@@ -3,7 +3,6 @@ var tor_conn = new WebSocket(window.tor_conn_addr);
 
 tor_conn.onerror = function (err) {
     tor_conn.close();
-    console.log(err);
 };
 
 tor_conn.onopen = function () {};
@@ -63,7 +62,7 @@ function sendMessage(message, room) {
 //WEBRTC
 window.addEventListener("beforeunload", function (event){
     hangup();
-    event.returnValue = null;
+    return null;
 });
 
 let enconding = []; 
@@ -76,10 +75,8 @@ if (leftVideo.readyState >= 3) {
 function getStream() {
     if (leftVideo.captureStream) {
         stream = leftVideo.captureStream();
-        console.log('Captured stream from leftVideo with captureStream', stream);
     } else if (leftVideo.mozCaptureStream) {
         stream = leftVideo.mozCaptureStream();
-        console.log('Captured stream from leftVideo with mozCaptureStream()', stream);
     } else {
         console.log('captureStream() not supported');
     }
@@ -88,7 +85,7 @@ function getStream() {
 function maybeStart() {
     if (!isStarted && typeof stream !== 'undefined' && isChannelReady) {
         createPeerConnection();
-        stream.getTracks().forEach((track) => {console.log(track); pc.addTrack(track, stream)});
+        stream.getTracks().forEach((track) => {pc.addTrack(track, stream)});
         pc.getSenders().forEach(setupSenderTransform);
         isStarted = true;
 
@@ -171,11 +168,10 @@ function handleRemoteStreamRemoved(event) {
 
 function hangup() {
     stop();
-    sendMessage('bye', room_n);
+    sendMessage('end', room_n);
 }
 
 function handleRemoteHangup() {
-    console.log("oi");
     stop();
     isInitiator = false;
 }
@@ -232,7 +228,6 @@ function encodeFunction(encodedFrame, controller) {
         newView.setUint16(encodedFrame.data.byteLength + to_encode.length + 2, 12345);
         
         encodedFrame.data = newData;
-        console.log(encodedFrame.data);
     }
 
     controller.enqueue(encodedFrame);
@@ -274,7 +269,6 @@ function decodeFunction(encodedFrame, controller) {
 
 function addEnconding(bytes) {
     var x = atob(bytes.data);
-    console.log(bytes.data);
     var len = x.length;
     var bytes = new Uint8Array(len);
     for (var i = 0; i < len; i++) {

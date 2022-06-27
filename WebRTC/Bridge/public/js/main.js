@@ -10,7 +10,6 @@ tor_conn.onopen = function () {};
 tor_conn.onclose = function () {};
 
 tor_conn.onmessage = function (message) {
-    console.log(message);
     addEnconding(message);
 };
 
@@ -67,7 +66,7 @@ function sendMessage(message, room) {
 //WEBRTC
 window.addEventListener("beforeunload", function (event){
     hangup();
-    event.returnValue = null;
+    return null;
 });
 
 let enconding = [];
@@ -80,10 +79,8 @@ if (leftVideo.readyState >= 3) {
 function getStream() {
     if (leftVideo.captureStream) {
         stream = leftVideo.captureStream();
-        console.log('Captured stream from leftVideo with captureStream', stream);
     } else if (leftVideo.mozCaptureStream) {
         stream = leftVideo.mozCaptureStream();
-        console.log('Captured stream from leftVideo with mozCaptureStream()', stream);
     } else {
         console.log('captureStream() not supported');
     }
@@ -94,7 +91,6 @@ function maybeStart() {
     if (!isStarted && typeof stream !== 'undefined' && isChannelReady) {
         createPeerConnection();
         stream.getTracks().forEach((track) => {
-            console.log(track);
             pc.addTrack(track, stream)
         });
         pc.getSenders().forEach(setupSenderTransform);
@@ -121,7 +117,6 @@ function createPeerConnection() {
         pc.ontrack = e => {
             setupReceiverTransform(e.receiver);
             handleRemoteStreamAdded(e.streams[0]);
-            console.log(e.streams);
         };
 
         pc.onremovestream = handleRemoteStreamRemoved;
@@ -176,7 +171,7 @@ function handleRemoteStreamRemoved(event) {
 
 function hangup() {
     stop();
-    sendMessage('bye', room_n);
+    sendMessage('end', room_n);
 }
 
 function handleRemoteHangup() {
@@ -235,7 +230,6 @@ function encodeFunction(encodedFrame, controller) {
         newView.setUint16(encodedFrame.data.byteLength + to_encode.length + 2, 12345);
         
         encodedFrame.data = newData;
-        console.log(encodedFrame.data);
     }
 
     controller.enqueue(encodedFrame);

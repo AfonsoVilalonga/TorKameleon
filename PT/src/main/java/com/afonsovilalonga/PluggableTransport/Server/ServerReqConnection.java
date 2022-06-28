@@ -1,27 +1,35 @@
 package com.afonsovilalonga.PluggableTransport.Server;
 
-import java.io.IOException;
-import java.net.Socket;
-
-import com.afonsovilalonga.Common.Modulators.Server.ModulatorServerInterface;
+import com.afonsovilalonga.Common.Modulators.ModulatorServerInterface;
 
 public class ServerReqConnection {
 
-    private Socket tor_sock;
     private ModulatorServerInterface copyloop;
+    private String id_window;
+    private String mod;
+    private String id;
 
-    public ServerReqConnection(Socket tor_sock, ModulatorServerInterface copyloop){
-        this.tor_sock = tor_sock;
+    public ServerReqConnection(String id_window, ModulatorServerInterface copyloop, String mod, String id){
         this.copyloop = copyloop;
+        this.id_window = id_window;
+        this.mod = mod;
+        this.id = id;
+    }
+
+    public String getId(){
+        return this.id;
+    }
+
+    public String getMod(){
+        return this.mod;
+    }
+
+    public String getId_Window(){
+        return this.id_window;
     }
 
     public void shutdown(){
-        copyloop.shutdown();
-        try {
-            tor_sock.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }       
+        copyloop.shutdown();    
     }
    
 }

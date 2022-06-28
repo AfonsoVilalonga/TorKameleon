@@ -116,7 +116,7 @@ public class SocksProtocol {
     /**
      * Close the connection and the serve socket 
      */
-    private void close() {
+    public void close() {
         try {
             this.SOCKSV5.close();
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-package com.afonsovilalonga.Common.Modulators.Server;
+package com.afonsovilalonga.Common.Modulators;
 
 public interface ModulatorServerInterface {
     

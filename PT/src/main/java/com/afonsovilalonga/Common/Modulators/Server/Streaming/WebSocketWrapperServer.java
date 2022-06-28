@@ -4,6 +4,8 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import com.afonsovilalonga.Common.Utils.Config;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,14 +21,13 @@ import javax.xml.bind.DatatypeConverter;
 public class WebSocketWrapperServer extends WebSocketServer
 {
     
-    private static int TCP_PORT = 4444; 
     private Map<Integer, Socket> tor_socks;
 
     private CountDownLatch cl;
     private WebSocket lastConn;
 
     public WebSocketWrapperServer() {
-        super(new InetSocketAddress(TCP_PORT));
+        super(new InetSocketAddress(Config.getInstance().getWebsocketPort()));
         super.start();
         tor_socks = new HashMap<>();
 

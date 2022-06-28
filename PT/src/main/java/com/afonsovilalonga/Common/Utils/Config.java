@@ -1,6 +1,5 @@
 package com.afonsovilalonga.Common.Utils;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,7 +7,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Scanner;
 
 public class Config {
     private String local_host;
@@ -39,6 +37,8 @@ public class Config {
 
     private int number_of_tirmmrt;
 
+    private int buffer_size;
+
     private int pt_client_port;
     private int pt_server_port;
     private String pt_server_host;
@@ -58,6 +58,8 @@ public class Config {
 
     private String webdriver_location;
 
+    private int websocket_port;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -72,6 +74,14 @@ public class Config {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getWebsocketPort(){
+        return websocket_port;
+    }
+
+    public int getBufferSize() {
+        return buffer_size;
     }
 
     public String getWebdriverLocation() {
@@ -245,6 +255,10 @@ public class Config {
             bridge_streaming_port = prop.getProperty("bridge_streaming_port");
 
             webdriver_location = prop.getProperty("webdriver_location");
+
+            buffer_size = Integer.parseInt(prop.getProperty("buffer_size"));
+
+            websocket_port = Integer.parseInt(prop.getProperty("websocket_port"));
 
         } catch (IOException e) {
             e.printStackTrace();

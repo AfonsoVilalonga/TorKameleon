@@ -7,7 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-public abstract class ModulatorTop {
+import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
+
+public abstract class ModulatorTop extends Monitor{
     private static final int RETRIES = 35;
     private static final int SLEEP_TIME = 1000;
 

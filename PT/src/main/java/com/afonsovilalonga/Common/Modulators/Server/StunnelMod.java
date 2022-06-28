@@ -8,22 +8,28 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
+import com.afonsovilalonga.Common.Modulators.ModulatorServerInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
+import com.afonsovilalonga.Common.Utils.Config;
 
 
 public class StunnelMod extends ModulatorTop implements ModulatorServerInterface{
     
     private Socket bridge_conn; 
+    private String id;
 
-    public StunnelMod(Socket tor_socket, Socket conn){
+    public StunnelMod(Socket tor_socket, Socket conn, String id){
         super(tor_socket);
         this.bridge_conn = conn;
+        this.id = id;
     }
 
     @Override
     public void run() {
-        Socket tor_socket = super.gettor_socket();
-        ExecutorService executor = super.getExecutor();
+        Config config = Config.getInstance();
+
+        Socket tor_socket = gettor_socket();
+        ExecutorService executor = getExecutor();
 
 		try {
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
@@ -32,41 +38,41 @@ public class StunnelMod extends ModulatorTop implements ModulatorServerInterface
 		    DataInputStream in_stunnel = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
 		    DataOutputStream out_stunnel = new DataOutputStream(new BufferedOutputStream(bridge_conn.getOutputStream()));
 	        
-            byte[] recv = new byte[20000];
-            byte[] send = new byte[20000];
+            byte[] recv = new byte[config.getBufferSize()];
+            byte[] send = new byte[config.getBufferSize()];
  
             executor.execute(() -> {
                 try {
-                    int i = 1;
-                    while( (i = in_Tor.read(send)) != -1 && !super.getShutdown()){
+                    int i = 0;
+                    while( (i = in_Tor.read(send)) != -1 && !getShutdown()){
                     	out_stunnel.write(send, 0, i);
                         out_stunnel.flush();	
                     }    
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    notifyObserver(id);
                 }
             });
 
             executor.execute(() -> {
                 try{
-                    int i = 1;
-                    while((i = in_stunnel.read(recv)) != -1 && !super.getShutdown()){
+                    int i = 0;
+                    while((i = in_stunnel.read(recv)) != -1 && !getShutdown()){
                     	out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }
                 } catch (Exception e){
-                    e.printStackTrace();
+                    notifyObserver(id);
                 }
             });    
         } catch (IOException e) {
-            e.printStackTrace();
+            notifyObserver(id);
         }
     }
 
     @Override
     public void shutdown(){
         try {
-            super.serviceShutdow();
+            serviceShutdow();
             this.bridge_conn.close();
         } catch (IOException e) {
             e.printStackTrace();

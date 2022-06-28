@@ -1,8 +1,5 @@
 package com.afonsovilalonga;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.PluggableTransport.Client.PT;
 import com.afonsovilalonga.PluggableTransport.Server.Server;
@@ -24,7 +21,6 @@ public class Solution {
 
         Config config = Config.getInstance();
         
-
         System.setProperty("webdriver.chrome.driver", config.getWebdriverLocation());
         WebDriverManager.chromedriver().setup();
 

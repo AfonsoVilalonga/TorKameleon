@@ -1,6 +1,5 @@
-package com.afonsovilalonga.Common.Modulators.Client;
+package com.afonsovilalonga.Common.Modulators;
 
-import com.afonsovilalonga.Common.Modulators.Server.ModulatorServerInterface;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 
 public interface ModulatorClientInterface extends ModulatorServerInterface{

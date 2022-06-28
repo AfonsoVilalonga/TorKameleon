@@ -4,6 +4,8 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import com.afonsovilalonga.Common.Utils.Config;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,12 +18,11 @@ import javax.xml.bind.DatatypeConverter;
 public class WebSocketWrapperClient extends WebSocketServer
 {
     
-    private static int TCP_PORT = 4444;
     private WebSocket webconn;
     private Socket tor_sock;
 
     public WebSocketWrapperClient(Socket tor_sock) {
-        super(new InetSocketAddress(TCP_PORT));
+        super(new InetSocketAddress(Config.getInstance().getWebsocketPort()));
         super.start();
         this.webconn = null;
         this.tor_sock = tor_sock;
@@ -35,19 +36,13 @@ public class WebSocketWrapperClient extends WebSocketServer
     }
 
     @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        System.out.println(" erro " + code + conn);
-    }
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {}
 
     @Override
     public void onMessage(WebSocket conn, String message) {
         try {
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_sock.getOutputStream()));
-
             byte[] recv = decodeBase64(message);
-            for(byte i: recv){
-                System.out.print(i + " ");
-            }
             out_tor.write(recv);
             out_tor.flush();
         } catch (Exception e) {
@@ -56,10 +51,7 @@ public class WebSocketWrapperClient extends WebSocketServer
     }
 
     @Override
-    public void onError(WebSocket conn, Exception ex) {
-        System.out.println(" erro2 " + conn);
-        ex.printStackTrace();
-    }   
+    public void onError(WebSocket conn, Exception ex) {}   
 
     public void stop(){
         try {

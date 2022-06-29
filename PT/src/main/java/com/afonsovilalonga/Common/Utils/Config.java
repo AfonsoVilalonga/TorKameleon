@@ -50,15 +50,15 @@ public class Config {
 
     private String mod;
 
-    private String client_streaming;
     private String client_streaming_port;
 
-    private String bridge_streaming;
     private String bridge_streaming_port;
 
     private String webdriver_location;
 
     private int websocket_port;
+
+    private String webrtc_location;
 
     private static Config instance; 
 
@@ -84,16 +84,12 @@ public class Config {
         return buffer_size;
     }
 
+    public String getWebRTCLocation() {
+        return webrtc_location;
+    }
+
     public String getWebdriverLocation() {
         return webdriver_location;
-    }
-
-    public String getClientLocationStreaming() {
-        return client_streaming;
-    }
-
-    public String getBridgeLocationStreaming() {
-        return bridge_streaming;
     }
 
     public String getBridgePortStreaming() {
@@ -248,9 +244,6 @@ public class Config {
 
             mod = prop.getProperty("modulation");
 
-            client_streaming = prop.getProperty("clientstreaming");
-            bridge_streaming = prop.getProperty("bridgestreaming");
-
             client_streaming_port = prop.getProperty("client_streaming_port");
             bridge_streaming_port = prop.getProperty("bridge_streaming_port");
 
@@ -259,6 +252,8 @@ public class Config {
             buffer_size = Integer.parseInt(prop.getProperty("buffer_size"));
 
             websocket_port = Integer.parseInt(prop.getProperty("websocket_port"));
+
+            webrtc_location = prop.getProperty("webrtc_location");
 
         } catch (IOException e) {
             e.printStackTrace();

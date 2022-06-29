@@ -6,7 +6,7 @@ const myArgs = process.argv.slice(2);
 //const views = "/home/ubuntu/Tese/WebRTC/Bridge/views/index";
 
 const static_pub = "public";
-const views = "index";
+const views = "/views/index";
 
 if(myArgs.length == 0)
     throw Error ('No port specified');

@@ -32,6 +32,7 @@ public class Server implements ObserverServer {
     private ServerSocket conns;
     private WebSocketWrapperServer websocket_server;
     private Process bridge_process;
+    private Process signalling_process;
     private ChromeDriver browser;
 
     public Server() {
@@ -49,10 +50,15 @@ public class Server implements ObserverServer {
         browser = new ChromeDriver(option);
 
         try {
-            ProcessBuilder pb = new ProcessBuilder("node", config.getBridgeLocationStreaming() + "/index",
+            ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Signalling/index.js");
+            pb.directory(new File(config.getWebRTCLocation() + "/Signalling"));
+            signalling_process = pb.start();
+
+
+            ProcessBuilder pb2 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Bridge/index.js",
                     config.getBridgePortStreaming());
-            pb.directory(new File(config.getBridgeLocationStreaming()));
-            bridge_process = pb.start();
+            pb2.directory(new File(config.getWebRTCLocation() + "/Bridge"));
+            bridge_process = pb2.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -132,6 +138,7 @@ public class Server implements ObserverServer {
         for (ServerReqConnection i : running_conns)
             i.shutdown();
         try {
+            signalling_process.destroy();
             bridge_process.destroy();
             conns.close();
         } catch (IOException e) {

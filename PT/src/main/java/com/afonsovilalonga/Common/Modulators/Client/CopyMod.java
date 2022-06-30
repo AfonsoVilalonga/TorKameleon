@@ -66,7 +66,7 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
             executor.execute(() -> {
                 try {
                     int i = 1;
-                    while ((i = in_Tor.read(send)) != -1 && !getShutdown()) {
+                    while ((i = in_Tor.read(send)) != -1) {
                         out_pt.write(send, 0, i);
                         out_pt.flush();
                     }
@@ -78,7 +78,7 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
             executor.execute(() -> {
                 try {
                     int i = 1;
-                    while ((i = in_pt.read(recv)) != -1 && !getShutdown()) {
+                    while ((i = in_pt.read(recv)) != -1) {
                         out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }

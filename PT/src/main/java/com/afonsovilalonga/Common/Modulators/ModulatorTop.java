@@ -16,17 +16,9 @@ public abstract class ModulatorTop extends Monitor{
     private Socket tor_socket;
     private ExecutorService executor;
 
-    private boolean shutdown;
-
     protected ModulatorTop(Socket tor_socket) {
         this.tor_socket = tor_socket;
         this.executor = Executors.newFixedThreadPool(2);
-
-        this.shutdown = false;
-    }
-
-    protected boolean getShutdown() {
-        return this.shutdown;
     }
 
     protected Socket gettor_socket() {
@@ -54,15 +46,13 @@ public abstract class ModulatorTop extends Monitor{
     }
 
     protected void serviceShutdow() {
-        this.shutdown = true;
-
         executor.shutdown(); // Disable new tasks from being submitted
         try {
             // Wait a while for existing tasks to terminate
-            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(15, TimeUnit.SECONDS)) {
                 executor.shutdownNow(); // Cancel currently executing tasks
                 // Wait a while for tasks to respond to being cancelled
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS))
+                if (!executor.awaitTermination(10, TimeUnit.SECONDS))
                     System.err.println("Pool did not terminate");
             }
 

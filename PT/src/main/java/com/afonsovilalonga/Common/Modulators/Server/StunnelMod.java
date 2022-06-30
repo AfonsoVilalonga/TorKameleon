@@ -44,7 +44,7 @@ public class StunnelMod extends ModulatorTop implements ModulatorServerInterface
             executor.execute(() -> {
                 try {
                     int i = 0;
-                    while( (i = in_Tor.read(send)) != -1 && !getShutdown()){
+                    while( (i = in_Tor.read(send)) != -1){
                     	out_stunnel.write(send, 0, i);
                         out_stunnel.flush();	
                     }    
@@ -56,7 +56,7 @@ public class StunnelMod extends ModulatorTop implements ModulatorServerInterface
             executor.execute(() -> {
                 try{
                     int i = 0;
-                    while((i = in_stunnel.read(recv)) != -1 && !getShutdown()){
+                    while((i = in_stunnel.read(recv)) != -1){
                     	out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }

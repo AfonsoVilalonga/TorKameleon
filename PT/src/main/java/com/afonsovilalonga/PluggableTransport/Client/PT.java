@@ -29,7 +29,6 @@ public class PT implements ObserverClient{
 
         try {
             this.tor_server = new ServerSocket(config.getPt_client_port());
-            
             ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Client/index.js", config.getClientPortStreaming());
             pb.directory(new File(config.getWebRTCLocation() + "/Client"));
             client_process = pb.start();

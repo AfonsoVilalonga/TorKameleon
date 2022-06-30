@@ -39,7 +39,7 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
             executor.execute(() -> {
                 try {
                     int i = 0;
-                    while ((i = in_Tor.read(send)) != -1 && !getShutdown()) {
+                    while ((i = in_Tor.read(send)) != -1) {
                         WebSocketWrapperServer.send(Arrays.copyOfRange(send, 0, i), bridge_conn);         
                     }
                 } catch (Exception e) {

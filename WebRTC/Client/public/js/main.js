@@ -214,8 +214,6 @@ function encodeFunction(encodedFrame, controller) {
         const to_encode = enconding[0];
         enconding.splice(0,1);
 
-        const view = new DataView(encodedFrame.data);
-
         const newData = new ArrayBuffer(encodedFrame.data.byteLength + to_encode.length + 2 + 2);
         
         const newView = new DataView(newData);

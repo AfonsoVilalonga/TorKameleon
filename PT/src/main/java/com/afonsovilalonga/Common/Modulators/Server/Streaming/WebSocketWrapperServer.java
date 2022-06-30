@@ -43,7 +43,9 @@ public class WebSocketWrapperServer extends WebSocketServer
 
 
     @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {}
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        onCloseOrError(conn);
+    }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
@@ -60,7 +62,9 @@ public class WebSocketWrapperServer extends WebSocketServer
     }
 
     @Override
-    public void onError(WebSocket conn, Exception ex) {}
+    public void onError(WebSocket conn, Exception ex) {
+        onCloseOrError(conn);
+    }
 
     public void setMutexAndWaitConn(CountDownLatch cl){
         this.cl = cl;
@@ -85,6 +89,16 @@ public class WebSocketWrapperServer extends WebSocketServer
 
     public static void send(byte[] message, WebSocket conn){
         conn.send(encodeBase64(message));
+    }
+
+    private void onCloseOrError(WebSocket conn){
+        Socket tor = tor_socks.get(conn.hashCode());
+        tor_socks.remove(conn.hashCode());
+        try {
+            tor.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

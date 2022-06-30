@@ -177,6 +177,10 @@ function hangup() {
 function handleRemoteHangup() {
     stop();
     isInitiator = false;
+
+    if(tor_conn.readyState == 1){
+        tor_conn.close();
+    }
 }
 
 function stop() {

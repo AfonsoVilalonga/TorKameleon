@@ -1,11 +1,13 @@
-package com.afonsovilalonga.Common.Modulators.Client.Streaming;
+package com.afonsovilalonga.Common.Modulators.Client;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import org.java_websocket.WebSocket;
 
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -14,6 +16,7 @@ import com.afonsovilalonga.Common.Initialization.InitializationPT;
 import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedException;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 
@@ -21,14 +24,16 @@ import com.afonsovilalonga.Common.Utils.Config;
 public class Streaming extends ModulatorTop implements ModulatorClientInterface{
 
     private Socket bridge_conn;
-    private WebSocketWrapperClient web_sock;
+
+    private WebSocket bridge_sock;
+    private WebSocketWrapper web_server;
     private ChromeDriver browser;
     
-    public Streaming(Socket tor_socket) {
+    public Streaming(Socket tor_socket, WebSocketWrapper web_server) {
         super(tor_socket);
-       
-        web_sock = new WebSocketWrapperClient(tor_socket);
+        this.web_server = web_server;
         browser = null;
+        bridge_sock = null;
     }
 
     @Override
@@ -38,14 +43,36 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
 
         if(can_connect){
             try {
+                //Wait for bridge to start up streaming protocol
                 InitializationPT.bridge_protocol_client_side(bridge_conn, mod);
-                                        
+                
+                CountDownLatch connectionWaiter = new CountDownLatch(1);
+                web_server.setMutexAndWaitConn(connectionWaiter);
+
                 ChromeOptions option = new ChromeOptions();
-                //option.addArguments("headless");
                 option.setAcceptInsecureCerts(true);            
                     
                 browser = new ChromeDriver(option);
                 browser.get("http://localhost:" + config.getClientPortStreaming());
+
+                //Wait for connection between local browser running client side webrtc and java websocket server
+                try {
+                    connectionWaiter.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                bridge_sock = web_server.getLaSocket();
+                web_server.setTorConnToConn(gettor_socket(), bridge_sock);
+
+                //everthing ready to start sending tor traffic
+                s.sendSocksResponseAccepted();
+
+                try {
+                    bridge_conn.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             } catch (BridgeFailedException e) {
                 e.printStackTrace();
@@ -57,7 +84,6 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 s.sendSocksResponseRejected(SocksProtocol.CONN_NOT_ALLOWED);
                 return false;
             }
-            s.sendSocksResponseAccepted();
         }
         else{
             s.sendSocksResponseRejected(SocksProtocol.CONN_NOT_ALLOWED);
@@ -82,7 +108,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 try {
                     int i = 0;
                     while ((i = in_Tor.read(send)) != -1) {
-                        web_sock.send(Arrays.copyOfRange(send, 0, i));           
+                        WebSocketWrapper.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
                     }
                 } catch (Exception e) {
                     notifyObserver();
@@ -101,7 +127,6 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 this.bridge_conn.close();
 
             browser.quit();
-            web_sock.stop();
         } catch (IOException e) {
             e.printStackTrace();
         }

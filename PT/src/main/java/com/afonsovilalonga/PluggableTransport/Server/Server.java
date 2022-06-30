@@ -16,10 +16,10 @@ import org.openqa.selenium.JavascriptExecutor;
 
 import com.afonsovilalonga.Common.Initialization.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorServerInterface;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
 import com.afonsovilalonga.Common.Modulators.Server.CopyMod;
+import com.afonsovilalonga.Common.Modulators.Server.Streaming;
 import com.afonsovilalonga.Common.Modulators.Server.StunnelMod;
-import com.afonsovilalonga.Common.Modulators.Server.Streaming.Streaming;
-import com.afonsovilalonga.Common.Modulators.Server.Streaming.WebSocketWrapperServer;
 import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
 import com.afonsovilalonga.Common.ObserversCleanup.ObserverServer;
 import com.afonsovilalonga.Common.Utils.Config;
@@ -30,19 +30,17 @@ public class Server implements ObserverServer {
     private List<ServerReqConnection> running_conns;
     private boolean bootstraped;
 
+    private WebSocketWrapper web_socket_server;
     private ServerSocket conns;
-    private WebSocketWrapperServer websocket_server;
-    private Process bridge_process;
-    private Process signalling_process;
+
     private ChromeDriver browser;
 
-    public Server() {
-        bootstraped = false;
-        exit = false;
-        config = Config.getInstance();
-        running_conns = new LinkedList<>();
-
-        websocket_server = new WebSocketWrapperServer();
+    public Server(WebSocketWrapper web_socket_server) {
+        this.config = Config.getInstance();
+        this.running_conns = new LinkedList<>();
+        this.web_socket_server = web_socket_server;
+        this.bootstraped = false;
+        this.exit = false;
 
         Monitor.registerObserver(this);
 
@@ -50,21 +48,7 @@ public class Server implements ObserverServer {
         option.setAcceptInsecureCerts(true);
         option.addArguments("headless");
 
-        browser = new ChromeDriver(option);
-
-        try {
-            ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Signalling/index.js");
-            pb.directory(new File(config.getWebRTCLocation() + "/Signalling"));
-            signalling_process = pb.start();
-
-
-            ProcessBuilder pb2 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Bridge/index.js",
-                    config.getBridgePortStreaming());
-            pb2.directory(new File(config.getWebRTCLocation() + "/Bridge"));
-            bridge_process = pb2.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.browser = new ChromeDriver(option);
     }
 
     public void run() {
@@ -101,7 +85,7 @@ public class Server implements ObserverServer {
 
                     else if (mod.equals("streaming")) {
                         CountDownLatch connectionWaiter = new CountDownLatch(1);
-                        websocket_server.setMutexAndWaitConn(connectionWaiter);
+                        web_socket_server.setMutexAndWaitConn(connectionWaiter);
 
                         ((JavascriptExecutor) browser).executeScript(
                                 "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
@@ -116,8 +100,8 @@ public class Server implements ObserverServer {
                         for (String aux : windowHandles)
                             id_window = aux;
 
-                        WebSocket sock = websocket_server.getLaSocket();
-                        websocket_server.setTorConnToConn(tor_sock, sock);
+                        WebSocket sock = web_socket_server.getLaSocket();
+                        web_socket_server.setTorConnToConn(tor_sock, sock);
 
                         copyloop = new Streaming(tor_sock, sock, id);
                     }
@@ -139,8 +123,6 @@ public class Server implements ObserverServer {
         for (ServerReqConnection i : running_conns)
             i.shutdown();
         try {
-            signalling_process.destroy();
-            bridge_process.destroy();
             conns.close();
         } catch (IOException e) {
             e.printStackTrace();

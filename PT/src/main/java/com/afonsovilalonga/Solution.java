@@ -1,5 +1,9 @@
 package com.afonsovilalonga;
 
+import java.io.File;
+import java.io.IOException;
+
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.PluggableTransport.Client.PT;
 import com.afonsovilalonga.PluggableTransport.Server.Server;
@@ -15,6 +19,12 @@ public class Solution {
 
     private static boolean isBridge;
 
+    private static Process client_process;
+    private static Process bridge_process;
+    private static WebSocketWrapper web_socket_server;
+
+    private static Process signalling_process;
+
     public static void main(String[] args) {
         shutdown();
         isBridge = true;
@@ -27,20 +37,45 @@ public class Solution {
         System.setProperty("javax.net.ssl.trustStore", config.getKeystore());
         System.setProperty("javax.net.ssl.trustStorePassword", config.getPassword());
 
+        try {
+            ProcessBuilder pb2 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Bridge/index.js", config.getBridgePortStreaming());
+            pb2.directory(new File(config.getWebRTCLocation() + "/Bridge"));
+            bridge_process = pb2.start();
+        } catch (IOException e1) {}
+
+        web_socket_server = new WebSocketWrapper();
+
+        if(args[0].equals("pt-client") || args[0].equals("proxy")){
+            try {
+                ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Client/index.js", config.getClientPortStreaming());
+                pb.directory(new File(config.getWebRTCLocation() + "/Client"));
+                client_process = pb.start();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Signalling/index.js");
+                pb.directory(new File(config.getWebRTCLocation() + "/Signalling"));
+                signalling_process = pb.start();
+            } catch (IOException e) {}
+        }
+
         switch (args[0]) {
             case "pt-client":
-                pt = new PT();
+                pt = new PT(web_socket_server);
                 pt.run();
                 break;
             case "pt-server":
                 isBridge = false;
-                server = new Server();
+                server = new Server(web_socket_server);
                 server.run();
                 break;
             case "proxy":
-                proxy = new Proxy();
-                pt = new PT();
+                pt = new PT(web_socket_server);
                 pt.run();
+                proxy = new Proxy();
                 break;
             default:
                 System.err.println("Invalid running command");
@@ -55,9 +90,22 @@ public class Solution {
 
                 if(isBridge){
                     pt.shutdown();
+                    client_process.destroy();
                 }else{
                     server.shutdown();
+                    signalling_process.destroy();
                 }
+
+                bridge_process.destroy();
+
+                try {
+                    web_socket_server.stop();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 System.out.println("Shutting down.");
             }
         }); 

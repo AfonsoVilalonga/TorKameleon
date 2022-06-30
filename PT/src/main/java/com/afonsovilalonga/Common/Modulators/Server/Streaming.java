@@ -1,4 +1,4 @@
-package com.afonsovilalonga.Common.Modulators.Server.Streaming;
+package com.afonsovilalonga.Common.Modulators.Server;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -11,6 +11,7 @@ import org.java_websocket.WebSocket;
 
 import com.afonsovilalonga.Common.Modulators.ModulatorServerInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
 import com.afonsovilalonga.Common.Utils.Config;
 
 public class Streaming extends ModulatorTop implements ModulatorServerInterface{
@@ -40,7 +41,7 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
                 try {
                     int i = 0;
                     while ((i = in_Tor.read(send)) != -1) {
-                        WebSocketWrapperServer.send(Arrays.copyOfRange(send, 0, i), bridge_conn);         
+                        WebSocketWrapper.send(Arrays.copyOfRange(send, 0, i), bridge_conn);         
                     }
                 } catch (Exception e) {
                     notifyObserver(id);

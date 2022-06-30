@@ -1,4 +1,4 @@
-package com.afonsovilalonga.Common.Modulators.Server.Streaming;
+package com.afonsovilalonga.Common.Modulators;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -18,7 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.xml.bind.DatatypeConverter;
 
 
-public class WebSocketWrapperServer extends WebSocketServer
+public class WebSocketWrapper extends WebSocketServer
 {
     
     private Map<Integer, Socket> tor_socks;
@@ -26,7 +26,7 @@ public class WebSocketWrapperServer extends WebSocketServer
     private CountDownLatch cl;
     private WebSocket lastConn;
 
-    public WebSocketWrapperServer() {
+    public WebSocketWrapper() {
         super(new InetSocketAddress(Config.getInstance().getWebsocketPort()));
         super.start();
         tor_socks = new HashMap<>();

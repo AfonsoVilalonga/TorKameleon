@@ -58,6 +58,7 @@ public class Solution {
                 }else{
                     server.shutdown();
                 }
+                System.out.println("Shutting down.");
             }
         }); 
     }

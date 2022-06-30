@@ -124,15 +124,13 @@ public class Server implements ObserverServer {
 
                     copyloop.run();
 
-                    ServerReqConnection req = new ServerReqConnection(id, copyloop, mod, id_window);
+                    ServerReqConnection req = new ServerReqConnection(id_window, copyloop, mod, id);
                     running_conns.add(req);
 
                     InitializationPT.bridge_protocol_server_side_send_ack(conn, modByte);
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
         }
     }
 

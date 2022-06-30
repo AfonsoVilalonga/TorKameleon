@@ -20,6 +20,7 @@ import com.afonsovilalonga.Common.Modulators.Server.CopyMod;
 import com.afonsovilalonga.Common.Modulators.Server.StunnelMod;
 import com.afonsovilalonga.Common.Modulators.Server.Streaming.Streaming;
 import com.afonsovilalonga.Common.Modulators.Server.Streaming.WebSocketWrapperServer;
+import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
 import com.afonsovilalonga.Common.ObserversCleanup.ObserverServer;
 import com.afonsovilalonga.Common.Utils.Config;
 
@@ -42,6 +43,8 @@ public class Server implements ObserverServer {
         running_conns = new LinkedList<>();
 
         websocket_server = new WebSocketWrapperServer();
+
+        Monitor.registerObserver(this);
 
         ChromeOptions option = new ChromeOptions();
         option.setAcceptInsecureCerts(true);

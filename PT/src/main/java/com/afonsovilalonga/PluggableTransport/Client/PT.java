@@ -8,6 +8,7 @@ import com.afonsovilalonga.Common.Initialization.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.Client.CopyMod;
 import com.afonsovilalonga.Common.Modulators.Client.Streaming.Streaming;
+import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
 import com.afonsovilalonga.Common.ObserversCleanup.ObserverClient;
 import com.afonsovilalonga.Common.Modulators.Client.StunnelMod;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
@@ -26,6 +27,8 @@ public class PT implements ObserverClient{
         config = Config.getInstance();
         modulator = null;
         socks_protocol = null;
+
+        Monitor.registerObserver(this);
 
         try {
             this.tor_server = new ServerSocket(config.getPt_client_port());

@@ -43,7 +43,7 @@ public class Solution {
             bridge_process = pb2.start();
         } catch (IOException e1) {}
 
-        web_socket_server = new WebSocketWrapper();
+
 
         if(args[0].equals("pt-client") || args[0].equals("proxy")){
             try {
@@ -55,6 +55,7 @@ public class Solution {
                 e.printStackTrace();
             }
         }else{
+            isBridge = false;
             try {
                 ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Signalling/index.js");
                 pb.directory(new File(config.getWebRTCLocation() + "/Signalling"));
@@ -62,13 +63,14 @@ public class Solution {
             } catch (IOException e) {}
         }
 
+        web_socket_server = new WebSocketWrapper(isBridge);
+
         switch (args[0]) {
             case "pt-client":
                 pt = new PT(web_socket_server);
                 pt.run();
                 break;
             case "pt-server":
-                isBridge = false;
                 server = new Server(web_socket_server);
                 server.run();
                 break;
@@ -92,6 +94,7 @@ public class Solution {
                     pt.shutdown();
                     client_process.destroy();
                 }else{
+                    proxy.shutdown();
                     server.shutdown();
                     signalling_process.destroy();
                 }

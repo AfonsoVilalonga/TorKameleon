@@ -1,20 +1,20 @@
 window.webrtc = {
     iceServers: [{
-        urls: [ "stun:eu-turn4.xirsys.com" ]
+        urls: [ "stun:eu-turn6.xirsys.com" ]
      }, {
-        username: "Es2MF1dNpixy1MuvrIgjIT-5R33ZlXc8sj1AoJQJka8Kk9_guwMDUmFHDlswCxfMAAAAAGK8vFF0ZXN0ZXdlYnJ0Y29pMTIzNDU=",
-        credential: "d8c91006-f7ed-11ec-a2a0-0242ac140004",
+        username: "mfdlqlPnR3r7lW1zEsq2Rm9_9Ebk7cU9m2cb-IJfrSHdXFZuULZ7neCfS_5QmTPwAAAAAGK-B9d3YnJ0YzEyMzQ1NnRlc3Rl",
+        credential: "73488402-f8b3-11ec-9a53-0242ac140004",
         urls: [
-            "turn:eu-turn4.xirsys.com:80?transport=udp",
-            "turn:eu-turn4.xirsys.com:3478?transport=udp",
-            "turn:eu-turn4.xirsys.com:80?transport=tcp",
-            "turn:eu-turn4.xirsys.com:3478?transport=tcp",
-            "turns:eu-turn4.xirsys.com:443?transport=tcp",
-            "turns:eu-turn4.xirsys.com:5349?transport=tcp"
+            "turn:eu-turn6.xirsys.com:80?transport=udp",
+            "turn:eu-turn6.xirsys.com:3478?transport=udp",
+            "turn:eu-turn6.xirsys.com:80?transport=tcp",
+            "turn:eu-turn6.xirsys.com:3478?transport=tcp",
+            "turns:eu-turn6.xirsys.com:443?transport=tcp",
+            "turns:eu-turn6.xirsys.com:5349?transport=tcp"
         ]
      }],
     encodedInsertableStreams: true
 };
-window.signalling_server = 'wss://localhost:8000';
-//window.signalling_server = 'wss://5.196.26.66:8000';
+//window.signalling_server = 'wss://localhost:8000';
+window.signalling_server = 'wss://5.196.26.66:8000';
 window.tor_conn_addr = 'ws://localhost:4444';

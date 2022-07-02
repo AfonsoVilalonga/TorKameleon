@@ -194,6 +194,33 @@ public class Proxy {
                 }
             }
         }).start();
+
+        //Streaming incoming connection, TODO METER O PORT CERTO
+        new Thread(() -> {
+            ExecutorService executor = null;
+            try(ServerSocket ss = getSecureSocketTLS(local_port_secure)){
+                executor = Executors.newFixedThreadPool(N_THREADS);
+                System.out.println("Streaming protocol is listening on port " + local_port_secure);
+                while (true) {
+                    Socket socket = ss.accept();
+                    executor.execute(() -> doTCP_TLS(socket));
+                }
+            } catch (IOException ioe) {
+                System.err.println("Cannot open the port on Streaming protocol");
+                ioe.printStackTrace();
+            } finally {
+                System.out.println("Closing Streaming protocol server");
+            }
+        }).start();
+    }
+
+    //To receive streaming
+    private void doStreaming(){
+
+    }
+
+    public void shutdown(){
+        
     }
 
     

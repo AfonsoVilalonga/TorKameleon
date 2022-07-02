@@ -25,11 +25,14 @@ public class WebSocketWrapper extends WebSocketServer
 
     private CountDownLatch cl;
     private WebSocket lastConn;
+    private boolean isBridge;
 
-    public WebSocketWrapper() {
+    public WebSocketWrapper(boolean isBridge) {
         super(new InetSocketAddress(Config.getInstance().getWebsocketPort()));
-        super.start();
+        
+        start();
         tor_socks = new HashMap<>();
+        this.isBridge = isBridge;
 
         cl = null;
         lastConn = null;
@@ -44,7 +47,8 @@ public class WebSocketWrapper extends WebSocketServer
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        onCloseOrError(conn);
+        if(!isBridge)
+            onCloseOrError(conn);
     }
 
     @Override

@@ -4,10 +4,17 @@ package com.afonsovilalonga.Proxy;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.*;
 
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
+import com.afonsovilalonga.Proxy.Streaming.Initialization;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
 import com.afonsovilalonga.Proxy.Utils.Http;
+import org.openqa.selenium.JavascriptExecutor;
+import org.java_websocket.WebSocket;
 
 import java.io.*;
 import java.net.*;
@@ -18,6 +25,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,11 +41,21 @@ public class Proxy {
 
     private String bypassAddress;
     private ConcurrentLinkedQueue<Instant> arrival_times = new ConcurrentLinkedQueue<>();
+    private WebSocketWrapper web_socket_server;
+    private ChromeDriver browser;
 
     private Config config;
 
-    public Proxy(){
+    public Proxy(WebSocketWrapper web_socket_server){
         try {
+            this.web_socket_server = web_socket_server;
+
+            ChromeOptions option = new ChromeOptions();
+            option.setAcceptInsecureCerts(true);
+            option.addArguments("headless");
+
+            this.browser = new ChromeDriver(option);
+
             run();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -203,7 +221,8 @@ public class Proxy {
                 System.out.println("Streaming protocol is listening on port " + local_port_secure);
                 while (true) {
                     Socket socket = ss.accept();
-                    executor.execute(() -> doTCP_TLS(socket));
+                    executor.execute(() -> doStreaming(socket));
+                    socket.close();
                 }
             } catch (IOException ioe) {
                 System.err.println("Cannot open the port on Streaming protocol");
@@ -215,7 +234,7 @@ public class Proxy {
     }
 
     //To receive streaming
-    private void doStreaming(){
+    private void doStreaming(Socket socket){
 
     }
 
@@ -541,12 +560,65 @@ public class Proxy {
                 return torRequest(path, remote_host, remote_port);
             } else {
                 System.err.println("TIR-MMRT connection :" + my_address + " ---> " + bypassAddress);
-                return bypassConnection(path);
+                boolean isStreaming = false;
+                if(isStreaming){
+                    return bypassConnectionStremaing(path);
+                }else{
+                    return bypassConnection(path);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    //TODO PORTS MESMO PORT QUE AQUELE LA DE CIMA DA TRHEAD 
+    private byte[] bypassConnectionStremaing(String path) throws Exception{
+        boolean result = Initialization.startHandshake(bypassAddress.split(":")[0], 2999);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        if(result){
+            WebSocket sock = null;
+            PipedInputStream pin = new PipedInputStream();
+            PipedOutputStream pout = new PipedOutputStream();
+
+            try {
+                pout.connect(pin);
+            } catch (IOException e) {}
+            
+            synchronized(this){    
+                CountDownLatch connectionWaiter = new CountDownLatch(1);
+                web_socket_server.setMutexAndWaitConn(connectionWaiter);
+    
+                ((JavascriptExecutor) browser).executeScript(
+                    "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
+    
+                try {
+                    connectionWaiter.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                sock = web_socket_server.getLaSocket();
+                web_socket_server.setTorConnToConn(pout, sock);
+            }
+            
+            WebSocketWrapper.send(String.format("GET %s HTTP/1.1", path.trim()).getBytes(), sock);         
+
+            int n;
+            byte[] buffer = new byte[BUF_SIZE];
+            while ((n = pin.read(buffer, 0, buffer.length)) != -1) {
+                //System.out.write(buffer, 0, n);
+                baos.write(buffer, 0, n);
+            }
+
+            //GARBAGGE COLLECTION QUANDO CHEGAR AO -1 PORTANTO ELIMINAR A PAGINA E TAL 
+        }else{
+            System.err.println("Error while handshaking with the brdige using the Streaming protocol");
+        }
+
+        return baos.toByteArray();
     }
 
     private byte[] bypassConnection(String path) throws Exception {

@@ -77,7 +77,7 @@ public class Solution {
             case "proxy":
                 pt = new PT(web_socket_server);
                 pt.run();
-                proxy = new Proxy();
+                proxy = new Proxy(web_socket_server);
                 break;
             default:
                 System.err.println("Invalid running command");

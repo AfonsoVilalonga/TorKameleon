@@ -16,8 +16,8 @@ import org.java_websocket.WebSocket;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import com.afonsovilalonga.Common.Initialization.InitializationPT;
 import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedException;
+import com.afonsovilalonga.Common.Initialization.PluggableTransportHanshake.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;

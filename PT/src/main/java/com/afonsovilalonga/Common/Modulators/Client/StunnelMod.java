@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutorService;
 
 import javax.net.ssl.SSLSocket;
 
-import com.afonsovilalonga.Common.Initialization.InitializationPT;
 import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedException;
+import com.afonsovilalonga.Common.Initialization.PluggableTransportHanshake.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;

@@ -1,5 +1,6 @@
 package com.afonsovilalonga.Common.Utils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class Config {
     private String local_host;
@@ -214,23 +216,23 @@ public class Config {
             prop.load(input);
 
             //TIR VARS
-            // local_host = prop.getProperty("local_host");
-            // local_port_unsecure = Integer.parseInt(prop.getProperty("local_port_unsecure"));
-            // local_port_secure = Integer.parseInt(prop.getProperty("local_port_secure"));
-            // remote_host = prop.getProperty("remote_host");
-            // remote_port = Integer.parseInt(prop.getProperty("remote_port"));
-            // tor_host = prop.getProperty("tor_host");
-            // tor_port = Integer.parseInt(prop.getProperty("tor_port"));
-            // stunnel_port = prop.getProperty("stunnel_port");
-            // bypass_timer = Integer.parseInt(prop.getProperty("bypass_timer"));
-            // test_port_iperf = Integer.parseInt(prop.getProperty("test_port_iperf"));
-            // test_stunnel_port_iperf = Integer.parseInt(prop.getProperty("test_stunnel_port_iperf"));
-            // test_port_httping = Integer.parseInt(prop.getProperty("test_port_httping"));
-            // test_stunnel_port_httping = Integer.parseInt(prop.getProperty("test_stunnel_port_httping"));
-            // number_of_tirmmrt = Integer.parseInt(prop.getProperty("number_of_tirmmrt"));
-            // tor_buffer_size = Integer.parseInt(prop.getProperty("tor_buffer_size"));
-            // test_port_analytics = Integer.parseInt(prop.getProperty("test_port_analytics"));
-            // test_stunnel_port_analytics = Integer.parseInt(prop.getProperty("test_stunnel_port_analytics"));
+            local_host = prop.getProperty("local_host");
+            local_port_unsecure = Integer.parseInt(prop.getProperty("local_port_unsecure"));
+            local_port_secure = Integer.parseInt(prop.getProperty("local_port_secure"));
+            remote_host = prop.getProperty("remote_host");
+            remote_port = Integer.parseInt(prop.getProperty("remote_port"));
+            tor_host = prop.getProperty("tor_host");
+            tor_port = Integer.parseInt(prop.getProperty("tor_port"));
+            stunnel_port = prop.getProperty("stunnel_port");
+            bypass_timer = Integer.parseInt(prop.getProperty("bypass_timer"));
+            test_port_iperf = Integer.parseInt(prop.getProperty("test_port_iperf"));
+            test_stunnel_port_iperf = Integer.parseInt(prop.getProperty("test_stunnel_port_iperf"));
+            test_port_httping = Integer.parseInt(prop.getProperty("test_port_httping"));
+            test_stunnel_port_httping = Integer.parseInt(prop.getProperty("test_stunnel_port_httping"));
+            number_of_tirmmrt = Integer.parseInt(prop.getProperty("number_of_tirmmrt"));
+            tor_buffer_size = Integer.parseInt(prop.getProperty("tor_buffer_size"));
+            test_port_analytics = Integer.parseInt(prop.getProperty("test_port_analytics"));
+            test_stunnel_port_analytics = Integer.parseInt(prop.getProperty("test_stunnel_port_analytics"));
 
             //PT CLIENT VARS
             pt_client_port = Integer.parseInt(prop.getProperty("pt_client_port"));
@@ -258,13 +260,13 @@ public class Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // File file = new File("./configuration/TIR-MMRT_network");
-        // Scanner sc = new Scanner(file);
-        // int tirmmrts = 0;
-        // while (sc.hasNextLine() && tirmmrts < number_of_tirmmrt) {
-        //     tirmmrt_network.add(sc.nextLine());
-        //     tirmmrts++;
-        // }
-        // sc.close();
+        File file = new File("../Config/TIR-MMRT_network");
+        Scanner sc = new Scanner(file);
+        int tirmmrts = 0;
+        while (sc.hasNextLine() && tirmmrts < number_of_tirmmrt) {
+            tirmmrt_network.add(sc.nextLine());
+            tirmmrts++;
+        }
+        sc.close();
     }
 }

@@ -4,11 +4,12 @@ com/afonsovilalonga/Common/ObserversCleanup/ObserverClient.class
 com/afonsovilalonga/Common/Utils/Config.class
 com/afonsovilalonga/Common/Socks/SocksProtocol.class
 com/afonsovilalonga/Common/Modulators/Server/CopyMod.class
-com/afonsovilalonga/Common/Initialization/InitializationPT.class
+com/afonsovilalonga/Common/Initialization/ProxyStreamingHanshake/Initialization.class
 com/afonsovilalonga/Common/Modulators/Client/CopyMod.class
 com/afonsovilalonga/Proxy/Utils/Http.class
 com/afonsovilalonga/Common/Modulators/ModulatorClientInterface.class
 com/afonsovilalonga/Common/Socks/Exceptions/SocksException.class
+com/afonsovilalonga/Common/Initialization/PluggableTransportHanshake/InitializationPT.class
 com/afonsovilalonga/Common/Modulators/Server/StunnelMod.class
 com/afonsovilalonga/Common/Modulators/Server/Streaming.class
 com/afonsovilalonga/Common/ObserversCleanup/ObserverServer.class

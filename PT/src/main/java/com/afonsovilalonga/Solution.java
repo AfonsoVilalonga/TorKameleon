@@ -74,9 +74,12 @@ public class Solution {
                 server = new Server(web_socket_server);
                 server.run();
                 break;
-            case "proxy":
+            case "pt-proxy":
                 pt = new PT(web_socket_server);
                 pt.run();
+                proxy = new Proxy(web_socket_server);
+                break;
+            case "proxy":
                 proxy = new Proxy(web_socket_server);
                 break;
             default:

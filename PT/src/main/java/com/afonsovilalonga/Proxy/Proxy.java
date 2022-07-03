@@ -7,10 +7,10 @@ import javax.net.ssl.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import com.afonsovilalonga.Common.Initialization.ProxyStreamingHanshake.Initialization;
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
-import com.afonsovilalonga.Proxy.Streaming.Initialization;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
 import com.afonsovilalonga.Proxy.Utils.Http;
 import org.openqa.selenium.JavascriptExecutor;
@@ -216,7 +216,7 @@ public class Proxy {
         //Streaming incoming connection, TODO METER O PORT CERTO
         new Thread(() -> {
             ExecutorService executor = null;
-            try(ServerSocket ss = getSecureSocketTLS(local_port_secure)){
+            try(ServerSocket ss = new ServerSocket(2999)){
                 executor = Executors.newFixedThreadPool(N_THREADS);
                 System.out.println("Streaming protocol is listening on port " + local_port_secure);
                 while (true) {
@@ -605,7 +605,7 @@ public class Proxy {
                 return torRequest(path, remote_host, remote_port);
             } else {
                 System.err.println("TIR-MMRT connection :" + my_address + " ---> " + bypassAddress);
-                boolean isStreaming = false;
+                boolean isStreaming = true;
                 if(isStreaming){
                     return bypassConnectionStremaing(path);
                 }else{
@@ -699,6 +699,7 @@ public class Proxy {
             SSLContext ctx;
             KeyManagerFactory kmf;
             KeyStore ks;
+            
             char[] passphrase = config.getPassword().toCharArray();
 
             ctx = SSLContext.getInstance("TLS");

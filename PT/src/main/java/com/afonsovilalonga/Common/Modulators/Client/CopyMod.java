@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
-import com.afonsovilalonga.Common.Initialization.InitializationPT;
 import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedException;
+import com.afonsovilalonga.Common.Initialization.PluggableTransportHanshake.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;

@@ -657,6 +657,7 @@ public class Proxy {
                 //System.out.write(buffer, 0, n);
                 baos.write(buffer, 0, n);
             }
+            System.out.println("acabou");
 
             //GARBAGGE COLLECTION QUANDO CHEGAR AO -1 PORTANTO ELIMINAR A PAGINA E TAL 
         }else{

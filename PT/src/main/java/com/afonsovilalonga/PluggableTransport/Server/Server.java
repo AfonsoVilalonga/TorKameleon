@@ -1,6 +1,8 @@
 package com.afonsovilalonga.PluggableTransport.Server;
 
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -83,6 +85,13 @@ public class Server implements ObserverServer {
                         copyloop = new StunnelMod(tor_sock, conn, id);
 
                     else if (mod.equals("streaming")) {
+                        PipedInputStream pin = new PipedInputStream();
+                        PipedOutputStream pout = new PipedOutputStream();
+
+                        try {
+                            pout.connect(pin);
+                        } catch (IOException e) {}
+
                         CountDownLatch connectionWaiter = new CountDownLatch(1);
                         web_socket_server.setMutexAndWaitConn(connectionWaiter);
 
@@ -100,9 +109,9 @@ public class Server implements ObserverServer {
                             id_window = aux;
 
                         WebSocket sock = web_socket_server.getLaSocket();
-                        web_socket_server.setTorConnToConn(tor_sock, sock);
+                        web_socket_server.setTorConnToConn(pout, sock);
 
-                        copyloop = new Streaming(tor_sock, sock, id);
+                        copyloop = new Streaming(tor_sock, sock, id, pin);
                     }
 
                     copyloop.run();

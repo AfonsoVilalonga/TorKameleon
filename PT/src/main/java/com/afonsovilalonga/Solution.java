@@ -91,11 +91,15 @@ public class Solution {
                 System.clearProperty("tir.done");
 
                 if(isBridge){
-                    pt.shutdown();
+                    if(pt != null)
+                        pt.shutdown();
                     client_process.destroy();
                 }else{
-                    proxy.shutdown();
-                    server.shutdown();
+                    if(proxy != null)
+                        proxy.shutdown();
+                    
+                    if(server != null)
+                        server.shutdown();
                     signalling_process.destroy();
                 }
 

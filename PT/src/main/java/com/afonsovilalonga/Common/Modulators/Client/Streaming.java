@@ -1,8 +1,12 @@
 package com.afonsovilalonga.Common.Modulators.Client;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -28,12 +32,22 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
     private WebSocket bridge_sock;
     private WebSocketWrapper web_server;
     private ChromeDriver browser;
+
+    private PipedInputStream pin;
+    private PipedOutputStream pout;
     
     public Streaming(Socket tor_socket, WebSocketWrapper web_server) {
         super(tor_socket);
         this.web_server = web_server;
-        browser = null;
-        bridge_sock = null;
+        this.pin = new PipedInputStream();
+        this.pout = new PipedOutputStream();
+        
+        try {
+            pout.connect(pin);
+        } catch (IOException e) {}
+        
+        this.browser = null;
+        this.bridge_sock = null;
     }
 
     @Override
@@ -63,7 +77,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 }
 
                 bridge_sock = web_server.getLaSocket();
-                web_server.setTorConnToConn(gettor_socket(), bridge_sock);
+                web_server.setTorConnToConn(pout, bridge_sock);
 
                 //everthing ready to start sending tor traffic
                 s.sendSocksResponseAccepted();
@@ -101,8 +115,10 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
         
         try {
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
-
+            DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
+            
             byte[] send = new byte[config.getBufferSize()];
+            byte[] recv = new byte[config.getBufferSize()];
 
             executor.execute(() -> {
                 try {
@@ -114,6 +130,19 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                     notifyObserver();
                 }
             });
+
+            executor.execute(() -> {
+                try {
+                    int i = 0;
+                    while ((i = pin.read(recv)) != -1) {
+                        out_tor.write(recv, 0, i);
+                        out_tor.flush();            
+                    }
+                } catch (Exception e) {
+                    notifyObserver();
+                }
+            });
+
         } catch (IOException e) {
             notifyObserver();
         }

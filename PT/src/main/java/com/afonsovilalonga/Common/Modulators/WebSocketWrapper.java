@@ -1,38 +1,34 @@
 package com.afonsovilalonga.Common.Modulators;
 
-import org.java_websocket.WebSocket;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
-
-import com.afonsovilalonga.Common.Utils.Config;
-
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PipedOutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
 
-public class WebSocketWrapper extends WebSocketServer
-{
-    
-    private Map<Integer, Socket> tor_socks;
+import com.afonsovilalonga.Common.Utils.Config;
+
+public class WebSocketWrapper extends WebSocketServer{
+
+    private Map<Integer, PipedOutputStream> tor_socks;
 
     private CountDownLatch cl;
     private WebSocket lastConn;
-    private boolean isBridge;
+    private boolean isBridgeOrProxy;
 
-    public WebSocketWrapper(boolean isBridge) {
+    public WebSocketWrapper(boolean isBridgeOrProxy) {
         super(new InetSocketAddress(Config.getInstance().getWebsocketPort()));
-        
+
         start();
         tor_socks = new HashMap<>();
-        this.isBridge = isBridge;
+        this.isBridgeOrProxy = isBridgeOrProxy;
 
         cl = null;
         lastConn = null;
@@ -44,22 +40,20 @@ public class WebSocketWrapper extends WebSocketServer
         cl.countDown();
     }
 
-
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        if(!isBridge)
+        if(!isBridgeOrProxy)
             onCloseOrError(conn);
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        Socket tor = tor_socks.get(conn.hashCode());
+        PipedOutputStream tor = tor_socks.get(conn.hashCode());
 
         try {
-            DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor.getOutputStream()));
             byte[] recv = decodeBase64(message);
-            out_tor.write(recv);
-            out_tor.flush();
+            tor.write(recv);
+            tor.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,16 +64,21 @@ public class WebSocketWrapper extends WebSocketServer
         onCloseOrError(conn);
     }
 
+
     public void setMutexAndWaitConn(CountDownLatch cl){
         this.cl = cl;
     }
 
-    public void setTorConnToConn(Socket tor_sock, WebSocket conn){
+    public void setTorConnToConn(PipedOutputStream tor_sock, WebSocket conn){
         tor_socks.put(conn.hashCode(), tor_sock);
     }
 
     public WebSocket getLaSocket(){
         return this.lastConn;
+    }
+
+    public static void send(byte[] message, WebSocket conn){
+        conn.send(encodeBase64(message));
     }
 
     public byte[] decodeBase64(String base64){
@@ -91,12 +90,8 @@ public class WebSocketWrapper extends WebSocketServer
         return result;
     }
 
-    public static void send(byte[] message, WebSocket conn){
-        conn.send(encodeBase64(message));
-    }
-
     private void onCloseOrError(WebSocket conn){
-        Socket tor = tor_socks.get(conn.hashCode());
+        PipedOutputStream tor = tor_socks.get(conn.hashCode());
         tor_socks.remove(conn.hashCode());
         try {
             tor.close();
@@ -104,5 +99,5 @@ public class WebSocketWrapper extends WebSocketServer
             e.printStackTrace();
         }
     }
-
+    
 }

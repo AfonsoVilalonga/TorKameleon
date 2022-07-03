@@ -235,7 +235,52 @@ public class Proxy {
 
     //To receive streaming
     private void doStreaming(Socket socket){
+        byte val = Initialization.serverHandshake(socket);
 
+        if(val != Initialization.ACK_FAILED){
+            Initialization.sendAccept(socket);
+            
+            WebSocket sock = null;
+            PipedInputStream pin = new PipedInputStream();
+            PipedOutputStream pout = new PipedOutputStream();
+    
+            try {
+                pout.connect(pin);
+            } catch (IOException e) {}
+            
+            synchronized(this){    
+                CountDownLatch connectionWaiter = new CountDownLatch(1);
+                web_socket_server.setMutexAndWaitConn(connectionWaiter);
+    
+                ((JavascriptExecutor) browser).executeScript(
+                    "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
+    
+                try {
+                    connectionWaiter.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+    
+                sock = web_socket_server.getLaSocket();
+                web_socket_server.setTorConnToConn(pout, sock);
+            }
+
+            byte[] buffer = new byte[BUF_SIZE];
+            try {
+                pin.read(buffer);
+                addJitterPerturbation();
+            } catch (IOException | InterruptedException e) {}
+
+            arrival_times.add(Instant.now());
+
+            String filePath = Http.parseHttpReply(new String(buffer))[1];
+            System.out.println("File request path: " + filePath + " from " + socket.getInetAddress() + ":" + socket.getPort());
+            byte[] data = bypass(filePath);
+
+            WebSocketWrapper.send(Arrays.copyOfRange(data, 0, data.length), sock); 
+        } else{
+            Initialization.sendFalied(socket);
+        }
     }
 
     public void shutdown(){
@@ -592,7 +637,7 @@ public class Proxy {
                 web_socket_server.setMutexAndWaitConn(connectionWaiter);
     
                 ((JavascriptExecutor) browser).executeScript(
-                    "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
+                    "window.open('http://localhost:" + config.getClientPortStreaming() + "');");
     
                 try {
                     connectionWaiter.await();

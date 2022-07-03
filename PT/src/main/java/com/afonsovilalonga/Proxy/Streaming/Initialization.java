@@ -13,8 +13,10 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class Initialization {
     
-    private static final byte ACK_SUCC = 0x00;
-    private static final byte ACK_FAILED = 0x0F;
+    public static final byte ACCEPTED_REQ = 0x00;
+
+    public static final byte ACK_SUCC = 0x00;
+    public static final byte ACK_FAILED = 0x0F;
 
     public static boolean startHandshake(String host, int port){
         try {
@@ -41,17 +43,31 @@ public class Initialization {
         return false;
     }
 
-    public static boolean serverHandshake(Socket socket){
+    public static byte serverHandshake(Socket socket){
         try {
-            DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+           
             DataInputStream in_sock = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
             byte req = in_sock.readByte();
 
-        
+            return req; 
         } catch (IOException e) {}
+        return 0x0F;
+    }
 
-        return false;
+    public static void sendAccept(Socket socket){
+        try{
+            DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            out_sock.writeByte(ACCEPTED_REQ);
+            out_sock.flush();
+        } catch(IOException e) {}
+    }
+
+    public static void sendFalied(Socket socket){
+        try{
+            DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            out_sock.writeByte(ACK_FAILED);
+            out_sock.flush();
+        } catch(IOException e) {}
     }
 
 }

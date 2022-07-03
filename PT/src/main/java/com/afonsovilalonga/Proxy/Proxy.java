@@ -52,7 +52,7 @@ public class Proxy {
 
             ChromeOptions option = new ChromeOptions();
             option.setAcceptInsecureCerts(true);
-            option.addArguments("headless");
+            //option.addArguments("headless");
 
             this.browser = new ChromeDriver(option);
 
@@ -222,7 +222,6 @@ public class Proxy {
                 while (true) {
                     Socket socket = ss.accept();
                     executor.execute(() -> doStreaming(socket));
-                    socket.close();
                 }
             } catch (IOException ioe) {
                 System.err.println("Cannot open the port on Streaming protocol");

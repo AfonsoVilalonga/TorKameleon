@@ -482,12 +482,9 @@ public class SocksProtocol {
             out.writeByte(TCP_STREAM);
             out.writeShort((short) remote_port);
 
-	        for (int i = 0; i < 3; i++){  
-                out.writeByte(0x00);
-            }
-            out.writeByte(0x01);
-
+            out.writeInt(0x01);
             out.writeByte(0x00);
+
             out.write(remote_host.getBytes());
             out.writeByte(0x00);
 

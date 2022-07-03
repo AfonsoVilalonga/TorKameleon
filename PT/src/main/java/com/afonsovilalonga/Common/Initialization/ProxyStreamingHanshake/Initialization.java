@@ -23,6 +23,7 @@ public class Initialization {
             //SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             //SSLSocket socket  = (SSLSocket) factory.createSocket(host, port);
             Socket socket = new Socket(host, port);
+            System.out.println(socket.isConnected());
 
             DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             DataInputStream in_sock = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -32,13 +33,15 @@ public class Initialization {
 
             byte ack = in_sock.readByte();
 
-            socket.close();
+            //socket.close();
 
             if(ack == ACK_SUCC)
                 return true;
             
                
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         
         return false;
     }

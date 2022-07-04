@@ -652,9 +652,13 @@ public class Proxy {
 
             int n;
             byte[] buffer = new byte[BUF_SIZE];
-            while ((n = pin.read(buffer, 0, buffer.length)) != -1) {
+            int x = 0;
+            while (x < 2) {
                 //System.out.write(buffer, 0, n);
+                n = pin.read(buffer, 0, buffer.length);
+                System.out.println(n);
                 baos.write(buffer, 0, n);
+                x++;
             }
             System.out.println("acabou");
 

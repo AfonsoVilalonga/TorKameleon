@@ -44,7 +44,6 @@ public class Solution {
         } catch (IOException e1) {}
 
 
-
         if(args[0].equals("pt-client") || args[0].equals("proxy")){
             try {
                 ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Client/index.js", config.getClientPortStreaming());

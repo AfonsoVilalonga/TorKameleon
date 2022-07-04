@@ -33,7 +33,7 @@ public class Initialization {
 
             byte ack = in_sock.readByte();
 
-            //socket.close();
+            socket.close();
 
             if(ack == ACK_SUCC)
                 return true;

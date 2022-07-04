@@ -3,7 +3,7 @@ package com.afonsovilalonga;
 import java.io.File;
 import java.io.IOException;
 
-import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.PluggableTransport.Client.PT;
 import com.afonsovilalonga.PluggableTransport.Server.Server;
@@ -21,7 +21,7 @@ public class Solution {
 
     private static Process client_process;
     private static Process bridge_process;
-    private static WebSocketWrapper web_socket_server;
+    private static WebSocketWrapperPT web_socket_server;
 
     private static Process signalling_process;
 
@@ -62,7 +62,7 @@ public class Solution {
             } catch (IOException e) {}
         }
 
-        web_socket_server = new WebSocketWrapper(isBridge);
+        web_socket_server = new WebSocketWrapperPT(isBridge);
 
         switch (args[0]) {
             case "pt-client":

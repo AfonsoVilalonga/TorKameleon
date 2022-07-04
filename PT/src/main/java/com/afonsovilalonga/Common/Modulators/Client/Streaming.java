@@ -20,7 +20,7 @@ import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedExceptio
 import com.afonsovilalonga.Common.Initialization.PluggableTransportHanshake.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
-import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 
@@ -30,13 +30,13 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
     private Socket bridge_conn;
 
     private WebSocket bridge_sock;
-    private WebSocketWrapper web_server;
+    private WebSocketWrapperPT web_server;
     private ChromeDriver browser;
 
     private PipedInputStream pin;
     private PipedOutputStream pout;
     
-    public Streaming(Socket tor_socket, WebSocketWrapper web_server) {
+    public Streaming(Socket tor_socket, WebSocketWrapperPT web_server) {
         super(tor_socket);
         this.web_server = web_server;
         this.pin = new PipedInputStream();
@@ -124,7 +124,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 try {
                     int i = 0;
                     while ((i = in_Tor.read(send)) != -1) {
-                        WebSocketWrapper.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
+                        WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
                     }
                 } catch (Exception e) {
                     notifyObserver();

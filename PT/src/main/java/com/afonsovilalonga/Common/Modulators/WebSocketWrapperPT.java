@@ -15,7 +15,8 @@ import org.java_websocket.server.WebSocketServer;
 
 import com.afonsovilalonga.Common.Utils.Config;
 
-public class WebSocketWrapper extends WebSocketServer{
+
+public class WebSocketWrapperPT extends WebSocketServer{
 
     private Map<Integer, PipedOutputStream> tor_socks;
 
@@ -23,8 +24,8 @@ public class WebSocketWrapper extends WebSocketServer{
     private WebSocket lastConn;
     private boolean isBridgeOrProxy;
 
-    public WebSocketWrapper(boolean isBridgeOrProxy) {
-        super(new InetSocketAddress(Config.getInstance().getWebsocketPort()));
+    public WebSocketWrapperPT(boolean isBridgeOrProxy) {
+        super(new InetSocketAddress(Config.getInstance().getWebsocket_port()));
 
         start();
         tor_socks = new HashMap<>();

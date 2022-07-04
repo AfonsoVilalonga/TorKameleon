@@ -36,6 +36,9 @@ package com.afonsovilalonga.Proxy.Utils;
  */
 
 import javax.net.ssl.*;
+
+import com.afonsovilalonga.Common.Utils.Config;
+
 import java.io.FileInputStream;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -62,10 +65,10 @@ public class DTLSOverDatagram {
     /*
      * The following is to set up the keystores.
      */
-    private static String passwd = "password";
+    private static String passwd = Config.getInstance().getPassword();
 
-    private static String keyFilename = "../Keystore/tirmmrt.key";
-    private static String trustFilename = "../Keystore/tirmmrts";
+    private static String keyFilename = Config.getInstance().getKey();
+    private static String trustFilename = Config.getInstance().getKeystore();
     private static Exception clientException = null;
     private static Exception serverException = null;
 

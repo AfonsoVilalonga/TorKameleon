@@ -11,19 +11,17 @@ import java.util.Properties;
 import java.util.Scanner;
 
 public class Config {
-    private String local_host;
     private int local_port_unsecure;
     private int local_port_secure;
 
     private String remote_host;
     private int remote_port;
 
-    private String tor_host;
     private int tor_port;
 
     private int bypass_timer;
 
-    private List<String> tirmmrt_network;
+    private List<String> nodes;
 
     private String stunnel_port;
 
@@ -37,13 +35,12 @@ public class Config {
     private int test_port_analytics;
     private int test_stunnel_port_analytics;
 
-    private int number_of_tirmmrt;
+    private int number_of_nodes;
 
     private int buffer_size;
 
     private int pt_client_port;
     private int pt_server_port;
-    private String pt_server_host;
     private int or_port;
 
     private String keystore;
@@ -58,9 +55,9 @@ public class Config {
 
     private String webdriver_location;
 
-    private int websocket_port;
-
     private String webrtc_location;
+
+    private int websocket_port;
 
     private static Config instance; 
 
@@ -78,7 +75,7 @@ public class Config {
         }
     }
 
-    public int getWebsocketPort(){
+    public int getWebsocket_port(){
         return websocket_port;
     }
 
@@ -102,11 +99,6 @@ public class Config {
         return client_streaming_port;
     }
     
-    
-    public String getLocal_host() {
-        return local_host;
-    }
-
     public String getModulation() {
         return mod;
     }
@@ -117,10 +109,6 @@ public class Config {
 
     public String getKeystore() {
         return keystore;
-    }
-
-    public String getPTServerHost() {
-        return pt_server_host;
     }
 
     public String getPassword() {
@@ -147,10 +135,6 @@ public class Config {
         return remote_port;
     }
 
-    public String getTor_host() {
-        return tor_host;
-    }
-
     public int getTor_port() {
         return tor_port;
     }
@@ -159,8 +143,8 @@ public class Config {
         return bypass_timer;
     }
 
-    public List<String> getTirmmrt_network() {
-        return tirmmrt_network;
+    public List<String> getNodes() {
+        return nodes;
     }
 
     public String getStunnel_port() {
@@ -195,8 +179,8 @@ public class Config {
         return test_stunnel_port_analytics;
     }
 
-    public int getNumber_of_tirmmrt() {
-        return number_of_tirmmrt;
+    public int getNumber_of_nodes() {
+        return number_of_nodes;
     }
 
     public int getPt_client_port() {
@@ -208,7 +192,7 @@ public class Config {
     }
 
     private void readConfigurationFiles() throws FileNotFoundException {
-        tirmmrt_network = new ArrayList<>();
+        this.nodes = new ArrayList<>();
 
         try (InputStream input = new FileInputStream("../Config/config.properties")) {
             Properties prop = new Properties();
@@ -216,12 +200,10 @@ public class Config {
             prop.load(input);
 
             //TIR VARS
-            local_host = prop.getProperty("local_host");
             local_port_unsecure = Integer.parseInt(prop.getProperty("local_port_unsecure"));
             local_port_secure = Integer.parseInt(prop.getProperty("local_port_secure"));
             remote_host = prop.getProperty("remote_host");
             remote_port = Integer.parseInt(prop.getProperty("remote_port"));
-            tor_host = prop.getProperty("tor_host");
             tor_port = Integer.parseInt(prop.getProperty("tor_port"));
             stunnel_port = prop.getProperty("stunnel_port");
             bypass_timer = Integer.parseInt(prop.getProperty("bypass_timer"));
@@ -229,7 +211,7 @@ public class Config {
             test_stunnel_port_iperf = Integer.parseInt(prop.getProperty("test_stunnel_port_iperf"));
             test_port_httping = Integer.parseInt(prop.getProperty("test_port_httping"));
             test_stunnel_port_httping = Integer.parseInt(prop.getProperty("test_stunnel_port_httping"));
-            number_of_tirmmrt = Integer.parseInt(prop.getProperty("number_of_tirmmrt"));
+            number_of_nodes = Integer.parseInt(prop.getProperty("number_of_nodes"));
             tor_buffer_size = Integer.parseInt(prop.getProperty("tor_buffer_size"));
             test_port_analytics = Integer.parseInt(prop.getProperty("test_port_analytics"));
             test_stunnel_port_analytics = Integer.parseInt(prop.getProperty("test_stunnel_port_analytics"));
@@ -237,7 +219,6 @@ public class Config {
             //PT CLIENT VARS
             pt_client_port = Integer.parseInt(prop.getProperty("pt_client_port"));
             pt_server_port = Integer.parseInt(prop.getProperty("pt_server_port"));
-            pt_server_host = prop.getProperty("pt_server_host");
             or_port = Integer.parseInt(prop.getProperty("or_port"));
 
             keystore = prop.getProperty("keystore");
@@ -260,12 +241,12 @@ public class Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        File file = new File("../Config/TIR-MMRT_network");
+        File file = new File("../Config/network");
         Scanner sc = new Scanner(file);
-        int tirmmrts = 0;
-        while (sc.hasNextLine() && tirmmrts < number_of_tirmmrt) {
-            tirmmrt_network.add(sc.nextLine());
-            tirmmrts++;
+        int nodes = 0;
+        while (sc.hasNextLine() && nodes < number_of_nodes) {
+            this.nodes.add(sc.nextLine());
+            nodes++;
         }
         sc.close();
     }

@@ -8,7 +8,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.afonsovilalonga.Common.Initialization.ProxyStreamingHanshake.Initialization;
-import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
@@ -31,7 +31,6 @@ import java.util.concurrent.Executors;
 
 public class Proxy {
 
-    public static final int BUF_SIZE = 1024;
     public static final int N_THREADS = 8;
     public static final int secureHttpingRequestPort = 2238;
     public static final int PACKET_ANALYSIS_PORT = 3238;
@@ -41,12 +40,13 @@ public class Proxy {
 
     private String bypassAddress;
     private ConcurrentLinkedQueue<Instant> arrival_times = new ConcurrentLinkedQueue<>();
-    private WebSocketWrapper web_socket_server;
+    
+    private WebSocketWrapperPT web_socket_server;
     private ChromeDriver browser;
 
     private Config config;
 
-    public Proxy(WebSocketWrapper web_socket_server){
+    public Proxy(WebSocketWrapperPT web_socket_server){
         try {
             this.web_socket_server = web_socket_server;
 
@@ -264,7 +264,7 @@ public class Proxy {
                 web_socket_server.setTorConnToConn(pout, sock);
             }
 
-            byte[] buffer = new byte[BUF_SIZE];
+            byte[] buffer = new byte[config.getBufferSize()];
             try {
                 pin.read(buffer);
                 addJitterPerturbation();
@@ -275,8 +275,14 @@ public class Proxy {
             String filePath = Http.parseHttpReply(new String(buffer))[1];
             System.out.println("File request path: " + filePath + " from " + socket.getInetAddress() + ":" + socket.getPort());
             byte[] data = bypass(filePath);
+            
+            ByteBuffer bb = ByteBuffer.allocate(data.length + 4);
+            bb.putInt(0, data.length);
+            bb.put(4, data);
 
-            WebSocketWrapper.send(Arrays.copyOfRange(data, 0, data.length), sock); 
+            data = bb.array();
+
+            WebSocketWrapperPT.send(Arrays.copyOfRange(data, 0, data.length), sock); 
         } else{
             Initialization.sendFalied(socket);
         }
@@ -289,10 +295,10 @@ public class Proxy {
     
     private void measureTestHttping(Socket socket) {
         try {
-            String local_host = config.getLocal_host();
+            String local_host = "localhost";
             int tor_buffer_size = config.getTor_buffer_size();
             String remote_host = config.getRemote_host();
-            String tor_host = config.getTor_host();
+            String tor_host = "127.0.0.1";
             int tor_port = config.getTor_port();
             int test_stunnel_port_httping = config.getTest_stunnel_port_httping();
 
@@ -300,7 +306,7 @@ public class Proxy {
             OutputStream out = socket.getOutputStream();
             out.flush();
 
-            byte[] buffer = new byte[BUF_SIZE];
+            byte[] buffer = new byte[config.getBufferSize()];
             String my_address = local_host;
 
             if (bypassAddress.equals(my_address)) {
@@ -368,9 +374,9 @@ public class Proxy {
     private void measureTestIperf(Socket serverSocket) {
         try {
             int tor_buffer_size = config.getTor_buffer_size();
-            String local_host = config.getLocal_host();
+            String local_host = "localhost";
             String remote_host = config.getRemote_host();
-            String tor_host = config.getTor_host();
+            String tor_host = "127.0.0.1";
             int tor_port = config.getTor_port();
             int test_stunnel_port_iperf = config.getTest_stunnel_port_iperf();
 
@@ -440,7 +446,7 @@ public class Proxy {
         try {
             OutputStream out = socket.getOutputStream();
             InputStream in = socket.getInputStream();
-            byte[] buffer = new byte[BUF_SIZE];
+            byte[] buffer = new byte[config.getBufferSize()];
             in.read(buffer);
 
             //Add perturbation before send to Tor
@@ -480,10 +486,10 @@ public class Proxy {
             try {
                 int bytesSent = 0;
                 while (bytesSent <= data.length) {
-                    byte[] sendData = Arrays.copyOfRange(data, bytesSent, bytesSent + BUF_SIZE); //prevent sending bytes overflow
+                    byte[] sendData = Arrays.copyOfRange(data, bytesSent, bytesSent + config.getBufferSize()); //prevent sending bytes overflow
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     socket.send(sendPacket);
-                    bytesSent += BUF_SIZE;
+                    bytesSent += config.getBufferSize();
                     Thread.sleep(5); // Avoid traffic congestion
                 }
                 byte[] endTransmission = "terminate_packet_receive".getBytes();
@@ -523,11 +529,11 @@ public class Proxy {
     private void packetAnalysis(Socket socket) {
         try {
             int tor_buffer_size = config.getTor_buffer_size();
-            String local_host = config.getLocal_host();
+            String local_host = "localhost";
             String remote_host = config.getRemote_host();
-            String tor_host = config.getTor_host();
+            String tor_host = "127.0.0.1";
             int tor_port = config.getTor_port();
-            List<String> tirmmrt_network = config.getTirmmrt_network(); 
+            List<String> tirmmrt_network = config.getNodes(); 
             int test_stunnel_port_analytics = config.getTest_stunnel_port_analytics();
 
             InputStream in = socket.getInputStream();
@@ -575,7 +581,7 @@ public class Proxy {
     }
 
     private void randomlyChooseBypassAddress() {
-        List<String> tirmmrt_network = config.getTirmmrt_network(); 
+        List<String> tirmmrt_network = config.getNodes(); 
 
         bypassAddress = tirmmrt_network.get(new Random().nextInt(tirmmrt_network.size()));
         System.err.println("Selected new bypass address is " + bypassAddress);
@@ -595,16 +601,22 @@ public class Proxy {
 
     private byte[] bypass(String path) {
         try {
-            String local_host = config.getLocal_host();
+            String local_host = "localhost";
             String remote_host = config.getRemote_host();
             int remote_port = config.getRemote_port();
 
             String my_address = local_host;
-            if (bypassAddress.equals(my_address)) {
+            String[] addr_and_protocol = bypassAddress.split("-");
+
+            if (addr_and_protocol[0].equals(my_address)) {
                 return torRequest(path, remote_host, remote_port);
             } else {
                 System.err.println("TIR-MMRT connection :" + my_address + " ---> " + bypassAddress);
                 boolean isStreaming = true;
+                
+                if(!addr_and_protocol[1].equals("s"))
+                    isStreaming = false;
+                
                 if(isStreaming){
                     return bypassConnectionStremaing(path);
                 }else{
@@ -617,7 +629,6 @@ public class Proxy {
         }
     }
 
-    //TODO PORTS MESMO PORT QUE AQUELE LA DE CIMA DA TRHEAD 
     private byte[] bypassConnectionStremaing(String path) throws Exception{
         boolean result = Initialization.startHandshake(bypassAddress.split(":")[0], 2999);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -648,19 +659,24 @@ public class Proxy {
                 web_socket_server.setTorConnToConn(pout, sock);
             }
             
-            WebSocketWrapper.send(String.format("GET %s HTTP/1.1", path.trim()).getBytes(), sock);         
+            WebSocketWrapperPT.send(String.format("GET %s HTTP/1.1", path.trim()).getBytes(), sock);         
 
             int n;
-            byte[] buffer = new byte[BUF_SIZE];
-            int x = 0;
-            while (x < 2) {
-                //System.out.write(buffer, 0, n);
+            byte[] buffer = new byte[config.getBufferSize()];
+            
+            n = pin.read(buffer, 0, buffer.length);
+            baos.write(buffer, 4, n);
+            
+            ByteBuffer bb = ByteBuffer.allocate(4);
+            bb.put(0, buffer, 0, 4);
+            int num_of_byte_to_rcv = bb.getInt();
+            int num_of_bytes_rcv = n - 4;
+
+            while (num_of_byte_to_rcv != num_of_bytes_rcv) {
                 n = pin.read(buffer, 0, buffer.length);
-                System.out.println(n);
                 baos.write(buffer, 0, n);
-                x++;
+                num_of_byte_to_rcv += n;
             }
-            System.out.println("acabou");
 
             //GARBAGGE COLLECTION QUANDO CHEGAR AO -1 PORTANTO ELIMINAR A PAGINA E TAL 
         }else{
@@ -685,7 +701,7 @@ public class Proxy {
         out.write(String.format("GET %s HTTP/1.1", path.trim()).getBytes());
 
         int n;
-        byte[] buffer = new byte[BUF_SIZE];
+        byte[] buffer = new byte[config.getBufferSize()];
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {
             //System.out.write(buffer, 0, n);
             baos.write(buffer, 0, n);
@@ -724,7 +740,7 @@ public class Proxy {
 
 
     private byte[] torRequest(String path, String remoteAddress, int remotePort) throws IOException {
-        String tor_host = config.getTor_host();
+        String tor_host = "127.0.0.1";
         int tor_port = config.getTor_port();
         int tor_buffer_size = config.getTor_buffer_size();
 
@@ -742,6 +758,7 @@ public class Proxy {
         InputStream in = clientSocket.getInputStream();
         int n;
         byte[] buffer = new byte[tor_buffer_size];
+
         while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
             baos.write(buffer, 0, n);
         }

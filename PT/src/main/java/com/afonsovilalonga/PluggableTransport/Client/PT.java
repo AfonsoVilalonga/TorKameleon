@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
-import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Modulators.Client.CopyMod;
 import com.afonsovilalonga.Common.Modulators.Client.Streaming;
 import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
@@ -21,9 +21,9 @@ public class PT implements ObserverClient{
     private SocksProtocol socks_protocol;
     
     private ServerSocket tor_server;
-    private WebSocketWrapper web_socket_server;
+    private WebSocketWrapperPT web_socket_server;
 
-    public PT(WebSocketWrapper web_socket_server) {
+    public PT(WebSocketWrapperPT web_socket_server) {
         this.config = Config.getInstance();
         this.web_socket_server = web_socket_server;
         this.modulator = null;

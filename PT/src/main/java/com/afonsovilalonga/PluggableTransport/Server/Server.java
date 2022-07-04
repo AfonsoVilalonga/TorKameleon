@@ -17,7 +17,7 @@ import org.openqa.selenium.JavascriptExecutor;
 
 import com.afonsovilalonga.Common.Initialization.PluggableTransportHanshake.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorServerInterface;
-import com.afonsovilalonga.Common.Modulators.WebSocketWrapper;
+import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Modulators.Server.CopyMod;
 import com.afonsovilalonga.Common.Modulators.Server.Streaming;
 import com.afonsovilalonga.Common.Modulators.Server.StunnelMod;
@@ -31,12 +31,12 @@ public class Server implements ObserverServer {
     private List<ServerReqConnection> running_conns;
     private boolean bootstraped;
 
-    private WebSocketWrapper web_socket_server;
+    private WebSocketWrapperPT web_socket_server;
     private ServerSocket conns;
 
     private ChromeDriver browser;
 
-    public Server(WebSocketWrapper web_socket_server) {
+    public Server(WebSocketWrapperPT web_socket_server) {
         this.config = Config.getInstance();
         this.running_conns = new LinkedList<>();
         this.web_socket_server = web_socket_server;
@@ -55,7 +55,7 @@ public class Server implements ObserverServer {
     public void run() {
         int pt_port = config.getPt_server_port();
         int or_port = config.getOrPort();
-        String pt_host = config.getPTServerHost();
+        String pt_host = "127.0.0.1";
 
         try {
             conns = new ServerSocket(pt_port);

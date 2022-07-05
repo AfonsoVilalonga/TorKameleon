@@ -15,7 +15,6 @@ public class Solution {
 
     private static PT pt;
     private static Server server;
-    private static Proxy proxy;
 
     private static boolean isBridge;
 
@@ -79,10 +78,10 @@ public class Solution {
             case "pt-proxy":
                 pt = new PT(web_socket_server);
                 pt.run();
-                proxy = new Proxy(web_socket_server);
+                new Proxy(web_socket_server);
                 break;
             case "proxy":
-                proxy = new Proxy(web_socket_server);
+                new Proxy(web_socket_server);
                 break;
             default:
                 System.err.println("Invalid running command");
@@ -98,20 +97,21 @@ public class Solution {
                 if (isBridge) {
                     if (pt != null)
                         pt.shutdown();
-                    client_process.destroy();
                 } else {
-                    if (proxy != null)
-                        proxy.shutdown();
-
                     if (server != null)
                         server.shutdown();
-                    signalling_process.destroy();
                 }
 
-                bridge_process.destroy();
+                if(client_process != null)
+                    client_process.destroy();
+                if(signalling_process != null)
+                    signalling_process.destroy();
+                if(bridge_process != null)
+                    bridge_process.destroy();
 
                 try {
-                    web_socket_server.stop();
+                    if(web_socket_server != null)
+                        web_socket_server.stop();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {

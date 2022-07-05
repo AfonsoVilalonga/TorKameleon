@@ -59,6 +59,8 @@ public class Config {
 
     private int websocket_port;
 
+    private int streaming_port_proxy;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -73,6 +75,10 @@ public class Config {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getStreaming_port_proxy(){
+        return streaming_port_proxy;
     }
 
     public int getWebsocket_port(){
@@ -237,6 +243,8 @@ public class Config {
             websocket_port = Integer.parseInt(prop.getProperty("websocket_port"));
 
             webrtc_location = prop.getProperty("webrtc_location");
+
+            streaming_port_proxy = Integer.parseInt(prop.getProperty("streaming_port_proxy"));
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -70,6 +70,7 @@ public class Proxy {
         int test_port_iperf = config.getTest_port_iperf();
         int test_port_httping = config.getTest_port_httping();
         int test_port_analytics = config.getTest_port_analytics();
+        int port_streaming = config.getStreaming_port_proxy();
         
 
         bypassTriggeredTimer();
@@ -216,7 +217,7 @@ public class Proxy {
         //Streaming incoming connection, TODO METER O PORT CERTO
         new Thread(() -> {
             ExecutorService executor = null;
-            try(ServerSocket ss = new ServerSocket(2999)){
+            try(ServerSocket ss = new ServerSocket(port_streaming)){
                 executor = Executors.newFixedThreadPool(N_THREADS);
                 System.out.println("Streaming protocol is listening on port " + local_port_secure);
                 while (true) {
@@ -280,17 +281,14 @@ public class Proxy {
             byte[] result = new byte[data.length + 4];
             System.arraycopy(bytes, 0, result, 0, 4);
             System.arraycopy(data,0, result, 4, data.length);
-
-            WebSocketWrapperPT.send(Arrays.copyOfRange(result, 0, result.length), sock); 
+            
+            for(int i = 0; i < result.length; i += config.getBufferSize()){
+                WebSocketWrapperPT.send(Arrays.copyOfRange(result, i, Math.min(result.length,i+config.getBufferSize())), sock); 
+            }
         } else{
             Initialization.sendFalied(socket);
         }
     }
-
-    public void shutdown(){
-        
-    }
-
     
     private void measureTestHttping(Socket socket) {
         try {
@@ -630,7 +628,7 @@ public class Proxy {
 
     private byte[] bypassConnectionStremaing(String path) throws Exception{
         String[] addr = bypassAddress.split("-");
-        boolean result = Initialization.startHandshake(addr[0], 2999);
+        boolean result = Initialization.startHandshake(addr[0], Config.getInstance().getStreaming_port_proxy());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         
         if(result){
@@ -665,17 +663,15 @@ public class Proxy {
             byte[] buffer = new byte[config.getBufferSize()];
             
             n = pin.read(buffer, 0, buffer.length);
-            baos.write(buffer, 4, n);
+            baos.write(buffer, 4, n-4);
 
             int num_of_byte_to_rcv = ByteBuffer.wrap(buffer).getInt();
             int num_of_bytes_rcv = n - 4;
 
-            System.out.println(num_of_byte_to_rcv);
-
             while (num_of_byte_to_rcv != num_of_bytes_rcv) {
                 n = pin.read(buffer, 0, buffer.length);
                 baos.write(buffer, 0, n);
-                num_of_byte_to_rcv += n;
+                num_of_bytes_rcv += n;
             }
 
             //GARBAGGE COLLECTION QUANDO CHEGAR AO -1 PORTANTO ELIMINAR A PAGINA E TAL 

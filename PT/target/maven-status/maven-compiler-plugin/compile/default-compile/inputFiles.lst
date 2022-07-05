@@ -3,9 +3,10 @@
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Solution.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Initialization/ProxyStreamingHanshake/Initialization.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/ModulatorClientInterface.java
-/home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/WebSocketWrapper.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/PluggableTransport/Server/ServerReqConnection.java
+/home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Proxy/Utils/WebSocketWrapperProxy.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/ObserversCleanup/ObserverServer.java
+/home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/WebSocketWrapperPT.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/ModulatorTop.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/Client/CopyMod.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/PluggableTransport/Server/Server.java

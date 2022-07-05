@@ -262,6 +262,7 @@ function decodeFunction(encodedFrame, controller) {
                 bytes.push(view.getUint8(i));
             }
 
+            console.log(bytes);
             tor_conn.send(decode(bytes));
         }
         

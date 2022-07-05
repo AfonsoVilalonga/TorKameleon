@@ -1,16 +1,16 @@
 window.webrtc = {
     iceServers: [{
-        urls: [ "stun:eu-turn6.xirsys.com" ]
+        urls: [ "stun:fr-turn1.xirsys.com" ]
      }, {
-        username: "mfdlqlPnR3r7lW1zEsq2Rm9_9Ebk7cU9m2cb-IJfrSHdXFZuULZ7neCfS_5QmTPwAAAAAGK-B9d3YnJ0YzEyMzQ1NnRlc3Rl",
-        credential: "73488402-f8b3-11ec-9a53-0242ac140004",
+        username: "-71sy_KL_1XHohz9pAchFcAHCEAPQ3OX7iYGaJhjQhpxv1WrdQo6QSC20W3dnUBaAAAAAGLEW2lwb2dvcmEzMTQy",
+        credential: "c9a51de2-fc78-11ec-b5f0-0242ac120004",
         urls: [
-            "turn:eu-turn6.xirsys.com:80?transport=udp",
-            "turn:eu-turn6.xirsys.com:3478?transport=udp",
-            "turn:eu-turn6.xirsys.com:80?transport=tcp",
-            "turn:eu-turn6.xirsys.com:3478?transport=tcp",
-            "turns:eu-turn6.xirsys.com:443?transport=tcp",
-            "turns:eu-turn6.xirsys.com:5349?transport=tcp"
+            "turn:fr-turn1.xirsys.com:80?transport=udp",
+            "turn:fr-turn1.xirsys.com:3478?transport=udp",
+            "turn:fr-turn1.xirsys.com:80?transport=tcp",
+            "turn:fr-turn1.xirsys.com:3478?transport=tcp",
+            "turns:fr-turn1.xirsys.com:443?transport=tcp",
+            "turns:fr-turn1.xirsys.com:5349?transport=tcp"
         ]
      }],
     encodedInsertableStreams: true

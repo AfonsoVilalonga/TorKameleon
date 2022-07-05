@@ -64,7 +64,7 @@ public class Solution {
             }
         }
 
-        web_socket_server = new WebSocketWrapperPT(isBridge);
+        web_socket_server = new WebSocketWrapperPT();
 
         switch (args[0]) {
             case "pt-client":

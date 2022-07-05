@@ -24,6 +24,7 @@ import com.afonsovilalonga.Common.Modulators.Server.StunnelMod;
 import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
 import com.afonsovilalonga.Common.ObserversCleanup.ObserverServer;
 import com.afonsovilalonga.Common.Utils.Config;
+import com.afonsovilalonga.Common.Utils.Utilities;
 
 public class Server implements ObserverServer {
     private Config config;
@@ -58,7 +59,7 @@ public class Server implements ObserverServer {
         String pt_host = "127.0.0.1";
 
         try {
-            conns = new ServerSocket(pt_port);
+            conns = Utilities.getSecureSocketTLS(pt_port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,7 +112,7 @@ public class Server implements ObserverServer {
                         WebSocket sock = web_socket_server.getLaSocket();
                         web_socket_server.setTorConnToConn(pout, sock);
 
-                        copyloop = new Streaming(tor_sock, sock, id, pin);
+                        copyloop = new Streaming(tor_sock, sock, id, pin, pout);
                     }
 
                     copyloop.run();
@@ -160,9 +161,12 @@ public class Server implements ObserverServer {
         for(ServerReqConnection i: running_conns){
             if(i.getId().equals(id)){
                 aux = i;
+                browser.switchTo().window(aux.getId_Window());
+                browser.close();
                 break;
             }
         }
+       
         aux.shutdown();
         running_conns.remove(aux);
     }

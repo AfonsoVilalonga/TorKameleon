@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 
+import com.afonsovilalonga.Common.Utils.Utilities;
 
 public class Initialization {
     
@@ -20,9 +20,7 @@ public class Initialization {
 
     public static boolean startHandshake(String host, int port){
         try {
-            //SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            //SSLSocket socket  = (SSLSocket) factory.createSocket(host, port);
-            Socket socket = new Socket(host, port);
+            SSLSocket socket = Utilities.createSSLSocket(host, port);
             System.out.println(socket.isConnected());
 
             DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));

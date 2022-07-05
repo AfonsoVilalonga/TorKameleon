@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -22,12 +23,15 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
     private WebSocket bridge_conn;
     private String id;
     private PipedInputStream pin;
+    private PipedOutputStream pout;
 
-    public Streaming(Socket tor_socket, WebSocket bridge_conn, String id, PipedInputStream pin) {
+
+    public Streaming(Socket tor_socket, WebSocket bridge_conn, String id, PipedInputStream pin, PipedOutputStream pout) {
         super(tor_socket);
         this.bridge_conn = bridge_conn;
         this.id = id;
         this.pin = pin;
+        this.pout = pout;
     }
 
     @Override
@@ -76,6 +80,11 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
         serviceShutdow();
         if(this.bridge_conn != null)
             this.bridge_conn.close();
+        
+        try {
+            pin.close();
+            pout.close();
+        } catch (IOException e) {}
     }
   
 }

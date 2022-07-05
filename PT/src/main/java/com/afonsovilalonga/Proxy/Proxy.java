@@ -1,7 +1,5 @@
 package com.afonsovilalonga.Proxy;
 
-
-import javax.net.ServerSocketFactory;
 import javax.net.ssl.*;
 
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -11,6 +9,7 @@ import com.afonsovilalonga.Common.Initialization.ProxyStreamingHanshake.Initiali
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
+import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
 import com.afonsovilalonga.Proxy.Utils.Http;
 import org.openqa.selenium.JavascriptExecutor;
@@ -20,7 +19,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -101,7 +99,7 @@ public class Proxy {
         // TLS
         new Thread(() -> {
             ExecutorService executor = null;
-            try (ServerSocket server = getSecureSocketTLS(local_port_secure)) {
+            try (ServerSocket server = Utilities.getSecureSocketTLS(local_port_secure)) {
                 executor = Executors.newFixedThreadPool(N_THREADS);
                 System.out.println("Listening on TLS port " + local_port_secure + ", waiting for file request!");
                 while (true) {
@@ -214,12 +212,12 @@ public class Proxy {
             }
         }).start();
 
-        //Streaming incoming connection, TODO METER O PORT CERTO
+        //Streaming incoming connection
         new Thread(() -> {
             ExecutorService executor = null;
-            try(ServerSocket ss = new ServerSocket(port_streaming)){
+            try(ServerSocket ss =  Utilities.getSecureSocketTLS(port_streaming)){
                 executor = Executors.newFixedThreadPool(N_THREADS);
-                System.out.println("Streaming protocol is listening on port " + local_port_secure);
+                System.out.println("Streaming protocol is listening on port " + port_streaming);
                 while (true) {
                     Socket socket = ss.accept();
                     executor.execute(() -> doStreaming(socket));
@@ -233,7 +231,6 @@ public class Proxy {
         }).start();
     }
 
-    //To receive streaming
     private void doStreaming(Socket socket){
         byte val = Initialization.serverHandshake(socket);
 
@@ -341,7 +338,7 @@ public class Proxy {
                 out.flush();
                 socketTor.close();
             } else {
-                System.err.println("TIR-MMRT test connection :" + my_address + " ---> " + bypassAddress);
+                System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
 
                 SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
                 SSLSocket socketStunnel = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], test_stunnel_port_httping);
@@ -366,7 +363,6 @@ public class Proxy {
             return;
         }
     }
-
 
     private void measureTestIperf(Socket serverSocket) {
         try {
@@ -399,7 +395,7 @@ public class Proxy {
                 out.flush();
                 clientSocket.close();
             } else {
-                System.err.println("TIR-MMRT test connection :" + my_address + " ---> " + bypassAddress);
+                System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
 
                 SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
                 SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], test_stunnel_port_iperf);
@@ -431,12 +427,6 @@ public class Proxy {
         if (interval_arrival_time_percentage < MAX_PERTURBATION_DELAY_TIME_MS) {
             Thread.sleep((int) interval_arrival_time_percentage);
         }
-    }
-
-    private ServerSocket getSecureSocketTLS(int port) throws IOException {
-        ServerSocketFactory ssf = getServerSocketFactory();
-        ServerSocket ss = ssf.createServerSocket(port);
-        return ss;
     }
 
     private void doTCP_TLS(Socket socket) {
@@ -530,7 +520,7 @@ public class Proxy {
             String remote_host = config.getRemote_host();
             String tor_host = "127.0.0.1";
             int tor_port = config.getTor_port();
-            List<String> tirmmrt_network = config.getNodes(); 
+            List<String> network = config.getNodes(); 
             int test_stunnel_port_analytics = config.getTest_stunnel_port_analytics();
 
             InputStream in = socket.getInputStream();
@@ -546,10 +536,10 @@ public class Proxy {
             SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
             Map<String, SSLSocket> stunnelSockets = new HashMap<>();
-            for (String tir : tirmmrt_network) {
-                if (tir.equals("localhost") || tir.equals("127.0.0.1")) continue;
-                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(tir.split("-")[0], test_stunnel_port_analytics);
-                stunnelSockets.put(tir, socketStunnel);
+            for (String node : network) {
+                if (node.equals("localhost") || node.equals("127.0.0.1")) continue;
+                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(node.split("-")[0], test_stunnel_port_analytics);
+                stunnelSockets.put(node, socketStunnel);
                 socketStunnel.startHandshake();
             }
 
@@ -563,7 +553,7 @@ public class Proxy {
                 if (bypassAddress.split("-")[0].equals(my_address)) {
                     outTor.write(buffer);
                 } else {
-                    System.err.println("TIR-MMRT test connection :" + my_address + " ---> " + bypassAddress);
+                    System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
                     OutputStream outStunnel = stunnelSockets.get(bypassAddress.split("-")[0]).getOutputStream();
                     outStunnel.write(buffer);
                 }
@@ -578,9 +568,9 @@ public class Proxy {
     }
 
     private void randomlyChooseBypassAddress() {
-        List<String> tirmmrt_network = config.getNodes(); 
+        List<String> network = config.getNodes(); 
 
-        bypassAddress = tirmmrt_network.get(new Random().nextInt(tirmmrt_network.size()));
+        bypassAddress = network.get(new Random().nextInt(network.size()));
         System.err.println("Selected new bypass address is " + bypassAddress);
     }
 
@@ -606,9 +596,9 @@ public class Proxy {
             String[] addr_and_protocol = bypassAddress.split("-");
 
             if (addr_and_protocol[0].equals(my_address)) {
-                return torRequest(path, remote_host, remote_port);
+                return Utilities.torRequest(path, remote_host, remote_port);
             } else {
-                System.err.println("TIR-MMRT connection :" + my_address + " ---> " + bypassAddress);
+                System.err.println("Connection :" + my_address + " ---> " + bypassAddress);
                 boolean isStreaming = true;
                 
                 if(!addr_and_protocol[1].equals("s"))
@@ -635,6 +625,7 @@ public class Proxy {
             WebSocket sock = null;
             PipedInputStream pin = new PipedInputStream();
             PipedOutputStream pout = new PipedOutputStream();
+            String id_window = null;
 
             try {
                 pout.connect(pin);
@@ -652,6 +643,10 @@ public class Proxy {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                Set<String> windowHandles = browser.getWindowHandles();
+                for (String aux : windowHandles)
+                    id_window = aux;
 
                 sock = web_socket_server.getLaSocket();
                 web_socket_server.setTorConnToConn(pout, sock);
@@ -673,8 +668,10 @@ public class Proxy {
                 baos.write(buffer, 0, n);
                 num_of_bytes_rcv += n;
             }
-
-            //GARBAGGE COLLECTION QUANDO CHEGAR AO -1 PORTANTO ELIMINAR A PAGINA E TAL 
+            
+            sock.close();
+            browser.switchTo().window(id_window);
+            browser.close();
         }else{
             System.err.println("Error while handshaking with the brdige using the Streaming protocol");
         }
@@ -699,67 +696,9 @@ public class Proxy {
         int n;
         byte[] buffer = new byte[config.getBufferSize()];
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {
-            //System.out.write(buffer, 0, n);
             baos.write(buffer, 0, n);
-
         }
 
         return baos.toByteArray();
     }
-
-    private ServerSocketFactory getServerSocketFactory() {
-        Config config = Config.getInstance();
-        SSLServerSocketFactory ssf;
-        try {
-            // set up key manager to do server.key authentication
-            SSLContext ctx;
-            KeyManagerFactory kmf;
-            KeyStore ks;
-            
-            char[] passphrase = config.getPassword().toCharArray();
-
-            ctx = SSLContext.getInstance("TLS");
-            kmf = KeyManagerFactory.getInstance("SunX509");
-            ks = KeyStore.getInstance("JKS");
-
-            ks.load(new FileInputStream(config.getKey()), passphrase);
-            kmf.init(ks, passphrase);
-            ctx.init(kmf.getKeyManagers(), null, null);
-
-            ssf = ctx.getServerSocketFactory();
-            return ssf;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    private byte[] torRequest(String path, String remoteAddress, int remotePort) throws IOException {
-        String tor_host = "127.0.0.1";
-        int tor_port = config.getTor_port();
-        int tor_buffer_size = config.getTor_buffer_size();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        Socket clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, remotePort, tor_host, tor_port);
-        clientSocket.setReceiveBufferSize(tor_buffer_size);
-        clientSocket.setSendBufferSize(tor_buffer_size);
-        OutputStream out = clientSocket.getOutputStream();
-        out.flush();
-
-        out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
-        out.flush();
-
-        InputStream in = clientSocket.getInputStream();
-        int n;
-        byte[] buffer = new byte[tor_buffer_size];
-
-        while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-            baos.write(buffer, 0, n);
-        }
-        clientSocket.close();
-        return baos.toByteArray();
-    }
-
 }

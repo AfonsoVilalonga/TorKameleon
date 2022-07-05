@@ -22,14 +22,12 @@ public class WebSocketWrapperPT extends WebSocketServer{
 
     private CountDownLatch cl;
     private WebSocket lastConn;
-    private boolean isBridgeOrProxy;
 
-    public WebSocketWrapperPT(boolean isBridgeOrProxy) {
+    public WebSocketWrapperPT() {
         super(new InetSocketAddress(Config.getInstance().getWebsocket_port()));
 
         start();
         tor_socks = new HashMap<>();
-        this.isBridgeOrProxy = isBridgeOrProxy;
 
         cl = null;
         lastConn = null;
@@ -43,8 +41,7 @@ public class WebSocketWrapperPT extends WebSocketServer{
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        if(!isBridgeOrProxy)
-            onCloseOrError(conn);
+        onCloseOrError(conn);
     }
 
     @Override
@@ -92,13 +89,7 @@ public class WebSocketWrapperPT extends WebSocketServer{
     }
 
     private void onCloseOrError(WebSocket conn){
-        PipedOutputStream tor = tor_socks.get(conn.hashCode());
         tor_socks.remove(conn.hashCode());
-        try {
-            tor.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     
 }

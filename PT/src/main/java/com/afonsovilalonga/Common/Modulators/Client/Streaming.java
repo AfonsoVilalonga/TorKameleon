@@ -11,6 +11,9 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+
+import javax.net.ssl.SSLSocket;
+
 import org.java_websocket.WebSocket;
 
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -23,11 +26,12 @@ import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
+import com.afonsovilalonga.Common.Utils.Utilities;
 
 
 public class Streaming extends ModulatorTop implements ModulatorClientInterface{
 
-    private Socket bridge_conn;
+    private SSLSocket bridge_conn;
 
     private WebSocket bridge_sock;
     private WebSocketWrapperPT web_server;
@@ -156,6 +160,8 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 this.bridge_conn.close();
 
             browser.quit();
+            pin.close();
+            pout.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,7 +169,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
 
     private boolean connectToBridge(String host, int port) {
         try {
-            Socket socket = new Socket(host, port);
+            SSLSocket socket = Utilities.createSSLSocket(host, port);
             this.bridge_conn = socket;
             return true;
         } catch (IOException e) {

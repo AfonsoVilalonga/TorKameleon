@@ -276,13 +276,12 @@ public class Proxy {
             System.out.println("File request path: " + filePath + " from " + socket.getInetAddress() + ":" + socket.getPort());
             byte[] data = bypass(filePath);
             
-            ByteBuffer bb = ByteBuffer.allocate(data.length + 4);
-            bb.putInt(0, data.length);
-            bb.put(4, data);
+            byte[] bytes = ByteBuffer.allocate(4).putInt(data.length).array();
+            byte[] result = new byte[data.length + 4];
+            System.arraycopy(bytes, 0, result, 0, 4);
+            System.arraycopy(data,0, result, 4, data.length);
 
-            data = bb.array();
-
-            WebSocketWrapperPT.send(Arrays.copyOfRange(data, 0, data.length), sock); 
+            WebSocketWrapperPT.send(Arrays.copyOfRange(result, 0, result.length), sock); 
         } else{
             Initialization.sendFalied(socket);
         }
@@ -309,7 +308,7 @@ public class Proxy {
             byte[] buffer = new byte[config.getBufferSize()];
             String my_address = local_host;
 
-            if (bypassAddress.equals(my_address)) {
+            if (bypassAddress.split("-")[0].equals(my_address)) {
 
                 OutputStream outTor;
                 InputStream inTor;
@@ -347,7 +346,7 @@ public class Proxy {
                 System.err.println("TIR-MMRT test connection :" + my_address + " ---> " + bypassAddress);
 
                 SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(bypassAddress.split(":")[0], test_stunnel_port_httping);
+                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], test_stunnel_port_httping);
                 socketStunnel.startHandshake();
                 OutputStream outStunnel = socketStunnel.getOutputStream();
                 InputStream inStunnel = socketStunnel.getInputStream();
@@ -385,7 +384,7 @@ public class Proxy {
             byte[] buffer = new byte[tor_buffer_size];
             String my_address = local_host;
 
-            if (bypassAddress.equals(my_address)) {
+            if (bypassAddress.split("-")[0].equals(my_address)) {
 
                 Socket clientSocket = SocksProtocol.sendRequest((byte)0x04, remote_host, 5001, tor_host, tor_port);
                 clientSocket.setReceiveBufferSize(tor_buffer_size);
@@ -405,7 +404,7 @@ public class Proxy {
                 System.err.println("TIR-MMRT test connection :" + my_address + " ---> " + bypassAddress);
 
                 SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split(":")[0], test_stunnel_port_iperf);
+                SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], test_stunnel_port_iperf);
                 socket.startHandshake();
                 OutputStream out = socket.getOutputStream();
                 out.flush();
@@ -551,7 +550,7 @@ public class Proxy {
             Map<String, SSLSocket> stunnelSockets = new HashMap<>();
             for (String tir : tirmmrt_network) {
                 if (tir.equals("localhost") || tir.equals("127.0.0.1")) continue;
-                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(tir.split(":")[0], test_stunnel_port_analytics);
+                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(tir.split("-")[0], test_stunnel_port_analytics);
                 stunnelSockets.put(tir, socketStunnel);
                 socketStunnel.startHandshake();
             }
@@ -563,11 +562,11 @@ public class Proxy {
                 addJitterPerturbation();
                 arrival_times.add(Instant.now());
 
-                if (bypassAddress.equals(my_address)) {
+                if (bypassAddress.split("-")[0].equals(my_address)) {
                     outTor.write(buffer);
                 } else {
                     System.err.println("TIR-MMRT test connection :" + my_address + " ---> " + bypassAddress);
-                    OutputStream outStunnel = stunnelSockets.get(bypassAddress).getOutputStream();
+                    OutputStream outStunnel = stunnelSockets.get(bypassAddress.split("-")[0]).getOutputStream();
                     outStunnel.write(buffer);
                 }
             }
@@ -630,7 +629,8 @@ public class Proxy {
     }
 
     private byte[] bypassConnectionStremaing(String path) throws Exception{
-        boolean result = Initialization.startHandshake(bypassAddress.split(":")[0], 2999);
+        String[] addr = bypassAddress.split("-");
+        boolean result = Initialization.startHandshake(addr[0], 2999);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         
         if(result){
@@ -647,7 +647,7 @@ public class Proxy {
                 web_socket_server.setMutexAndWaitConn(connectionWaiter);
     
                 ((JavascriptExecutor) browser).executeScript(
-                    "window.open('http://localhost:" + config.getClientPortStreaming() + "');");
+                    "window.open('http://localhost:" + config.getClientPortStreaming() + "/?bridge=" + addr[2] + "');");
     
                 try {
                     connectionWaiter.await();
@@ -666,11 +666,11 @@ public class Proxy {
             
             n = pin.read(buffer, 0, buffer.length);
             baos.write(buffer, 4, n);
-            
-            ByteBuffer bb = ByteBuffer.allocate(4);
-            bb.put(0, buffer, 0, 4);
-            int num_of_byte_to_rcv = bb.getInt();
+
+            int num_of_byte_to_rcv = ByteBuffer.wrap(buffer).getInt();
             int num_of_bytes_rcv = n - 4;
+
+            System.out.println(num_of_byte_to_rcv);
 
             while (num_of_byte_to_rcv != num_of_bytes_rcv) {
                 n = pin.read(buffer, 0, buffer.length);
@@ -693,7 +693,7 @@ public class Proxy {
         SSLSocketFactory factory =
                 (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket socket =
-                (SSLSocket) factory.createSocket(bypassAddress.split(":")[0], Integer.parseInt(stunnel_port));
+                (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], Integer.parseInt(stunnel_port));
         socket.startHandshake();
         OutputStream out = socket.getOutputStream();
         InputStream in = socket.getInputStream();

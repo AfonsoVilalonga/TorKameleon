@@ -67,7 +67,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 option.setAcceptInsecureCerts(true);            
                     
                 browser = new ChromeDriver(option);
-                browser.get("http://localhost:" + config.getClientPortStreaming());
+                browser.get("http://localhost:" + config.getClientPortStreaming() + "/?bridge=0");
 
                 //Wait for connection between local browser running client side webrtc and java websocket server
                 try {

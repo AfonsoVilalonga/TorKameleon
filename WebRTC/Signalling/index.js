@@ -42,8 +42,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('join', function (room) {
         var clientsInRoom = io.sockets.adapter.rooms[room];
-        var numClients = clientsInRoom ? Object.keys(clientsInRoom).length : 0;
-
+        var numClients = clientsInRoom ? clientsInRoom.length : 0;
         if(numClients === 1 ){
             socket.join(room);
             io.sockets.in(room).emit('ready');

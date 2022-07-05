@@ -20,43 +20,51 @@ let stream;
 var localVideo = document.querySelector('#leftVideo');
 const remoteVideo = document.createElement('video');
 
-var socket = io(window.signalling_server);
+var socket = null;
 var room_n = -1;
 var isChannelReady = false;
 var isStarted = false;
 
-socket.emit('want_join_server');
+var socket_to_node = io(window.local_node_addr);
 
-socket.on('want_join', function (room) {
+socket_to_node.on('bridge', function (room) {
     room_n = room;
-    socket.emit('create', room);
+    socket_to_node.disconnect();
+
+    socket = io(window.signalling_server[room_n]);
+    
+    socket.on('want_join', function (room) {
+        room_n = room;
+        socket.emit('create', room);
+    });
+    
+    socket.on('ready', function (room) {
+        isChannelReady = true;
+        leftVideo.play();
+        maybeStart();
+    });
+    
+    socket.on('message', function (message, room) {
+        if (message.type === 'answer' && isStarted) {
+            pc.setRemoteDescription(new RTCSessionDescription(message));
+        } else if (message.type === 'candidate' && isStarted) {
+            var candidate = new RTCIceCandidate({
+                sdpMLineIndex: message.label,
+                candidate: message.candidate
+            });
+            pc.addIceCandidate(candidate);
+        } else if (message === 'end' && isStarted) {
+            handleRemoteHangup();
+        }
+    });
+    
+    socket.emit('want_join_server');
 });
 
-socket.on('ready', function (room) {
-    isChannelReady = true;
-    leftVideo.play();
-    maybeStart();
-});
-
-socket.on('message', function (message, room) {
-    if (message.type === 'answer' && isStarted) {
-        pc.setRemoteDescription(new RTCSessionDescription(message));
-    } else if (message.type === 'candidate' && isStarted) {
-        var candidate = new RTCIceCandidate({
-            sdpMLineIndex: message.label,
-            candidate: message.candidate
-        });
-        pc.addIceCandidate(candidate);
-    } else if (message === 'end' && isStarted) {
-        handleRemoteHangup();
-    }
-});
 
 function sendMessage(message, room) {
     socket.emit('message', message, room);
 };
-
-
 
 
 //WEBRTC

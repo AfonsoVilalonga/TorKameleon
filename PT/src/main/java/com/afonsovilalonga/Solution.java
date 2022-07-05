@@ -13,7 +13,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Solution {
 
-    private static PT pt; 
+    private static PT pt;
     private static Server server;
     private static Proxy proxy;
 
@@ -30,36 +30,39 @@ public class Solution {
         isBridge = true;
 
         Config config = Config.getInstance();
-        
+
         System.setProperty("webdriver.chrome.driver", config.getWebdriverLocation());
         WebDriverManager.chromedriver().setup();
 
         System.setProperty("javax.net.ssl.trustStore", config.getKeystore());
         System.setProperty("javax.net.ssl.trustStorePassword", config.getPassword());
 
-        try {
-            ProcessBuilder pb2 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Bridge/index.js", config.getBridgePortStreaming());
-            pb2.directory(new File(config.getWebRTCLocation() + "/Bridge"));
-            bridge_process = pb2.start();
-        } catch (IOException e1) {}
+        if(args[0].equals("pt-server"))
+            isBridge = false;
 
-
-        if(args[0].equals("pt-client") || args[0].equals("proxy")){
+        if (!args[0].equals("pt-client")) {
             try {
-                ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Client/index.js", config.getClientPortStreaming());
+                ProcessBuilder pb2 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Bridge/index.js",
+                        config.getBridgePortStreaming());
+                pb2.directory(new File(config.getWebRTCLocation() + "/Bridge"));
+                bridge_process = pb2.start();
+
+                ProcessBuilder pb3 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Signalling/index.js");
+                pb3.directory(new File(config.getWebRTCLocation() + "/Signalling"));
+                signalling_process = pb3.start();
+
+            } catch (IOException e1) {}
+        }
+
+        if (!args[0].equals("pt-server")) {
+            try {
+                ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Client/index.js",
+                        config.getClientPortStreaming());
                 pb.directory(new File(config.getWebRTCLocation() + "/Client"));
                 client_process = pb.start();
 
             } catch (IOException e) {
-                e.printStackTrace();
             }
-        }else{
-            isBridge = false;
-            try {
-                ProcessBuilder pb = new ProcessBuilder("node", config.getWebRTCLocation() + "/Signalling/index.js");
-                pb.directory(new File(config.getWebRTCLocation() + "/Signalling"));
-                signalling_process = pb.start();
-            } catch (IOException e) {}
         }
 
         web_socket_server = new WebSocketWrapperPT(isBridge);
@@ -92,15 +95,15 @@ public class Solution {
             public void run() {
                 System.clearProperty("tir.done");
 
-                if(isBridge){
-                    if(pt != null)
+                if (isBridge) {
+                    if (pt != null)
                         pt.shutdown();
                     client_process.destroy();
-                }else{
-                    if(proxy != null)
+                } else {
+                    if (proxy != null)
                         proxy.shutdown();
-                    
-                    if(server != null)
+
+                    if (server != null)
                         server.shutdown();
                     signalling_process.destroy();
                 }
@@ -117,6 +120,6 @@ public class Solution {
 
                 System.out.println("Shutting down.");
             }
-        }); 
+        });
     }
 }

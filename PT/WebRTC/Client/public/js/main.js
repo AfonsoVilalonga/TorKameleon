@@ -1,5 +1,5 @@
 //TOR PT Connection
-var tor_conn = new WebSocket(tor_conn_addr);
+var tor_conn = new WebSocket(window.tor_conn_addr);
 
 tor_conn.onerror = function (err) {
     tor_conn.close();
@@ -20,54 +20,70 @@ let stream;
 var localVideo = document.querySelector('#leftVideo');
 const remoteVideo = document.createElement('video');
 
-var socket = io(signalling_server);
+var socket = null;
 var room_n = -1;
 var isChannelReady = false;
 var isStarted = false;
 
+var socket_to_node = io(window.local_node_addr);
 
-socket.on('bridge_join', function (room) {
-    if (room_n == -1) {
+socket_to_node.on('bridge', function (room) {
+    room_n = room;
+    socket_to_node.disconnect();
+
+    socket = io(window.signalling_server[room_n]);
+
+    socket.on('want_join', function (room) {
         room_n = room;
-        socket.emit("join", room_n);
-    }
-});
+        socket.emit('create', room);
+    });
 
-socket.on('ready', function (room) {
-    isChannelReady = true;
-    leftVideo.play();
-});
+    socket.on('ready', function (room) {
+        isChannelReady = true;
+        leftVideo.play();
+        maybeStart();
+    });
 
-socket.on('message', function (message, room) {
-    if (message.type === 'offer') {
-        if (!isStarted) {
-            maybeStart();
+    socket.on('message', function (message, room) {
+        if (message.type === 'answer' && isStarted) {
+            pc.setRemoteDescription(new RTCSessionDescription(message));
+        } else if (message.type === 'candidate' && isStarted) {
+            var candidate = new RTCIceCandidate({
+                sdpMLineIndex: message.label,
+                candidate: message.candidate
+            });
+            pc.addIceCandidate(candidate);
+        } else if (message === 'end' && isStarted) {
+            handleRemoteHangup();
         }
-        pc.setRemoteDescription(new RTCSessionDescription(message));
+    });
 
-        doAnswer();
-    } else if (message.type === 'candidate' && isStarted) {
-        var candidate = new RTCIceCandidate({
-            sdpMLineIndex: message.label,
-            candidate: message.candidate
-        });
-        pc.addIceCandidate(candidate);
-    } else if (message === 'end' && isStarted) {
-        handleRemoteHangup();
-    }
+    socket.emit('want_join_server');
 });
+
 
 function sendMessage(message, room) {
     socket.emit('message', message, room);
 };
 
 
-
 //WEBRTC
-window.addEventListener("beforeunload", function (event){
+window.addEventListener("beforeunload", function (event) {
     hangup();
     return null;
 });
+
+var transform = null;
+
+
+switch(modulation) {
+    case 'replace':
+        transform = new Transform(encondeReplacing, decodeReplacing);
+      break;
+    default:
+        transform = new Transform(encondeReplacing, decodeReplacing);
+}
+
 
 let enconding = [];
 
@@ -86,7 +102,6 @@ function getStream() {
     }
 }
 
-
 function maybeStart() {
     if (!isStarted && typeof stream !== 'undefined' && isChannelReady) {
         createPeerConnection();
@@ -95,6 +110,9 @@ function maybeStart() {
         });
         pc.getSenders().forEach(setupSenderTransform);
         isStarted = true;
+
+        forceCodec('video/VP8');
+        doCall();
     }
 }
 
@@ -110,10 +128,10 @@ function forceCodec(preferredVideoCodecMimeType) {
 
 function createPeerConnection() {
     try {
-        pc = new RTCPeerConnection(webrtc);
+        pc = new RTCPeerConnection(window.webrtc);
 
         pc.onicecandidate = handleIceCandidate;
-        
+
         pc.ontrack = e => {
             setupReceiverTransform(e.receiver);
             handleRemoteStreamAdded(e.streams[0]);
@@ -139,11 +157,12 @@ function handleIceCandidate(event) {
     }
 }
 
-function doAnswer() {
-    pc.createAnswer().then(
-        setLocalAndSendMessage,
-        onCreateSessionDescriptionError
-    );
+function handleCreateOfferError(event) {
+    console.log('createOffer() error: ', event);
+}
+
+function doCall() {
+    pc.createOffer(setLocalAndSendMessage, handleCreateOfferError);
 }
 
 function setLocalAndSendMessage(sessionDescription) {
@@ -177,10 +196,6 @@ function hangup() {
 function handleRemoteHangup() {
     stop();
     isInitiator = false;
-
-    if(tor_conn.readyState == 1){
-        tor_conn.close();
-    }
 }
 
 function stop() {
@@ -217,23 +232,7 @@ function setupReceiverTransform(receiver) {
 
 function encodeFunction(encodedFrame, controller) {
     if (encodedFrame instanceof RTCEncodedVideoFrame && enconding.length > 0) {
-        const to_encode = enconding[0];
-        enconding.splice(0,1);
-
-        const view = new DataView(encodedFrame.data);
-
-        const newData = new ArrayBuffer(encodedFrame.data.byteLength + to_encode.length + 2 + 2);
-        
-        const newView = new DataView(newData);
-       
-        for(let i = 0; i < to_encode.length; i++){
-            newView.setUInt8(i + encodedFrame.data.byteLength, to_encode[i]);
-        }
-
-        newView.setUint16(encodedFrame.data.byteLength + to_encode.length, to_encode.length);
-        newView.setUint16(encodedFrame.data.byteLength + to_encode.length + 2, 12345);
-        
-        encodedFrame.data = newData;
+        encodedFrame.data = transform.getModulator()(encodedFrame);
     }
 
     controller.enqueue(encodedFrame);
@@ -244,28 +243,20 @@ let prevFrameTimestamp;
 let prevFrameSynchronizationSource;
 
 
-
 function decodeFunction(encodedFrame, controller) {
     if (encodedFrame instanceof RTCEncodedVideoFrame) {
         const view = new DataView(encodedFrame.data);
-        
-        const hasencoded = view.getUint16(encodedFrame.data.byteLength-2);
-        const len = view.getUint16(encodedFrame.data.byteLength-4);
+
+        const hasencoded = view.getUint16(encodedFrame.data.byteLength - 2);
+        const len = view.getUint16(encodedFrame.data.byteLength - 4);
 
         if (!(encodedFrame.type === prevFrameType &&
                 encodedFrame.timestamp === prevFrameTimestamp &&
                 encodedFrame.synchronizationSource === prevFrameSynchronizationSource) && hasencoded == 12345) {
-            
-            var bytes = [] 
-
-            for(let i = encodedFrame.data.byteLength - 4 - len; i < encodedFrame.data.byteLength - 4; i++){
-                bytes.push(view.getUint8(i));
-            }
-
-            tor_conn.send(decode(bytes));
-            encodedFrame.data = encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4 - len);
+                
+            encodedFrame.data = transform.getDemodulator()(encodedFrame, len);
         }
-        
+
         prevFrameType = encodedFrame.type;
         prevFrameTimestamp = encodedFrame.timestamp;
         prevFrameSynchronizationSource = encodedFrame.synchronizationSource;
@@ -282,14 +273,13 @@ function addEnconding(bytes) {
         bytes[i] = x.charCodeAt(i);
     }
 
-    enconding.push(bytes);    
+    enconding.push(bytes);
 }
 
 
-function decode(bytes){
-    var result = btoa(bytes.map(function(v){return String.fromCharCode(v)}).join(''))
+function decode(bytes) {
+    var result = btoa(bytes.map(function (v) {
+        return String.fromCharCode(v)
+    }).join(''))
     return result;
 }
-
-
-

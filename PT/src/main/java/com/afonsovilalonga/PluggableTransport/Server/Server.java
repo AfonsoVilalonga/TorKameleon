@@ -36,6 +36,7 @@ public class Server implements ObserverServer {
     private ServerSocket conns;
 
     private ChromeDriver browser;
+    private String first_window; 
 
     public Server(WebSocketWrapperPT web_socket_server) {
         this.config = Config.getInstance();
@@ -51,6 +52,12 @@ public class Server implements ObserverServer {
         option.addArguments("headless");
 
         this.browser = new ChromeDriver(option);
+
+        for (String aux : browser.getWindowHandles()){
+            this.first_window = aux;
+            break;
+        }
+  
     }
 
     public void run() {
@@ -163,6 +170,7 @@ public class Server implements ObserverServer {
                 aux = i;
                 browser.switchTo().window(aux.getId_Window());
                 browser.close();
+                browser.switchTo().window(this.first_window);
                 break;
             }
         }

@@ -14,7 +14,7 @@
 <body class="h-100">
   <div class="h-100" id="video_display">
     <div id="video_container" class="align-items-center" style="margin-top: 10%;">
-      <div class="local_div" id="div1" style="">
+      <div class="local_div" id="div1">
         <!-- For playing local video -->
         <video id="leftVideo" playsinline muted controls loop>
           <!-- NB CORS: https://bugzilla.mozilla.org/show_bug.cgi?id=1177793 -->
@@ -25,7 +25,7 @@
       </div>
       <div class="remote_div" id="div2">
         <!-- For playing local audio -->
-       
+      
       </div>
     </div>
   </div>
@@ -35,7 +35,11 @@
 
 
   <!-- Import WebRTC adapter for compatibility with all the browsers  -->
-  <script src="config\config.js"></script>
+  <script src="js\modulators\transform.js"></script> 
+
+  <script src="js\modulators\replaceFrame.js"></script> 
+
+  <script src="config\config.js" ></script>
 
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 

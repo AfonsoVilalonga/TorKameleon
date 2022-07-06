@@ -227,7 +227,7 @@ function encodeFunction(encodedFrame, controller) {
         const newView = new DataView(newData);
        
         for(let i = 0; i < to_encode.length; i++){
-            newView.setInt8(i + encodedFrame.data.byteLength, to_encode[i]);
+            newView.setUInt8(i + encodedFrame.data.byteLength, to_encode[i]);
         }
 
         newView.setUint16(encodedFrame.data.byteLength + to_encode.length, to_encode.length);
@@ -263,7 +263,9 @@ function decodeFunction(encodedFrame, controller) {
             }
 
             console.log(bytes);
-            tor_conn.send(decode(bytes));
+            //tor_conn.send(decode(bytes));
+            console.log(encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4 - len));
+            encodedFrame.data = encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4 - len);
         }
         
         prevFrameType = encodedFrame.type;

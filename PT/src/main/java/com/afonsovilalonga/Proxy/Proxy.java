@@ -626,6 +626,7 @@ public class Proxy {
             PipedInputStream pin = new PipedInputStream();
             PipedOutputStream pout = new PipedOutputStream();
             String id_window = null;
+            String first_window = null;
 
             try {
                 pout.connect(pin);
@@ -645,8 +646,14 @@ public class Proxy {
                 }
 
                 Set<String> windowHandles = browser.getWindowHandles();
-                for (String aux : windowHandles)
+                int x = 0;
+                for (String aux : windowHandles){
+                    if(x == 0)
+                        first_window = aux;
                     id_window = aux;
+                    x++;
+                }
+                   
 
                 sock = web_socket_server.getLaSocket();
                 web_socket_server.setTorConnToConn(pout, sock);
@@ -668,10 +675,11 @@ public class Proxy {
                 baos.write(buffer, 0, n);
                 num_of_bytes_rcv += n;
             }
-            
+  
             sock.close();
             browser.switchTo().window(id_window);
             browser.close();
+            browser.switchTo().window(first_window);
         }else{
             System.err.println("Error while handshaking with the brdige using the Streaming protocol");
         }

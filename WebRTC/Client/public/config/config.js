@@ -2,8 +2,8 @@ window.webrtc = {
     iceServers: [{
         urls: [ "stun:fr-turn1.xirsys.com" ]
      }, {
-        username: "-71sy_KL_1XHohz9pAchFcAHCEAPQ3OX7iYGaJhjQhpxv1WrdQo6QSC20W3dnUBaAAAAAGLEW2lwb2dvcmEzMTQy",
-        credential: "c9a51de2-fc78-11ec-b5f0-0242ac120004",
+        username: "1SEaaw1t7eUc5HuxjRp-S_0CIS2C01gdSeQyaRB683wtYrOb_eTnhIz4ItFi_tgHAAAAAGLEyiFtb3ZlZ2E0MDQz",
+        credential: "c8454eee-fcba-11ec-aa9b-0242ac120004",
         urls: [
             "turn:fr-turn1.xirsys.com:80?transport=udp",
             "turn:fr-turn1.xirsys.com:3478?transport=udp",
@@ -13,6 +13,7 @@ window.webrtc = {
             "turns:fr-turn1.xirsys.com:5349?transport=tcp"
         ]
      }],
+     
     encodedInsertableStreams: true
 };
 

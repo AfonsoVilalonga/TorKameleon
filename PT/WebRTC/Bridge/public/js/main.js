@@ -250,7 +250,10 @@ function decodeFunction(encodedFrame, controller) {
                 encodedFrame.timestamp === prevFrameTimestamp &&
                 encodedFrame.synchronizationSource === prevFrameSynchronizationSource) && hasencoded == 12345) {
             
-            encodedFrame.data = transform.getDemodulator()(encodedFrame, len);
+
+            tor_conn.send(transform.getDemodulator()(encodedFrame, len));
+            encodedFrame.data = encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4 - len);
+            
         }
         
         prevFrameType = encodedFrame.type;
@@ -272,8 +275,3 @@ function addEnconding(bytes) {
     enconding.push(bytes);    
 }
 
-
-function decode(bytes){
-    var result = btoa(bytes.map(function(v){return String.fromCharCode(v)}).join(''))
-    return result;
-}

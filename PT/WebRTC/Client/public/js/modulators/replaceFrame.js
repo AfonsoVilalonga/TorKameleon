@@ -11,8 +11,10 @@ function encondeReplacing(encodedFrame) {
     const newView = new DataView(newData);
     const oldData = new DataView(encodedFrame.data);
 
+    console.log(to_encode.length);
+
     for (let i = 0; i < to_encode.length; i++) {
-        newView.setUInt8(i + encodedFrame.data.byteLength, to_encode[i]);
+        newView.setUint8(i + encodedFrame.data.byteLength, to_encode[i]);
         newView.setUint8(i, oldData.getUint8(i));
     }
 
@@ -28,6 +30,10 @@ function decodeReplacing(encodedFrame, len){
         bytes.push(view.getUint8(i));
     }
 
-    tor_conn.send(decode(bytes));
-    return encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4 - len);
+    return decode(bytes);
+}
+
+function decode(bytes){
+    var result = btoa(bytes.map(function(v){return String.fromCharCode(v)}).join(''))
+    return result;
 }

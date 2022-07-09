@@ -53,6 +53,8 @@ public class Proxy {
             //option.addArguments("headless");
 
             this.browser = new ChromeDriver(option);
+            this.web_socket_server.setBrowser(browser);
+            this.web_socket_server.setFirstWindow(browser.getWindowHandle());
 
             run();
         } catch (FileNotFoundException e) {
@@ -259,7 +261,7 @@ public class Proxy {
                 }
     
                 sock = web_socket_server.getLaSocket();
-                web_socket_server.setTorConnToConn(pout, sock);
+                web_socket_server.setPipe(pout, sock);
             }
 
             byte[] buffer = new byte[config.getBufferSize()];
@@ -656,7 +658,7 @@ public class Proxy {
                    
 
                 sock = web_socket_server.getLaSocket();
-                web_socket_server.setTorConnToConn(pout, sock);
+                web_socket_server.setPipe(pout, sock);
             }
             
             WebSocketWrapperPT.send(String.format("GET %s HTTP/1.1", path.trim()).getBytes(), sock);         

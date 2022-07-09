@@ -39,7 +39,7 @@ public class Solution {
         if(args[0].equals("pt-server"))
             isBridge = false;
 
-        if (!args[0].equals("pt-client")) {
+        if (!args[0].equals("pt-client") && !args[0].equals("proxy-client")) {
             try {
                 ProcessBuilder pb2 = new ProcessBuilder("node", config.getWebRTCLocation() + "/Bridge/index.js",
                         config.getBridgePortStreaming());
@@ -60,12 +60,14 @@ public class Solution {
                 pb.directory(new File(config.getWebRTCLocation() + "/Client"));
                 client_process = pb.start();
 
-            } catch (IOException e) {
-            }
+            } catch (IOException e) {}
         }
 
-        web_socket_server = new WebSocketWrapperPT();
-
+        if(args[0].equals("proxy") || args[0].equals("pt-proxy"))
+            web_socket_server = new WebSocketWrapperPT(true);
+        else    
+            web_socket_server = new WebSocketWrapperPT(false);
+        
         switch (args[0]) {
             case "pt-client":
                 pt = new PT(web_socket_server);
@@ -81,6 +83,9 @@ public class Solution {
                 new Proxy(web_socket_server);
                 break;
             case "proxy":
+                new Proxy(web_socket_server);
+                break;
+            case "proxy-client":
                 new Proxy(web_socket_server);
                 break;
             default:

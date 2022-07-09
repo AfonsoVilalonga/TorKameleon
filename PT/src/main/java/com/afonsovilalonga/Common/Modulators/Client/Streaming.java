@@ -81,7 +81,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 }
 
                 bridge_sock = web_server.getLaSocket();
-                web_server.setTorConnToConn(pout, bridge_sock);
+                web_server.setPipe(pout, bridge_sock);
 
                 //everthing ready to start sending tor traffic
                 s.sendSocksResponseAccepted();

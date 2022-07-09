@@ -117,7 +117,7 @@ public class Server implements ObserverServer {
                             id_window = aux;
 
                         WebSocket sock = web_socket_server.getLaSocket();
-                        web_socket_server.setTorConnToConn(pout, sock);
+                        web_socket_server.setPipe(pout, sock);
 
                         copyloop = new Streaming(tor_sock, sock, id, pin, pout);
                     }

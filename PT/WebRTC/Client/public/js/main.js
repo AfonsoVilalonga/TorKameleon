@@ -75,13 +75,19 @@ window.addEventListener("beforeunload", function (event) {
 
 var transform = null;
 
+let prevFrameType;
+let prevFrameTimestamp;
+let prevFrameSynchronizationSource;
 
 switch(modulation) {
+    case 'add':
+        transform = new Transform(encondeAdd, decodeAdd);
+        break;
     case 'replace':
-        transform = new Transform(encondeReplacing, decodeReplacing);
-      break;
+        transform = new Transform(encondeReplace, decodeReplace);
+        break;
     default:
-        transform = new Transform(encondeReplacing, decodeReplacing);
+        transform = new Transform(encondeAdd, decodeAdd);
 }
 
 
@@ -212,7 +218,7 @@ function setupSenderTransform(sender) {
     } = senderStreams;
 
     const transformStream = new TransformStream({
-        transform: encodeFunction,
+        transform: transform.getModulator(),
     });
     readable.pipeThrough(transformStream).pipeTo(writable);
 }
@@ -225,46 +231,9 @@ function setupReceiverTransform(receiver) {
     } = receiverStreams;
 
     const transformStream = new TransformStream({
-        transform: decodeFunction,
+        transform: transform.getDemodulator(),
     });
     readable.pipeThrough(transformStream).pipeTo(writable);
-}
-
-function encodeFunction(encodedFrame, controller) {
-    if (encodedFrame instanceof RTCEncodedVideoFrame && enconding.length > 0) {
-        encodedFrame.data = transform.getModulator()(encodedFrame);
-    }
-
-    controller.enqueue(encodedFrame);
-}
-
-let prevFrameType;
-let prevFrameTimestamp;
-let prevFrameSynchronizationSource;
-
-
-function decodeFunction(encodedFrame, controller) {
-    if (encodedFrame instanceof RTCEncodedVideoFrame) {
-        const view = new DataView(encodedFrame.data);
-
-        const hasencoded = view.getUint16(encodedFrame.data.byteLength - 2);
-        const len = view.getUint16(encodedFrame.data.byteLength - 4);
-
-        if (!(encodedFrame.type === prevFrameType &&
-                encodedFrame.timestamp === prevFrameTimestamp &&
-                encodedFrame.synchronizationSource === prevFrameSynchronizationSource) && hasencoded == 12345) {
-                
-            
-            tor_conn.send(transform.getDemodulator()(encodedFrame, len));
-            encodedFrame.data = encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4 - len);
-        }
-
-        prevFrameType = encodedFrame.type;
-        prevFrameTimestamp = encodedFrame.timestamp;
-        prevFrameSynchronizationSource = encodedFrame.synchronizationSource;
-    }
-
-    controller.enqueue(encodedFrame);
 }
 
 function addEnconding(bytes) {

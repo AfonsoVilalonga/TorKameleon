@@ -12,25 +12,33 @@ import javax.xml.bind.DatatypeConverter;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import com.afonsovilalonga.Common.Utils.Config;
+import com.afonsovilalonga.Common.Utils.TupleWebServer;
 
 
 public class WebSocketWrapperPT extends WebSocketServer{
 
-    private Map<Integer, PipedOutputStream> tor_socks;
+    private Map<Integer, TupleWebServer> pipes;
 
     private CountDownLatch cl;
     private WebSocket lastConn;
+    private boolean isProxy;
+    private ChromeDriver browser;
+    private String first_window;
 
-    public WebSocketWrapperPT() {
+    public WebSocketWrapperPT(boolean isProxy) {
         super(new InetSocketAddress(Config.getInstance().getWebsocket_port()));
+        
+        this.isProxy = isProxy;
+        this.pipes = new HashMap<>();
+        this.cl = null;
+        this.lastConn = null;
+        this.browser = null;
+        this.first_window = null;
 
         start();
-        tor_socks = new HashMap<>();
-
-        cl = null;
-        lastConn = null;
     }
 
     @Override
@@ -41,17 +49,21 @@ public class WebSocketWrapperPT extends WebSocketServer{
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        if(isProxy){
+            closeWindow(conn);
+        }
         onCloseOrError(conn);
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        PipedOutputStream tor = tor_socks.get(conn.hashCode());
+        TupleWebServer tuple = pipes.get(conn.hashCode());
+        PipedOutputStream pipe = tuple.getPipe();
 
         try {
             byte[] recv = decodeBase64(message);
-            tor.write(recv);
-            tor.flush();
+            pipe.write(recv);
+            pipe.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,16 +71,27 @@ public class WebSocketWrapperPT extends WebSocketServer{
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
+        if(isProxy){
+            closeWindow(conn);
+        }
         onCloseOrError(conn);
     }
 
+    public void setBrowser(ChromeDriver browser){
+        if(isProxy)
+            this.browser = browser;
+    }
 
     public void setMutexAndWaitConn(CountDownLatch cl){
         this.cl = cl;
     }
 
-    public void setTorConnToConn(PipedOutputStream tor_sock, WebSocket conn){
-        tor_socks.put(conn.hashCode(), tor_sock);
+    public void setPipe(PipedOutputStream pipe, WebSocket conn){
+        pipes.put(conn.hashCode(), new TupleWebServer(pipe, null));
+    }
+
+    public void setPipe(PipedOutputStream pipe, WebSocket conn, String window_id){
+        pipes.put(conn.hashCode(), new TupleWebServer(pipe, window_id));
     }
 
     public WebSocket getLaSocket(){
@@ -88,8 +111,23 @@ public class WebSocketWrapperPT extends WebSocketServer{
         return result;
     }
 
-    private void onCloseOrError(WebSocket conn){
-        tor_socks.remove(conn.hashCode());
+    public void setFirstWindow(String firstWindow){
+        if(isProxy)
+            this.first_window = firstWindow;
     }
+
+    private void onCloseOrError(WebSocket conn){
+        pipes.remove(conn.hashCode());
+    }
+
+    private void closeWindow(WebSocket conn){
+        TupleWebServer tuple = pipes.get(conn.hashCode());
+    
+        browser.switchTo().window(tuple.getWindownId());
+        browser.close();
+        browser.switchTo().window(this.first_window);
+        
+        
+    }   
     
 }

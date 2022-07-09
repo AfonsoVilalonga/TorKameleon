@@ -54,6 +54,9 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
         ExecutorService executor = getExecutor();
 
         try {
+            tor_socket.setReceiveBufferSize(config.getTor_buffer_size());
+            tor_socket.setSendBufferSize(config.getTor_buffer_size());
+
             DataInputStream in_pt = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
             DataOutputStream out_pt = new DataOutputStream(new BufferedOutputStream(bridge_conn.getOutputStream()));
 

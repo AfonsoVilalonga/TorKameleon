@@ -14,6 +14,7 @@ import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
+import com.afonsovilalonga.Common.Utils.Utilities;
 
 public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
 
@@ -71,9 +72,8 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
                         out_pt.write(send, 0, i);
                         out_pt.flush();
                     }
-                } catch (Exception e) {
-                    notifyObserver();
-                }
+                } catch (Exception e) {}
+                execNotifier();
             });
 
             executor.execute(() -> {
@@ -83,12 +83,11 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
                         out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }
-                } catch (Exception e) {
-                    notifyObserver();
-                }
+                } catch (Exception e) {}
+                execNotifier();
             });
         } catch (IOException e) {
-            notifyObserver();
+            execNotifier();
         }
     }
 
@@ -104,7 +103,7 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
 
     private boolean connectToBridge(String host, int port) {
         try {
-            Socket socket = new Socket(host, port);
+            Socket socket = Utilities.createSSLSocket(host, port);
             this.bridge_conn = socket;
             return true;
         } catch (IOException e) {

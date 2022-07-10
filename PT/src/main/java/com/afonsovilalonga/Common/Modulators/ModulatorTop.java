@@ -15,10 +15,12 @@ public abstract class ModulatorTop extends Monitor{
 
     private Socket tor_socket;
     private ExecutorService executor;
+    private boolean started_notifier;
 
     protected ModulatorTop(Socket tor_socket) {
         this.tor_socket = tor_socket;
         this.executor = Executors.newFixedThreadPool(2);
+        this.started_notifier = false;
     }
 
     protected Socket gettor_socket() {
@@ -27,6 +29,20 @@ public abstract class ModulatorTop extends Monitor{
 
     protected ExecutorService getExecutor() {
         return this.executor;
+    }
+
+    protected synchronized void execNotifier(String id){
+        if(!this.started_notifier){
+            this.started_notifier = true;
+            notifyObserver(id);
+        }
+    }
+
+    protected synchronized void execNotifier(){
+        if(!this.started_notifier){
+            this.started_notifier = true;
+            notifyObserver();
+        }
     }
 
     protected <T> boolean reTry(Supplier<Boolean> func) {

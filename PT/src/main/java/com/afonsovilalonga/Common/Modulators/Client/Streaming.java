@@ -130,9 +130,8 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                     while ((i = in_Tor.read(send)) != -1) {
                         WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
                     }
-                } catch (Exception e) {
-                    notifyObserver();
-                }
+                } catch (Exception e) {}
+                execNotifier();
             });
 
             executor.execute(() -> {
@@ -142,9 +141,8 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                         out_tor.write(recv, 0, i);
                         out_tor.flush();            
                     }
-                } catch (Exception e) {
-                    notifyObserver();
-                }
+                } catch (Exception e) {}
+                execNotifier();
             });
 
         } catch (IOException e) {

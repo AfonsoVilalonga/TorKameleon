@@ -75,9 +75,8 @@ public class StunnelMod extends ModulatorTop implements ModulatorClientInterface
                     	out_stunnel.write(send, 0, i);
                         out_stunnel.flush();	
                     }    
-                } catch (Exception e) {
-                    notifyObserver();
-                }
+                } catch (Exception e) {}
+                execNotifier();
             });
 
             executor.execute(() -> {
@@ -87,12 +86,11 @@ public class StunnelMod extends ModulatorTop implements ModulatorClientInterface
                     	out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }
-                } catch (Exception e){
-                    notifyObserver();
-                }
+                } catch (Exception e){}
+                execNotifier();
             });    
         } catch (IOException e) {
-            notifyObserver();
+            execNotifier();
         }
     }
 

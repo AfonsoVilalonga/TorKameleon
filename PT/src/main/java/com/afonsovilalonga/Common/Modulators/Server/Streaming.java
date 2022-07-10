@@ -25,7 +25,6 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
     private PipedInputStream pin;
     private PipedOutputStream pout;
 
-
     public Streaming(Socket tor_socket, WebSocket bridge_conn, String id, PipedInputStream pin, PipedOutputStream pout) {
         super(tor_socket);
         this.bridge_conn = bridge_conn;
@@ -54,9 +53,8 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
                     while ((i = in_Tor.read(send)) != -1) {
                         WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_conn);         
                     }
-                } catch (Exception e) {
-                    notifyObserver(id);
-                }
+                } catch (Exception e) {}
+                execNotifier(id);
             });
 
             executor.execute(() -> {
@@ -66,12 +64,12 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
                         out_tor.write(recv, 0, i);
                         out_tor.flush();            
                     }
-                } catch (Exception e) {
-                    notifyObserver(id);
-                }
+                   
+                } catch (Exception e) {}
+                execNotifier(id);
             });
         } catch (IOException e) {
-            notifyObserver(id);
+            execNotifier(id);
         }
     }
 
@@ -86,5 +84,4 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
             pout.close();
         } catch (IOException e) {}
     }
-  
 }

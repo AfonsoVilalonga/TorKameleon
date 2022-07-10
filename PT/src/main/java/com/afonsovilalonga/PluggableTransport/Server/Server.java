@@ -174,11 +174,10 @@ public class Server implements ObserverServer {
                 browser.switchTo().window(aux.getId_Window());
                 browser.close();
                 browser.switchTo().window(this.first_window);
+                aux.shutdown();
                 break;
             }
         }
-       
-        aux.shutdown();
         running_conns.remove(aux);
     }
 }

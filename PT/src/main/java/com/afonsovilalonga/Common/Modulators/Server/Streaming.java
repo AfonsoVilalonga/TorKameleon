@@ -67,7 +67,7 @@ public class Streaming extends ModulatorTop implements ModulatorServerInterface{
                         out_tor.flush();            
                     }
                 } catch (Exception e) {
-                    notifyObserver();
+                    notifyObserver(id);
                 }
             });
         } catch (IOException e) {

@@ -38,9 +38,7 @@ public abstract class ModulatorTop extends Monitor{
             
             try {
                 Thread.sleep(SLEEP_TIME);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
+            } catch (InterruptedException e1) {}
         }
         return false;
     }
@@ -49,18 +47,15 @@ public abstract class ModulatorTop extends Monitor{
         executor.shutdown(); // Disable new tasks from being submitted
         try {
             // Wait a while for existing tasks to terminate
-            if (!executor.awaitTermination(15, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
                 executor.shutdownNow(); // Cancel currently executing tasks
                 // Wait a while for tasks to respond to being cancelled
-                if (!executor.awaitTermination(10, TimeUnit.SECONDS))
-                    System.err.println("Pool did not terminate");
+                if (!executor.awaitTermination(2, TimeUnit.SECONDS));
             }
 
             this.tor_socket.close();
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) {}
     }
 }

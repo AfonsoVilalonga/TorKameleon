@@ -86,8 +86,8 @@ public class Server implements ObserverServer {
 
                 conn.setSoTimeout(0);
 
-                tor_sock.setReceiveBufferSize(config.getTor_buffer_size());
-                tor_sock.setSendBufferSize(config.getTor_buffer_size());
+                //tor_sock.setReceiveBufferSize(config.getTor_buffer_size());
+                //tor_sock.setSendBufferSize(config.getTor_buffer_size());
 
                 if (mod != null) {
                     if (mod.equals("copy"))

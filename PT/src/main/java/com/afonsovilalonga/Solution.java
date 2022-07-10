@@ -117,11 +117,8 @@ public class Solution {
                 try {
                     if(web_socket_server != null)
                         web_socket_server.stop();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                } catch (IOException e) {} 
+                catch (InterruptedException e) {}
 
                 System.out.println("Shutting down.");
             }

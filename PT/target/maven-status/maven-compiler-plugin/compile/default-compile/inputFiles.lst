@@ -23,6 +23,7 @@
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/Server/Streaming.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Socks/SocksProtocol.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Proxy/Utils/DTLSOverDatagram.java
+/home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Utils/TupleWebServer.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/ObserversCleanup/ObserverClient.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Common/Modulators/Server/StunnelMod.java
 /home/afonso/Desktop/ThesisCode/PT/src/main/java/com/afonsovilalonga/Proxy/Utils/Http.java

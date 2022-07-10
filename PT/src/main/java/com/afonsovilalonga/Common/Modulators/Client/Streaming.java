@@ -118,8 +118,6 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
         ExecutorService executor = getExecutor();
         
         try {
-            tor_socket.setReceiveBufferSize(config.getTor_buffer_size());
-            tor_socket.setSendBufferSize(config.getTor_buffer_size());
 
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));

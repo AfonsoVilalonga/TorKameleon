@@ -10,6 +10,7 @@ com/afonsovilalonga/Common/Modulators/Client/CopyMod.class
 com/afonsovilalonga/Proxy/Utils/Http.class
 com/afonsovilalonga/Common/Modulators/ModulatorClientInterface.class
 com/afonsovilalonga/Common/Socks/Exceptions/SocksException.class
+com/afonsovilalonga/Common/Utils/TupleWebServer.class
 com/afonsovilalonga/Common/Initialization/PluggableTransportHanshake/InitializationPT.class
 com/afonsovilalonga/Common/Modulators/Server/StunnelMod.class
 com/afonsovilalonga/Common/Modulators/Server/Streaming.class

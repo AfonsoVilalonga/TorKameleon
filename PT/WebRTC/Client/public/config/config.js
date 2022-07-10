@@ -18,9 +18,9 @@ window.webrtc = {
     encodedInsertableStreams: true
 };
 
-window.modulation = 'replace';
+window.modulation = 'add';
 
-window.signalling_server = ['null','wss://5.196.26.66:8000'];
+window.signalling_server = ['wss://5.196.26.66:8000'];
 //window.signalling_server = ['null','wss://localhost:8000'];
 window.tor_conn_addr = 'ws://localhost:4444';
 window.local_node_addr = 'ws://localhost:8002';

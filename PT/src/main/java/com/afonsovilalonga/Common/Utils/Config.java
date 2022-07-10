@@ -37,7 +37,8 @@ public class Config {
 
     private int number_of_nodes;
 
-    private int buffer_size;
+    private int proxy_buffer_size;
+    private int pt_buffer_size;
 
     private int pt_client_port;
     private int pt_server_port;
@@ -85,8 +86,12 @@ public class Config {
         return websocket_port;
     }
 
-    public int getBufferSize() {
-        return buffer_size;
+    public int getProxyBufferSize() {
+        return proxy_buffer_size;
+    }
+
+    public int getPTBufferSize() {
+        return pt_buffer_size;
     }
 
     public String getWebRTCLocation() {
@@ -238,7 +243,8 @@ public class Config {
 
             webdriver_location = prop.getProperty("webdriver_location");
 
-            buffer_size = Integer.parseInt(prop.getProperty("buffer_size"));
+            proxy_buffer_size = Integer.parseInt(prop.getProperty("buffer_size"));
+            pt_buffer_size = Integer.parseInt(prop.getProperty("pt_buffer_size"));
 
             websocket_port = Integer.parseInt(prop.getProperty("websocket_port"));
 

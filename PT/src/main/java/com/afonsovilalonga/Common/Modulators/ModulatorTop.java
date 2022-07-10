@@ -44,13 +44,10 @@ public abstract class ModulatorTop extends Monitor{
     }
 
     protected void serviceShutdow() {
-        executor.shutdown(); // Disable new tasks from being submitted
+        executor.shutdown();
         try {
-            // Wait a while for existing tasks to terminate
             if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
-                executor.shutdownNow(); // Cancel currently executing tasks
-                // Wait a while for tasks to respond to being cancelled
-                if (!executor.awaitTermination(2, TimeUnit.SECONDS));
+                executor.shutdownNow(); 
             }
 
             this.tor_socket.close();

@@ -264,7 +264,7 @@ public class Proxy {
                 web_socket_server.setPipe(pout, sock);
             }
 
-            byte[] buffer = new byte[config.getBufferSize()];
+            byte[] buffer = new byte[config.getProxyBufferSize()];
             try {
                 pin.read(buffer);
                 addJitterPerturbation();
@@ -281,8 +281,8 @@ public class Proxy {
             System.arraycopy(bytes, 0, result, 0, 4);
             System.arraycopy(data,0, result, 4, data.length);
             
-            for(int i = 0; i < result.length; i += config.getBufferSize()){
-                WebSocketWrapperPT.send(Arrays.copyOfRange(result, i, Math.min(result.length,i+config.getBufferSize())), sock); 
+            for(int i = 0; i < result.length; i += config.getProxyBufferSize()){
+                WebSocketWrapperPT.send(Arrays.copyOfRange(result, i, Math.min(result.length,i+config.getProxyBufferSize())), sock); 
             }
         } else{
             Initialization.sendFalied(socket);
@@ -302,7 +302,7 @@ public class Proxy {
             OutputStream out = socket.getOutputStream();
             out.flush();
 
-            byte[] buffer = new byte[config.getBufferSize()];
+            byte[] buffer = new byte[config.getProxyBufferSize()];
             String my_address = local_host;
 
             if (bypassAddress.split("-")[0].equals(my_address)) {
@@ -435,7 +435,7 @@ public class Proxy {
         try {
             OutputStream out = socket.getOutputStream();
             InputStream in = socket.getInputStream();
-            byte[] buffer = new byte[config.getBufferSize()];
+            byte[] buffer = new byte[config.getProxyBufferSize()];
             in.read(buffer);
 
             //Add perturbation before send to Tor
@@ -475,10 +475,10 @@ public class Proxy {
             try {
                 int bytesSent = 0;
                 while (bytesSent <= data.length) {
-                    byte[] sendData = Arrays.copyOfRange(data, bytesSent, bytesSent + config.getBufferSize()); //prevent sending bytes overflow
+                    byte[] sendData = Arrays.copyOfRange(data, bytesSent, bytesSent + config.getProxyBufferSize()); //prevent sending bytes overflow
                     DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
                     socket.send(sendPacket);
-                    bytesSent += config.getBufferSize();
+                    bytesSent += config.getProxyBufferSize();
                     Thread.sleep(5); // Avoid traffic congestion
                 }
                 byte[] endTransmission = "terminate_packet_receive".getBytes();
@@ -664,7 +664,7 @@ public class Proxy {
             WebSocketWrapperPT.send(String.format("GET %s HTTP/1.1", path.trim()).getBytes(), sock);         
 
             int n;
-            byte[] buffer = new byte[config.getBufferSize()];
+            byte[] buffer = new byte[config.getProxyBufferSize()];
             
             n = pin.read(buffer, 0, buffer.length);
             baos.write(buffer, 4, n-4);
@@ -704,7 +704,7 @@ public class Proxy {
         out.write(String.format("GET %s HTTP/1.1", path.trim()).getBytes());
 
         int n;
-        byte[] buffer = new byte[config.getBufferSize()];
+        byte[] buffer = new byte[config.getProxyBufferSize()];
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {
             baos.write(buffer, 0, n);
         }

@@ -38,8 +38,8 @@ public class CopyMod extends ModulatorTop implements ModulatorServerInterface {
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
             DataOutputStream out_Tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
 
-            byte[] recv = new byte[config.getBufferSize()];
-            byte[] send = new byte[config.getBufferSize()];
+            byte[] recv = new byte[config.getPTBufferSize()];
+            byte[] send = new byte[config.getPTBufferSize()];
 
             executor.execute(() -> {
                 try {

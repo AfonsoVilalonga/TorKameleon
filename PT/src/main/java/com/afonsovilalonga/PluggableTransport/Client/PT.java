@@ -74,9 +74,7 @@ public class PT implements ObserverClient{
         
         try {
             tor_server.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) {}
     }
 
     @Override

@@ -64,9 +64,7 @@ public class WebSocketWrapperPT extends WebSocketServer{
             byte[] recv = decodeBase64(message);
             pipe.write(recv);
             pipe.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) {}
     }
 
     @Override
@@ -117,17 +115,20 @@ public class WebSocketWrapperPT extends WebSocketServer{
     }
 
     private void onCloseOrError(WebSocket conn){
-        pipes.remove(conn.hashCode());
+        if(conn != null)
+            pipes.remove(conn.hashCode());
     }
 
     private void closeWindow(WebSocket conn){
-        TupleWebServer tuple = pipes.get(conn.hashCode());
-    
-        browser.switchTo().window(tuple.getWindownId());
-        browser.close();
-        browser.switchTo().window(this.first_window);
-        
-        
+        if(conn != null){
+            TupleWebServer tuple = pipes.get(conn.hashCode());
+
+            if(tuple != null && tuple.getWindownId() != null){
+                browser.switchTo().window(tuple.getWindownId());
+                browser.close();
+                browser.switchTo().window(this.first_window);
+            }
+        }
     }   
     
 }

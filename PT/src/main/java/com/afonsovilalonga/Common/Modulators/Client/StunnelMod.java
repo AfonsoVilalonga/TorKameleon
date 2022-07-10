@@ -65,8 +65,8 @@ public class StunnelMod extends ModulatorTop implements ModulatorClientInterface
 		    DataOutputStream out_stunnel = new DataOutputStream(new BufferedOutputStream(bridge_conn.getOutputStream()));
 	        
 
-            byte[] recv = new byte[config.getBufferSize()];
-            byte[] send = new byte[config.getBufferSize()];
+            byte[] recv = new byte[config.getPTBufferSize()];
+            byte[] send = new byte[config.getPTBufferSize()];
 		          
             executor.execute(() -> {
                 try {

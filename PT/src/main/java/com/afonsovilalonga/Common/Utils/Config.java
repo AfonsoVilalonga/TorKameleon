@@ -243,7 +243,7 @@ public class Config {
 
             webdriver_location = prop.getProperty("webdriver_location");
 
-            proxy_buffer_size = Integer.parseInt(prop.getProperty("buffer_size"));
+            proxy_buffer_size = Integer.parseInt(prop.getProperty("proxy_buffer_size"));
             pt_buffer_size = Integer.parseInt(prop.getProperty("pt_buffer_size"));
 
             websocket_port = Integer.parseInt(prop.getProperty("websocket_port"));

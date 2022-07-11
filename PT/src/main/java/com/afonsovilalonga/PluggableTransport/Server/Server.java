@@ -171,9 +171,11 @@ public class Server implements ObserverServer {
         for(ServerReqConnection i: running_conns){
             if(i.getId().equals(id)){
                 aux = i;
-                browser.switchTo().window(aux.getId_Window());
-                browser.close();
-                browser.switchTo().window(this.first_window);
+                if(i.getMod().equals("streaming")){
+                    browser.switchTo().window(aux.getId_Window());
+                    browser.close();
+                    browser.switchTo().window(this.first_window);
+                }
                 aux.shutdown();
                 break;
             }

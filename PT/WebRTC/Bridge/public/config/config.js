@@ -17,7 +17,7 @@ window.webrtc = {
     encodedInsertableStreams: true
 };
 
-window.modulation = 'replace';
+window.modulation = 'add';
 
 //window.signalling_server = 'wss://localhost:8000';
 window.signalling_server = 'wss://5.196.26.66:8000';

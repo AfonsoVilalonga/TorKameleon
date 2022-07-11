@@ -115,8 +115,18 @@ public class WebSocketWrapperPT extends WebSocketServer{
     }
 
     private void onCloseOrError(WebSocket conn){
-        if(conn != null)
+        TupleWebServer tuple = pipes.get(conn.hashCode());
+
+        if(conn != null){
+            if(tuple.getPipe() != null){
+                try {
+                    tuple.getPipe().close();
+                } catch (IOException e) {}
+            }
+    
             pipes.remove(conn.hashCode());
+        }
+            
     }
 
     private void closeWindow(WebSocket conn){

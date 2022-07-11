@@ -146,7 +146,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
             });
 
         } catch (IOException e) {
-            notifyObserver();
+            execNotifier();
         }
     }
 

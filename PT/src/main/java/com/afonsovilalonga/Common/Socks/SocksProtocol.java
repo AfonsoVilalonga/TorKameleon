@@ -118,7 +118,8 @@ public class SocksProtocol {
      */
     public void close() {
         try {
-            this.SOCKSV5.close();
+            if(this.SOCKSV5 != null)
+                this.SOCKSV5.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

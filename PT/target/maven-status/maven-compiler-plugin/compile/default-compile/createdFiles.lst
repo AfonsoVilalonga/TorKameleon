@@ -16,7 +16,6 @@ com/afonsovilalonga/Common/Modulators/Server/StunnelMod.class
 com/afonsovilalonga/Common/Modulators/Server/Streaming.class
 com/afonsovilalonga/Common/ObserversCleanup/ObserverServer.class
 com/afonsovilalonga/Common/Modulators/Client/Streaming.class
-com/afonsovilalonga/Proxy/Utils/WebSocketWrapperProxy.class
 com/afonsovilalonga/Common/Socks/SocksReq.class
 com/afonsovilalonga/PluggableTransport/Server/ServerReqConnection.class
 com/afonsovilalonga/Proxy/Proxy$1.class

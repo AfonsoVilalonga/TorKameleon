@@ -1,0 +1,63 @@
+#tor cells size 
+tor_buffer_size=512
+
+#number of nodes
+number_of_nodes=1
+
+#cooldown to choose new node to relay traffic
+bypass_timer=2000
+
+#address of the end destination
+remote_host=5.196.26.66
+remote_port=1238
+
+#ports for proxy (unsecure for tcp/udp, secure for tls/dtls)
+local_port_unsecure=1234
+local_port_secure=2000
+test_port_analytics=1244
+test_stunnel_port_analytics=1240
+test_port_iperf=9993
+test_stunnel_port_iperf=9998
+test_port_httping=9997
+test_stunnel_port_httping=9996
+streaming_port_proxy=2999
+
+#outgoing connection for tor 
+tor_port=9050
+
+#outgoing connection for stunnel
+stunnel_port=1239 
+
+#type of modulation for pt client
+modulation=streaming
+
+#client port
+pt_client_port=9999
+
+#server pt config (or port is the exposed port where tor receives the packets from the pluggable transport)
+pt_server_port=9999
+or_port=65300
+
+#ssl config
+keystore=../Keystore/tirmmrts
+password=password
+key=../Keystore/tirmmrt.key
+
+#ports for client and bridge http server
+client_streaming_port=8002
+bridge_streaming_port=8001
+
+#location of the chromedriver
+webdriver_location=/home//Desktop/chromedriver
+
+#size of packets between proxy and proxy and between client and bridge
+proxy_buffer_size=3072
+pt_buffer_size=1024
+
+#Websocket port for IPC between bridge/client WebRTC and the pluggable transport
+websocket_port=4444
+
+#location of webrtc dir
+webrtc_location=/home/afonso/Desktop/ThesisCode/PT/WebRTC
+
+

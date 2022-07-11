@@ -56,10 +56,7 @@ public class InitializationPT {
             }
             return done;
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        } catch (InterruptedException e) {}
         return false;
     }
 

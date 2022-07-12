@@ -31,6 +31,7 @@ public class Solution {
         Config config = Config.getInstance();
 
         System.setProperty("webdriver.chrome.driver", config.getWebdriverLocation());
+        System.setProperty("webdriver.chrome.silentOutput", "true");
         WebDriverManager.chromedriver().setup();
 
         System.setProperty("javax.net.ssl.trustStore", config.getKeystore());

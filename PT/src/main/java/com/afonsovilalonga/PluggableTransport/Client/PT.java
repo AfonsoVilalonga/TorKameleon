@@ -7,14 +7,12 @@ import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Modulators.Client.CopyMod;
 import com.afonsovilalonga.Common.Modulators.Client.Streaming;
-import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
-import com.afonsovilalonga.Common.ObserversCleanup.ObserverClient;
 import com.afonsovilalonga.Common.Modulators.Client.StunnelMod;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Socks.Exceptions.SocksException;
 import com.afonsovilalonga.Common.Utils.Config;
 
-public class PT implements ObserverClient{
+public class PT{
     private Config config;
     private ModulatorClientInterface modulator;
 
@@ -29,8 +27,6 @@ public class PT implements ObserverClient{
         this.modulator = null;
         this.socks_protocol = null;
      
-        Monitor.registerObserver(this);
-
         try {
             this.tor_server = new ServerSocket(config.getPt_client_port());
         } catch (IOException e) {}
@@ -71,14 +67,8 @@ public class PT implements ObserverClient{
             modulator.shutdown();
         else    
             socks_protocol.close();
-        
         try {
             tor_server.close();
         } catch (IOException e) {}
-    }
-
-    @Override
-    public void onStateChange() {
-        shutdown();
     }
 }

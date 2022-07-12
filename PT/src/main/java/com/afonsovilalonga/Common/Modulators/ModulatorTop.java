@@ -38,13 +38,6 @@ public abstract class ModulatorTop extends Monitor{
         }
     }
 
-    protected synchronized void execNotifier(){
-        if(!this.started_notifier){
-            this.started_notifier = true;
-            notifyObserver();
-        }
-    }
-
     protected <T> boolean reTry(Supplier<Boolean> func) {
         for (int i = 0; i < RETRIES; i++) {
             boolean result = func.get();

@@ -11,14 +11,6 @@ public class Monitor {
         observer_obj = observer;
     }
 
-    public void notifyObserver() {
-
-        if (observer_obj != null) {
-            ((ObserverClient) observer_obj).onStateChange();
-        }
-
-    }
-
     public void notifyObserver(String id) {
         if (observer_obj != null) {
             ((ObserverServer) observer_obj).onStateChange(id);

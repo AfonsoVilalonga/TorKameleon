@@ -49,6 +49,8 @@ public class Server implements ObserverServer {
 
         ChromeOptions option = new ChromeOptions();
         option.setAcceptInsecureCerts(true);
+        option.addArguments("--log-level=3");
+        option.addArguments("--silent");
         option.addArguments("headless");
 
         this.browser = new ChromeDriver(option);
@@ -57,7 +59,6 @@ public class Server implements ObserverServer {
             this.first_window = aux;
             break;
         }
-  
     }
 
     public void run() {

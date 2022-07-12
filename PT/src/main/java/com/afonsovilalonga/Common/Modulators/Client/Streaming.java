@@ -68,8 +68,13 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 web_server.setMutexAndWaitConn(connectionWaiter);
 
                 ChromeOptions option = new ChromeOptions();
+                option.addArguments("--log-level=3");
+                option.addArguments("--silent");
                 option.setAcceptInsecureCerts(true);            
-                    
+                
+                if(!config.getWatchVideo().equals("pt-client"))
+                    option.addArguments("headless");
+
                 browser = new ChromeDriver(option);
                 browser.get("http://localhost:" + config.getClientPortStreaming() + "/?bridge=0");
 
@@ -131,7 +136,8 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                         WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
                     }
                 } catch (Exception e) {}
-                execNotifier();
+                System.out.println("Connection to Tor Bridge failed.");
+                System.exit(-1);
             });
 
             executor.execute(() -> {
@@ -142,11 +148,13 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                         out_tor.flush();            
                     }
                 } catch (Exception e) {}
-                execNotifier();
+                System.out.println("Connection to Tor Bridge failed.");
+                System.exit(-1);
             });
 
         } catch (IOException e) {
-            execNotifier();
+            System.out.println("Connection to Tor Bridge failed.");
+            System.exit(-1);
         }
     }
 
@@ -157,7 +165,8 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
             if(this.bridge_conn != null)
                 this.bridge_conn.close();
 
-            browser.quit();
+            if(browser != null)
+                browser.quit();
             pin.close();
             pout.close();
         } catch (IOException e) {

@@ -62,6 +62,8 @@ public class Config {
 
     private int streaming_port_proxy;
 
+    private String watch_video;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -92,6 +94,10 @@ public class Config {
 
     public int getPTBufferSize() {
         return pt_buffer_size;
+    }
+
+    public String getWatchVideo() {
+        return watch_video;
     }
 
     public String getWebRTCLocation() {
@@ -251,6 +257,8 @@ public class Config {
             webrtc_location = prop.getProperty("webrtc_location");
 
             streaming_port_proxy = Integer.parseInt(prop.getProperty("streaming_port_proxy"));
+
+            watch_video = prop.getProperty("watch_video");
 
         } catch (IOException e) {
             e.printStackTrace();

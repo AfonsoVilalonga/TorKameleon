@@ -50,7 +50,9 @@ public class Proxy {
 
             ChromeOptions option = new ChromeOptions();
             option.setAcceptInsecureCerts(true);
-            //option.addArguments("headless");
+
+            if(!config.getWatchVideo().equals("proxy-client"))
+                option.addArguments("headless");
 
             this.browser = new ChromeDriver(option);
             this.web_socket_server.setBrowser(browser);

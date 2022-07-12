@@ -6,7 +6,7 @@ function encondeReplace(encodedFrame, controller) {
         const frameTagSize = (keyframeBit == 1) ? 3 : 10; 
 
         var to_encode = enconding[0];
-        console.log("oi " + to_encode.length);
+        console.log("enviei " + to_encode.length);
         enconding.splice(0, 1);
 
         const newData = new ArrayBuffer(encodedFrame.data.byteLength + 2 + 2);
@@ -52,6 +52,8 @@ function decodeReplace(encodedFrame, controller) {
             for (let i = 0; i < len; i++) {
                 bytes.push(view.getUint8(i + frameTagSize));
             }
+
+            console.log("enviei " + len);
 
             tor_conn.send(decode(bytes));
             encodedFrame.data = encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4);

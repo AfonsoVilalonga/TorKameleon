@@ -68,8 +68,6 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 web_server.setMutexAndWaitConn(connectionWaiter);
 
                 ChromeOptions option = new ChromeOptions();
-                option.addArguments("--log-level=3");
-                option.addArguments("--silent");
                 option.setAcceptInsecureCerts(true);            
                 
                 if(!config.getWatchVideo().equals("pt-client"))

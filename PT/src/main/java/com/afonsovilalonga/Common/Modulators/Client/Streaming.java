@@ -136,7 +136,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                         WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
                     }
                 } catch (Exception e) {}
-                System.out.println("Connection to Tor Bridge failed.");
+               
                 System.exit(-1);
             });
 
@@ -148,12 +148,11 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                         out_tor.flush();            
                     }
                 } catch (Exception e) {}
-                System.out.println("Connection to Tor Bridge failed.");
+                
                 System.exit(-1);
             });
 
         } catch (IOException e) {
-            System.out.println("Connection to Tor Bridge failed.");
             System.exit(-1);
         }
     }

@@ -76,7 +76,6 @@ public class StunnelMod extends ModulatorTop implements ModulatorClientInterface
                         out_stunnel.flush();	
                     }    
                 } catch (Exception e) {}
-                System.out.println("Connection to Tor Bridge failed.");
                 System.exit(-1);
             });
 
@@ -88,11 +87,10 @@ public class StunnelMod extends ModulatorTop implements ModulatorClientInterface
                         out_Tor.flush();
                     }
                 } catch (Exception e){}
-                System.out.println("Connection to Tor Bridge failed.");
+                
                 System.exit(-1);
             });    
         } catch (IOException e) {
-            System.out.println("Connection to Tor Bridge failed.");
             System.exit(-1);
         }
     }

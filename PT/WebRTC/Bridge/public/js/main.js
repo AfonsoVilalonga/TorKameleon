@@ -136,6 +136,12 @@ function createPeerConnection() {
             handleRemoteStreamAdded(e.streams[0]);
         };
 
+        pc.addEventListener('connectionstatechange', event => {
+            if(pc.connectionState == "disconnected"){
+                handleRemoteHangup();
+            }
+        });
+
         pc.onremovestream = handleRemoteStreamRemoved;
     } catch (e) {
         alert('Cannot create RTCPeerConnection object.');
@@ -188,7 +194,6 @@ function handleRemoteStreamRemoved(event) {
 
 function hangup() {
     stop();
-    sendMessage('end', room_n);
 }
 
 function handleRemoteHangup() {

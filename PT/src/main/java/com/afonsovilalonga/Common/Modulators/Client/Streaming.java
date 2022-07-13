@@ -70,6 +70,9 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 ChromeOptions option = new ChromeOptions();
                 option.setAcceptInsecureCerts(true);            
                 
+                option.addArguments("--log-level=3");
+                option.addArguments("--silent");
+
                 if(!config.getWatchVideo().equals("pt-client"))
                     option.addArguments("headless");
 

@@ -50,6 +50,8 @@ public class Proxy {
 
             ChromeOptions option = new ChromeOptions();
             option.setAcceptInsecureCerts(true);
+            option.addArguments("--silent");
+            option.addArguments("--log-level=3");
 
             if(!config.getWatchVideo().equals("proxy-client"))
                 option.addArguments("headless");
@@ -239,8 +241,6 @@ public class Proxy {
         byte val = Initialization.serverHandshake(socket);
 
         if(val != Initialization.ACK_FAILED){
-            Initialization.sendAccept(socket);
-            
             WebSocket sock = null;
             PipedInputStream pin = new PipedInputStream();
             PipedOutputStream pout = new PipedOutputStream();
@@ -265,7 +265,9 @@ public class Proxy {
                 sock = web_socket_server.getLaSocket();
                 web_socket_server.setPipe(pout, sock);
             }
-
+            
+            Initialization.sendAccept(socket);
+            
             byte[] buffer = new byte[config.getProxyBufferSize()];
             try {
                 pin.read(buffer);

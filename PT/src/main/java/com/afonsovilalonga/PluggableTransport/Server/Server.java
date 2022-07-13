@@ -76,7 +76,9 @@ public class Server implements ObserverServer {
             try {
                 String id = Integer.toString(running_conns.size());
                 String id_window = null;
+                
                 ModulatorServerInterface copyloop = null;
+                
                 Socket tor_sock = connectToTor(pt_host, or_port);
                 Socket conn = conns.accept();
 
@@ -87,9 +89,6 @@ public class Server implements ObserverServer {
 
                 conn.setSoTimeout(0);
 
-                //tor_sock.setReceiveBufferSize(config.getTor_buffer_size());
-                //tor_sock.setSendBufferSize(config.getTor_buffer_size());
-
                 if (mod != null) {
                     if (mod.equals("copy"))
                         copyloop = new CopyMod(tor_sock, conn, id);
@@ -97,33 +96,11 @@ public class Server implements ObserverServer {
                         copyloop = new StunnelMod(tor_sock, conn, id);
 
                     else if (mod.equals("streaming")) {
-                        PipedInputStream pin = new PipedInputStream();
-                        PipedOutputStream pout = new PipedOutputStream();
-
-                        try {
-                            pout.connect(pin);
-                        } catch (IOException e) {}
-
-                        CountDownLatch connectionWaiter = new CountDownLatch(1);
-                        web_socket_server.setMutexAndWaitConn(connectionWaiter);
-
-                        ((JavascriptExecutor) browser).executeScript(
-                                "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
-
-                        try {
-                            connectionWaiter.await();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        copyloop = this.streamingMode(tor_sock, id);
 
                         Set<String> windowHandles = browser.getWindowHandles();
                         for (String aux : windowHandles)
                             id_window = aux;
-
-                        WebSocket sock = web_socket_server.getLaSocket();
-                        web_socket_server.setPipe(pout, sock);
-
-                        copyloop = new Streaming(tor_sock, sock, id, pin, pout);
                     }
 
                     copyloop.run();
@@ -149,6 +126,24 @@ public class Server implements ObserverServer {
         }
     }
 
+    @Override
+    public void onStateChange(String id) {
+        ServerReqConnection aux = null;
+        for(ServerReqConnection i: running_conns){
+            if(i.getId().equals(id)){
+                aux = i;
+                if(i.getMod().equals("streaming")){
+                    browser.switchTo().window(aux.getId_Window());
+                    browser.close();
+                    browser.switchTo().window(this.first_window);
+                }
+                aux.shutdown();
+                break;
+            }
+        }
+        running_conns.remove(aux);
+    }
+
     private Socket connectToTor(String pt_host, int or_port) {
         if (!bootstraped && !InitializationPT.tor_init(1000)) {
             System.err.println("Could not connect to Tor.");
@@ -166,21 +161,32 @@ public class Server implements ObserverServer {
         return null;
     }
 
-    @Override
-    public void onStateChange(String id) {
-        ServerReqConnection aux = null;
-        for(ServerReqConnection i: running_conns){
-            if(i.getId().equals(id)){
-                aux = i;
-                if(i.getMod().equals("streaming")){
-                    browser.switchTo().window(aux.getId_Window());
-                    browser.close();
-                    browser.switchTo().window(this.first_window);
-                }
-                aux.shutdown();
-                break;
-            }
+    private ModulatorServerInterface streamingMode(Socket tor_sock, String id){
+        //byte modWebRTCByte = InitializationPT.bridge_protocol_server_side(conn);
+        //String webrtcMode = InitializationPT.mapper(modWebRTCByte);
+        
+        PipedInputStream pin = new PipedInputStream();
+        PipedOutputStream pout = new PipedOutputStream();
+
+        try {
+            pout.connect(pin);
+        } catch (IOException e) {}
+
+        CountDownLatch connectionWaiter = new CountDownLatch(1);
+        web_socket_server.setMutexAndWaitConn(connectionWaiter);
+
+        ((JavascriptExecutor) browser).executeScript(
+                "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
+
+        try {
+            connectionWaiter.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        running_conns.remove(aux);
+
+        WebSocket sock = web_socket_server.getLaSocket();
+        web_socket_server.setPipe(pout, sock);
+
+        return new Streaming(tor_sock, sock, id, pin, pout);
     }
 }

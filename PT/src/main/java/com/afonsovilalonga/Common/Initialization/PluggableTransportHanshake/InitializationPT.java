@@ -24,6 +24,10 @@ public class InitializationPT {
     private static final byte MOD_STUNNEL = 0x01;
     private static final byte MOD_STREAMING = 0x02;
 
+    private static final byte WEBRTC_REPLACE = 0x10;
+    private static final byte WEBRTC_ADD = 0x11;
+
+
     public static boolean tor_init(long sleep) {
         try (Socket tor = new Socket("127.0.0.1", 9051)) {
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor.getOutputStream()));
@@ -126,6 +130,10 @@ public class InitializationPT {
                 return "stunnel";
             case MOD_STREAMING:
                 return "streaming";
+            case WEBRTC_REPLACE:
+                return "replace";
+            case WEBRTC_ADD:
+                return "add";
             default:
                 return null;
         }
@@ -144,8 +152,11 @@ public class InitializationPT {
         if (modulation.equals("stunnel"))
             out_bridge.writeByte(MOD_STUNNEL);
 
-        if (modulation.equals("streaming"))
+        if (modulation.equals("streaming")){
             out_bridge.writeByte(MOD_STREAMING);
+            //TODO ADICIONAR NA CONFIG O METOOD DO WEBRTC
+        }
+            
 
         out_bridge.flush();
 

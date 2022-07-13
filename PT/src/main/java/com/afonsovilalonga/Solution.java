@@ -2,6 +2,7 @@ package com.afonsovilalonga;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Utils.Config;
@@ -29,7 +30,9 @@ public class Solution {
         isBridge = true;
 
         Config config = Config.getInstance();
-
+        
+        java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(Level.OFF);
+        System.setProperty("webdriver.chrome.silentOutput", "true");
         System.setProperty("webdriver.chrome.driver", config.getWebdriverLocation());
         System.setProperty("webdriver.chrome.silentOutput", "true");
         WebDriverManager.chromedriver().setup();

@@ -240,7 +240,7 @@ function setupReceiverTransform(receiver) {
 function addEnconding(bytes) {
     var x = atob(bytes.data);
     var len = x.length;
-    var bytes = new Uint8Array(len);
+    var bytes = [len];
     for (var i = 0; i < len; i++) {
         bytes[i] = x.charCodeAt(i);
     }

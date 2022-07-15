@@ -134,6 +134,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 try {
                     int i = 0;
                     while ((i = in_Tor.read(send)) != -1) {
+                        System.out.println(i + " ola");
                         WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
                     }
                 } catch (Exception e) {}
@@ -145,6 +146,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 try {
                     int i = 0;
                     while ((i = pin.read(recv)) != -1) {
+                        System.out.println(i + " adeus");
                         out_tor.write(recv, 0, i);
                         out_tor.flush();            
                     }

@@ -3,46 +3,32 @@ function encondeReplace(encodedFrame, controller) {
         const oldview = new DataView(encodedFrame.data);
         const keyframeBit = oldview.getUint8(0) & 0x01;
         const frameTagSize = (keyframeBit == 1) ? 3 : 10; 
-
-        var covert_bytes = enconding[0];
-        var to_encode = [];
-
-        if(covert_bytes.length > encodedFrame.data.byteLength - frameTagSize - 4){
-            while(covert_bytes.length > encodedFrame.data.byteLength - frameTagSize - 4){
-                to_encode.push(covert_bytes.shift());
-            }
-        }else{
-            to_encode = covert_bytes;
-            enconding.splice(0, 1);
-        }
+        
+        var to_encode = enconding[0];
 
         const newData = new ArrayBuffer(encodedFrame.data.byteLength);
         const newView = new DataView(newData);
-    
-        console.log(to_encode);
 
         for(let i = 0; i < frameTagSize; i++){
             newView.setUint8(i, oldview.getUint8(i));
         }
 
-        for (let i = 0 ; i < to_encode.length; i++) {
-            newView.setUint8(i+frameTagSize, to_encode[i]);
+        for (let i = 0 ; i < to_encode.length && (i + frameTagSize) < encodedFrame.data.byteLength - 4; i++) {
+            newView.setUint8(i+frameTagSize, to_encode.shift());
         }
-
-        for(let i = frameTagSize + to_encode.length; i < newData.byteLength - 4; i++){
-            newView.setUint8(i, oldview.getUint8(i));
-        }
-
-        console.log(newData);
 
         newView.setUint16(newData.byteLength - 4, to_encode.length);
         newView.setUint16(newData.byteLength - 2, 12345);
+
+        if(to_encode.length == 0)
+            enconding.splice(0, 1);
 
         encodedFrame.data = newData;
     }
     
     controller.enqueue(encodedFrame);
 }
+
 
 function decodeReplace(encodedFrame, controller) {
     if (encodedFrame instanceof RTCEncodedVideoFrame) {

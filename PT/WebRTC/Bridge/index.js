@@ -1,9 +1,8 @@
 'use strict';
 
-const myArgs = process.argv.slice(2);
+var socketIO = require('socket.io');
 
-//const static_pub = "/home/ubuntu/Tese/WebRTC/Bridge/public";
-//const views = "/home/ubuntu/Tese/WebRTC/Bridge/views/index";
+const myArgs = process.argv.slice(2);
 
 const static_pub = "public";
 const views = "index";
@@ -25,4 +24,5 @@ app.get("/", function (req, res) {
 
 var server = http.createServer(app);
 server.listen(process.env.PORT || myArgs[0]);
+
 

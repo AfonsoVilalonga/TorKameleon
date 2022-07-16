@@ -53,7 +53,6 @@ function decodeReplace(encodedFrame, controller) {
             }
 
             tor_conn.send(decode(bytes));
-            encodedFrame.data = encodedFrame.data.slice(0, encodedFrame.data.byteLength - 4);
         }
         
         prevFrameType = encodedFrame.type;

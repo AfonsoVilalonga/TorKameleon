@@ -26,8 +26,21 @@ var isChannelReady = false;
 var isStarted = false;
 
 
-socket.on('bridge_join', function (room) {
+socket.on('bridge_join', function (modulation, room) {
     if (room_n == -1) {
+        switch(modulation) {
+            case 'add':
+                transform = new Transform(encondeAdd, decodeAdd);
+                break;
+            case 'replace':
+                transform = new Transform(encondeReplace, decodeReplace);
+                break;
+            default:
+                transform = new Transform(encondeAdd, decodeAdd);
+        }
+        console.log(modulation);
+        console.log(transform);
+        
         room_n = room;
         socket.emit("join", room_n);
     }
@@ -74,17 +87,6 @@ var transform = null;
 let prevFrameType;
 let prevFrameTimestamp;
 let prevFrameSynchronizationSource;
-
-switch(modulation) {
-    case 'add':
-        transform = new Transform(encondeAdd, decodeAdd);
-        break;
-    case 'replace':
-        transform = new Transform(encondeReplace, decodeReplace);
-        break;
-    default:
-        transform = new Transform(encondeAdd, decodeAdd);
-}
 
 let enconding = [];
 

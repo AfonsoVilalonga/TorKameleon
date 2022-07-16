@@ -35,7 +35,7 @@ socket_to_node.on('bridge', function (room) {
 
     socket.on('want_join', function (room) {
         room_n = room;
-        socket.emit('create', room);
+        socket.emit('create', modulation, room);
     });
 
     socket.on('ready', function (room) {

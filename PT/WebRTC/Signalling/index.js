@@ -32,8 +32,8 @@ io.sockets.on('connection', function (socket) {
         room_n++;
     });
 
-    socket.on('create', function (room) {
-        socket.broadcast.emit("bridge_join", room);
+    socket.on('create', function (modulation, room) {
+        socket.broadcast.emit("bridge_join", modulation, room);
     });
 
     socket.on('message', function (message, room) {

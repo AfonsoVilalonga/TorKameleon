@@ -4,9 +4,6 @@ var socketIO = require('socket.io');
 
 const myArgs = process.argv.slice(2);
 
-//const static_pub = "/home/afonso/Desktop/Tese/WebRTC/Client/public";
-//const views = "/home/afonso/Desktop/Tese/WebRTC/Client/views";
-
 const static_pub = "public";
 const views = "index";
 

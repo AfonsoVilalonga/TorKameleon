@@ -63,7 +63,6 @@ public class Solution {
                         config.getClientPortStreaming());
                 pb.directory(new File(config.getWebRTCLocation() + "/Client"));
                 client_process = pb.start();
-                System.out.println("ola");
 
             } catch (IOException e) {
                 e.printStackTrace();

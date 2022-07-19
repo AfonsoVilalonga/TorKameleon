@@ -1,5 +1,6 @@
 function encondeReplace(encodedFrame, controller) {    
     if (encodedFrame instanceof RTCEncodedVideoFrame && enconding.length > 0) {
+        console.log("oi");
         const oldview = new DataView(encodedFrame.data);
         const keyframeBit = oldview.getUint8(0) & 0x01;
         const frameTagSize = (keyframeBit == 1) ? 3 : 10; 

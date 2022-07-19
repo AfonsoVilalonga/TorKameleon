@@ -2,8 +2,8 @@ window.webrtc = {
     iceServers: [{
         urls: [ "stun:fr-turn1.xirsys.com" ]
      }, {
-        username: "P40wXpNMo8cRzYNSvH9tfQAbpFVDEH53Jz-s-1vhXlydb8b0Kb7NdjE9oSTrpZXSAAAAAGLR9RNyYW1va282OTg5",
-        credential: "05c67dfc-0494-11ed-97e6-0242ac120004",
+        username: "01MTi058dhJGL5x3MLQHQPCTk1yPwYLhIyhQjPW9FUjZa0xxAvD8JeyvHUW3mgkYAAAAAGLVTNlib2dlbWk2ODM1",
+        credential: "1a3dca9c-0692-11ed-8bcd-0242ac120004",
         urls: [
             "turn:fr-turn1.xirsys.com:80?transport=udp",
             "turn:fr-turn1.xirsys.com:3478?transport=udp",

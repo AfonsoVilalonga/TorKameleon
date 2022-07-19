@@ -63,7 +63,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
             try {
                 //Wait for bridge to start up streaming protocol
                 InitializationPT.bridge_protocol_client_side(bridge_conn, mod);
-                
+
                 CountDownLatch connectionWaiter = new CountDownLatch(1);
                 web_server.setMutexAndWaitConn(connectionWaiter);
 

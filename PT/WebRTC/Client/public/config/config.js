@@ -1,18 +1,19 @@
 window.webrtc = {
     iceServers: [{
-        urls: [ "stun:fr-turn1.xirsys.com" ]
+        urls: [ "stun:eu-turn2.xirsys.com" ]
      }, {
-        username: "01MTi058dhJGL5x3MLQHQPCTk1yPwYLhIyhQjPW9FUjZa0xxAvD8JeyvHUW3mgkYAAAAAGLVTNlib2dlbWk2ODM1",
-        credential: "1a3dca9c-0692-11ed-8bcd-0242ac120004",
+        username: "tykNiA_lpo762O254PychQp_Fjntt9xR-C8rjrgRAyt9qZ0bwQDjOhVzeAWz5jUZAAAAAGLWlcp5b25vaDE2NDkz",
+        credential: "2add367a-0756-11ed-b39b-0242ac140004",
         urls: [
-            "turn:fr-turn1.xirsys.com:80?transport=udp",
-            "turn:fr-turn1.xirsys.com:3478?transport=udp",
-            "turn:fr-turn1.xirsys.com:80?transport=tcp",
-            "turn:fr-turn1.xirsys.com:3478?transport=tcp",
-            "turns:fr-turn1.xirsys.com:443?transport=tcp",
-            "turns:fr-turn1.xirsys.com:5349?transport=tcp"
+            "turn:eu-turn2.xirsys.com:80?transport=udp",
+            "turn:eu-turn2.xirsys.com:3478?transport=udp",
+            "turn:eu-turn2.xirsys.com:80?transport=tcp",
+            "turn:eu-turn2.xirsys.com:3478?transport=tcp",
+            "turns:eu-turn2.xirsys.com:443?transport=tcp",
+            "turns:eu-turn2.xirsys.com:5349?transport=tcp"
         ]
      }],
+     
      
      
     encodedInsertableStreams: true

@@ -152,12 +152,10 @@ public class InitializationPT {
         if (modulation.equals("stunnel"))
             out_bridge.writeByte(MOD_STUNNEL);
 
-        if (modulation.equals("streaming")){
+        if (modulation.equals("streaming"))
             out_bridge.writeByte(MOD_STREAMING);
-            //TODO ADICIONAR NA CONFIG O METOOD DO WEBRTC
-        }
             
-
+            
         out_bridge.flush();
 
         byte resp = in_bridge.readByte();

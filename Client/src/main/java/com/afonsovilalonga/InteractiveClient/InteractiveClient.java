@@ -4,36 +4,29 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.afonsovilalonga.Utils.Config;
 import com.afonsovilalonga.Utils.DTLSOverDatagram;
 import com.afonsovilalonga.Utils.Stats;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.nio.ByteBuffer;
-import java.util.Properties;
 import java.util.Scanner;
 
 public class InteractiveClient {
-    public static int remote_port_secure = 2000;
-    public static int remote_port_unsecure = 1234;
-    public static int test_port_httping = 0000;
-
-    public static String remote_host = "127.0.0.1"; // 172.28.0.5 or 127.0.0.1;
     public static final int BUF_SIZE = 4096;
 
-    public static void main(String[] argv) throws Exception {
-        //TIRMMRT certificate for server side authentication
-        System.setProperty("javax.net.ssl.trustStore", "./keystore/tirmmrts");
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-        System.setProperty("javax.net.ssl.trustStorePassword", "password");
-
-        readConfigurationFiles();
-
+    public static void run() throws Exception {
+        Config config = Config.getInstance();
+        String remote_host = config.get_remote_host();
+        int remote_port_secure = config.getRemote_port_secure();
+        int remote_port_unsecure = config.getRemote_port_unsecure();
+        Scanner inFromUser;
+        
         while (true) {
-            Scanner inFromUser = new Scanner(System.in);
+            inFromUser = new Scanner(System.in);
             String path = null;
             String protocol = null;
             try {
@@ -67,22 +60,6 @@ public class InteractiveClient {
                     dtls_socket.close();
                     break;
             }
-        }
-    }
-
-    private static void readConfigurationFiles() {
-
-        try (InputStream input = new FileInputStream("./configuration/config.properties")) {
-            Properties prop = new Properties();
-
-            prop.load(input);
-
-            remote_host = prop.getProperty("remote_host");
-            remote_port_unsecure = Integer.parseInt(prop.getProperty("remote_port_unsecure"));
-            remote_port_secure = Integer.parseInt(prop.getProperty("remote_port_secure"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

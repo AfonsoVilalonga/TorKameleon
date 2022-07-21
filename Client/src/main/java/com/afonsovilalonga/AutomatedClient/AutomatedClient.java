@@ -5,10 +5,10 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import com.afonsovilalonga.Utils.Config;
 import com.afonsovilalonga.Utils.DTLSOverDatagram;
 import com.afonsovilalonga.Utils.Stats;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,35 +16,34 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-public class AutomatedClient {
+public class AutomatedClient implements Runnable{
     public static final String SPACE = " ";
+    
     public static final int TIMEOUT = 50000;
-    private static int COMMAND_MAX_TIMER = 15000;
-    private static int COMMAND_MIN_TIMER = 5000;
-    public static int remote_port_secure = 2000;
-    public static int remote_port_unsecure = 1234;
-    public static String remote_host = "127.0.0.1"; // 172.28.0.5 or 127.0.0.1;
     public static final int BUF_SIZE = 4096;
 
     public static final List<String> files =
-            List.of("/Files/large", "/Files/book.pdf", "/Files/small"); // "/Files/large", "/Files/small", ,
+            List.of(Config.getInstance().get_files().split(",")); // "/Files/large", "/Files/small", ,
     public static final List<String> protocols =
-            List.of("tcp", "tls", "udp", "dtls"); // "tls", "udp", "dtls"
+            List.of(Config.getInstance().get_protocols().split(",")); // "tls", "udp", "dtls"
 
     public static String command = "";
 
-    public static void main(String[] argv) {
-        //TIRMMRT certificate for server side authentication
-        System.setProperty("javax.net.ssl.trustStore", "./keystore/tirmmrts");
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-        System.setProperty("javax.net.ssl.trustStorePassword", "password");
 
-        readConfigurationFiles();
+    public AutomatedClient(){
+    }
+
+    @Override
+    public void run() {
         nextCommandTriggeredTimer();
-
     }
 
     private static void executeCommand() throws Exception {
+        Config config = Config.getInstance();
+        String remote_host = config.get_remote_host();
+        int remote_port_secure = config.getRemote_port_secure();
+        int remote_port_unsecure = config.getRemote_port_unsecure();
+
         String path = null;
         String protocol = null;
         try {
@@ -86,12 +85,16 @@ public class AutomatedClient {
         String pickRandomFile = files.get(rand.nextInt(files.size()));
         String pickRandomProtocol = protocols.get(rand.nextInt(protocols.size()));
         command = pickRandomFile + SPACE + pickRandomProtocol;
-        System.err.println("Selected command is: " + command);
+        System.out.println("Selected command is: " + command);
     }
 
     private static void nextCommandTriggeredTimer() {
+        Config config = Config.getInstance();
+        int command_max_timer = config.get_command_max_timer();
+        int command_min_timer = config.get_command_min_timer();
+
         Timer timer = new Timer();
-        int command_timer = (new Random()).nextInt(COMMAND_MAX_TIMER - COMMAND_MIN_TIMER) + COMMAND_MIN_TIMER;
+        int command_timer = (new Random()).nextInt(command_max_timer - command_min_timer) + command_min_timer;
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -103,25 +106,6 @@ public class AutomatedClient {
                 }
             }
         }, 0, command_timer);
-    }
-
-    private static void readConfigurationFiles() {
-
-        try (InputStream input = new FileInputStream("./configuration/config.properties")) {
-            Properties prop = new Properties();
-
-            prop.load(input);
-
-            remote_host = prop.getProperty("remote_host");
-            remote_port_unsecure = Integer.parseInt(prop.getProperty("remote_port_unsecure"));
-            remote_port_secure = Integer.parseInt(prop.getProperty("remote_port_secure"));
-            COMMAND_MAX_TIMER = Integer.parseInt(prop.getProperty("COMMAND_MAX_TIMER"));
-            COMMAND_MIN_TIMER = Integer.parseInt(prop.getProperty("COMMAND_MIN_TIMER"));
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private static Socket getSecureSocket(String host, int port) throws IOException {
@@ -202,5 +186,7 @@ public class AutomatedClient {
         dtls.handshake(engine, socket, isa, "Client");
         return engine;
     }
+
+
 
 }

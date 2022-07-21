@@ -27,13 +27,8 @@ public class Config {
 
     private int tor_buffer_size;
     private int test_port_iperf;
-    private int test_stunnel_port_iperf;
 
     private int test_port_httping;
-    private int test_stunnel_port_httping;
-
-    private int test_port_analytics;
-    private int test_stunnel_port_analytics;
 
     private int number_of_nodes;
 
@@ -64,6 +59,8 @@ public class Config {
 
     private String watch_video;
 
+    private int control_tor_port;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -82,6 +79,10 @@ public class Config {
 
     public int getStreaming_port_proxy(){
         return streaming_port_proxy;
+    }
+
+    public int getControl_tor_port(){
+        return control_tor_port;
     }
 
     public int getWebsocket_port(){
@@ -176,24 +177,8 @@ public class Config {
         return test_port_iperf;
     }
 
-    public int getTest_stunnel_port_iperf() {
-        return test_stunnel_port_iperf;
-    }
-
     public int getTest_port_httping() {
         return test_port_httping;
-    }
-
-    public int getTest_stunnel_port_httping() {
-        return test_stunnel_port_httping;
-    }
-
-    public int getTest_port_analytics() {
-        return test_port_analytics;
-    }
-
-    public int getTest_stunnel_port_analytics() {
-        return test_stunnel_port_analytics;
     }
 
     public int getNumber_of_nodes() {
@@ -225,13 +210,9 @@ public class Config {
             stunnel_port = prop.getProperty("stunnel_port");
             bypass_timer = Integer.parseInt(prop.getProperty("bypass_timer"));
             test_port_iperf = Integer.parseInt(prop.getProperty("test_port_iperf"));
-            test_stunnel_port_iperf = Integer.parseInt(prop.getProperty("test_stunnel_port_iperf"));
             test_port_httping = Integer.parseInt(prop.getProperty("test_port_httping"));
-            test_stunnel_port_httping = Integer.parseInt(prop.getProperty("test_stunnel_port_httping"));
             number_of_nodes = Integer.parseInt(prop.getProperty("number_of_nodes"));
             tor_buffer_size = Integer.parseInt(prop.getProperty("tor_buffer_size"));
-            test_port_analytics = Integer.parseInt(prop.getProperty("test_port_analytics"));
-            test_stunnel_port_analytics = Integer.parseInt(prop.getProperty("test_stunnel_port_analytics"));
 
             //PT CLIENT VARS
             pt_client_port = Integer.parseInt(prop.getProperty("pt_client_port"));
@@ -259,6 +240,8 @@ public class Config {
             streaming_port_proxy = Integer.parseInt(prop.getProperty("streaming_port_proxy"));
 
             watch_video = prop.getProperty("watch_video");
+
+            control_tor_port = Integer.parseInt(prop.getProperty("control_tor_port"));
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -30,10 +30,10 @@ import java.util.concurrent.Executors;
 public class Proxy {
 
     public static final int N_THREADS = 8;
-    public static final int secureHttpingRequestPort = 2238;
-    public static final int PACKET_ANALYSIS_PORT = 3238;
     public static final int PERTURBATION_DELAY_PERCENTAGE = 20;
     public static final int MAX_PERTURBATION_DELAY_TIME_MS = 5000;
+
+    public static final int secureHttpingRequestPort = 2238;
     public static final int PING_PORT = 80;
 
     private String bypassAddress;
@@ -73,7 +73,6 @@ public class Proxy {
         int local_port_secure = config.getLocal_port_secure();
         int test_port_iperf = config.getTest_port_iperf();
         int test_port_httping = config.getTest_port_httping();
-        int test_port_analytics = config.getTest_port_analytics();
         int port_streaming = config.getStreaming_port_proxy();
         
 
@@ -159,15 +158,12 @@ public class Proxy {
         // Iperf test
         new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(test_port_iperf)) {
-
                 System.out.println("Iperf proxy is listening on port " + test_port_iperf);
-
                 while (true) {
                     Socket socket = serverSocket.accept();
                     measureTestIperf(socket);
                     socket.close();
                 }
-
             } catch (IOException ex) {
                 System.out.println("Iperf exception: " + ex.getMessage());
                 ex.printStackTrace();
@@ -190,28 +186,6 @@ public class Proxy {
                 ioe.printStackTrace();
             } finally {
                 System.out.println("Closing Httping server");
-                if (executor != null) {
-                    executor.shutdown();
-                }
-            }
-        }).start();
-
-        // Packet Analysis test
-        new Thread(() -> {
-            ExecutorService executor = null;
-            try (ServerSocket ss = new ServerSocket(test_port_analytics)) {
-                executor = Executors.newFixedThreadPool(N_THREADS);
-                System.out.println("Packet Analysis proxy is listening on port " + test_port_analytics);
-                while (true) {
-                    Socket clientSock = ss.accept();
-                    packetAnalysis(clientSock);
-                    clientSock.close();
-                }
-            } catch (IOException ioe) {
-                System.err.println("Cannot open the port on Packet Analysis");
-                ioe.printStackTrace();
-            } finally {
-                System.out.println("Closing Packet Analysis server");
                 if (executor != null) {
                     executor.shutdown();
                 }
@@ -300,7 +274,7 @@ public class Proxy {
             String remote_host = config.getRemote_host();
             String tor_host = "127.0.0.1";
             int tor_port = config.getTor_port();
-            int test_stunnel_port_httping = config.getTest_stunnel_port_httping();
+            int stunnel_port = Integer.parseInt(config.getStunnel_port());
 
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
@@ -318,7 +292,6 @@ public class Proxy {
                 byte[] bufferTor = new byte[tor_buffer_size];
                 int n = in.read(buffer, 0, buffer.length);
 
-
                 if (new String(buffer).contains("https")) {
                     socketTor = SocksProtocol.sendRequest((byte)0x04, remote_host, secureHttpingRequestPort, tor_host, tor_port);
                 } else if (new String(buffer).contains("ping")) {
@@ -326,6 +299,7 @@ public class Proxy {
                 } else {
                     socketTor = SocksProtocol.sendRequest((byte)0x04, remote_host, 5000, tor_host, tor_port);
                 }
+                
                 socketTor.setReceiveBufferSize(tor_buffer_size);
                 socketTor.setSendBufferSize(tor_buffer_size);
                 outTor = socketTor.getOutputStream();
@@ -347,7 +321,7 @@ public class Proxy {
                 System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
 
                 SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], test_stunnel_port_httping);
+                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], stunnel_port);
                 socketStunnel.startHandshake();
                 OutputStream outStunnel = socketStunnel.getOutputStream();
                 InputStream inStunnel = socketStunnel.getInputStream();
@@ -377,7 +351,7 @@ public class Proxy {
             String remote_host = config.getRemote_host();
             String tor_host = "127.0.0.1";
             int tor_port = config.getTor_port();
-            int test_stunnel_port_iperf = config.getTest_stunnel_port_iperf();
+            int stunnel_port = Integer.parseInt(config.getStunnel_port());
 
             InputStream in = serverSocket.getInputStream();
 
@@ -404,7 +378,7 @@ public class Proxy {
                 System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
 
                 SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], test_stunnel_port_iperf);
+                SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], stunnel_port);
                 socket.startHandshake();
                 OutputStream out = socket.getOutputStream();
                 out.flush();
@@ -517,60 +491,6 @@ public class Proxy {
             System.err.println("Unable to do DTLS");
         }
 
-    }
-
-    private void packetAnalysis(Socket socket) {
-        try {
-            int tor_buffer_size = config.getTor_buffer_size();
-            String local_host = "localhost";
-            String remote_host = config.getRemote_host();
-            String tor_host = "127.0.0.1";
-            int tor_port = config.getTor_port();
-            List<String> network = config.getNodes(); 
-            int test_stunnel_port_analytics = config.getTest_stunnel_port_analytics();
-
-            InputStream in = socket.getInputStream();
-
-            byte[] buffer = new byte[tor_buffer_size];
-            String my_address = local_host;
-
-            //Send through Tor
-            Socket clientSocket = SocksProtocol.sendRequest((byte)0x04, remote_host, PACKET_ANALYSIS_PORT, tor_host, tor_port);
-            OutputStream outTor = clientSocket.getOutputStream();
-            outTor.flush();
-
-            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-
-            Map<String, SSLSocket> stunnelSockets = new HashMap<>();
-            for (String node : network) {
-                if (node.equals("localhost") || node.equals("127.0.0.1")) continue;
-                SSLSocket socketStunnel = (SSLSocket) factory.createSocket(node.split("-")[0], test_stunnel_port_analytics);
-                stunnelSockets.put(node, socketStunnel);
-                socketStunnel.startHandshake();
-            }
-
-            while ((in.read(buffer, 0, buffer.length)) >= 0) {
-                Thread.sleep(15); // Avoid traffic congestion
-
-                //Add perturbation before send to Tor
-                addJitterPerturbation();
-                arrival_times.add(Instant.now());
-
-                if (bypassAddress.split("-")[0].equals(my_address)) {
-                    outTor.write(buffer);
-                } else {
-                    System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
-                    OutputStream outStunnel = stunnelSockets.get(bypassAddress.split("-")[0]).getOutputStream();
-                    outStunnel.write(buffer);
-                }
-            }
-            outTor.flush();
-            outTor.close();
-            clientSocket.close();
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void randomlyChooseBypassAddress() {

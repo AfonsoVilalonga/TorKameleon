@@ -30,6 +30,7 @@ public class HttpsClient {
 
                     url = new URL(https_url);
                     HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+                    System.out.println(con.getResponseMessage());
 
                     //dump all the content
                     print_content(con, out);

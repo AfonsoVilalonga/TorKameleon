@@ -46,6 +46,7 @@ public class Proxy {
 
     public Proxy(WebSocketWrapperPT web_socket_server){
         try {
+            this.config = Config.getInstance();
             this.web_socket_server = web_socket_server;
 
             ChromeOptions option = new ChromeOptions();
@@ -157,11 +158,13 @@ public class Proxy {
 
         // Iperf test
         new Thread(() -> {
+            ExecutorService executor = null;
             try (ServerSocket serverSocket = new ServerSocket(test_port_iperf)) {
+                executor = Executors.newFixedThreadPool(N_THREADS);
                 System.out.println("Iperf proxy is listening on port " + test_port_iperf);
                 while (true) {
                     Socket socket = serverSocket.accept();
-                    measureTestIperf(socket);
+                    executor.execute(() -> measureTestIperf(socket));
                     socket.close();
                 }
             } catch (IOException ex) {
@@ -292,14 +295,10 @@ public class Proxy {
                 byte[] bufferTor = new byte[tor_buffer_size];
                 int n = in.read(buffer, 0, buffer.length);
 
-                if (new String(buffer).contains("https")) {
-                    socketTor = SocksProtocol.sendRequest((byte)0x04, remote_host, secureHttpingRequestPort, tor_host, tor_port);
-                } else if (new String(buffer).contains("ping")) {
-                    socketTor = SocksProtocol.sendRequest((byte)0x04, remote_host, PING_PORT, tor_host, tor_port);
-                } else {
-                    socketTor = SocksProtocol.sendRequest((byte)0x04, remote_host, 5000, tor_host, tor_port);
-                }
-                
+                System.out.println(new String(buffer));
+
+                socketTor = SocksProtocol.sendRequest((byte)0x04, remote_host, secureHttpingRequestPort, tor_host, tor_port);
+                 
                 socketTor.setReceiveBufferSize(tor_buffer_size);
                 socketTor.setSendBufferSize(tor_buffer_size);
                 outTor = socketTor.getOutputStream();
@@ -360,7 +359,7 @@ public class Proxy {
 
             if (bypassAddress.split("-")[0].equals(my_address)) {
 
-                Socket clientSocket = SocksProtocol.sendRequest((byte)0x04, remote_host, 5001, tor_host, tor_port);
+                Socket clientSocket = SocksProtocol.sendRequest((byte)0x04, remote_host, 9999, tor_host, tor_port);
                 clientSocket.setReceiveBufferSize(tor_buffer_size);
                 clientSocket.setSendBufferSize(tor_buffer_size);
                 OutputStream out = clientSocket.getOutputStream();
@@ -368,7 +367,6 @@ public class Proxy {
 
                 int n;
                 while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                    System.err.println("Sending iperf throughout Tor: " + new String(buffer));
                     out.write(buffer, 0, n);
                 }
                 out.write("\r\n\r\n".getBytes());

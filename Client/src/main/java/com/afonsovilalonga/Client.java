@@ -66,10 +66,6 @@ public class Client {
                     doDTLS(dtls_socket, path.getBytes(), remote_host, remote_port_secure);
                     dtls_socket.close();
                     break;
-                case "browse":
-                    Socket browse_socket = new Socket(remote_host, test_port_httping);
-                    doCurl(browse_socket, path.getBytes());
-                    browse_socket.close();
             }
         }
     }
@@ -97,25 +93,6 @@ public class Client {
                 (SSLSocket) factory.createSocket(host, port);
         socket.startHandshake();
         return socket;
-    }
-
-    
-    private static void doCurl(Socket socket, byte[] path) throws IOException{
-        OutputStream out = socket.getOutputStream();
-        InputStream in = socket.getInputStream();
-        Stats stats = new Stats();
-
-        byte[] message = String.format("GET %s HTTP/1.1", path).getBytes();
-        out.write(message, 0, message.length);
-        out.flush();
-
-        int n;
-        byte[] buffer = new byte[BUF_SIZE];
-        while ((n = in.read(buffer, 0, buffer.length)) != -1) {
-            stats.newRequest(n);
-            System.out.write(buffer, 0, n);
-        }
-        stats.printReport();
     }
 
     private static void do_TCP_TLS(Socket socket, String path) throws IOException {

@@ -72,6 +72,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
                 
                 option.addArguments("--log-level=3");
                 option.addArguments("--silent");
+                option.addArguments("--no-sandbox");
 
                 if(!config.getWatchVideo().equals("pt-client"))
                     option.addArguments("headless");

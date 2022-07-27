@@ -50,6 +50,7 @@ public class Server implements ObserverServer {
         option.setAcceptInsecureCerts(true);
         option.addArguments("--log-level=3");
         option.addArguments("--silent");
+        option.addArguments("--no-sandbox");
         option.addArguments("headless");
 
         this.browser = new ChromeDriver(option);

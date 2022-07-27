@@ -61,6 +61,9 @@ public class Config {
 
     private int control_tor_port;
 
+    private int stunnel_iperf;
+    private int stunnel_httping;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -80,6 +83,16 @@ public class Config {
     public int getStreaming_port_proxy(){
         return streaming_port_proxy;
     }
+
+    public int getStunnel_iperf(){
+        return stunnel_iperf;
+    }
+
+    public int getStunnel_httping(){
+        return stunnel_httping;
+    }
+
+
 
     public int getControl_tor_port(){
         return control_tor_port;
@@ -242,6 +255,9 @@ public class Config {
             watch_video = prop.getProperty("watch_video");
 
             control_tor_port = Integer.parseInt(prop.getProperty("control_tor_port"));
+
+            stunnel_iperf = Integer.parseInt(prop.getProperty("stunnel_httping"));
+            stunnel_httping = Integer.parseInt(prop.getProperty("stunnel_iperf"));
 
         } catch (IOException e) {
             e.printStackTrace();

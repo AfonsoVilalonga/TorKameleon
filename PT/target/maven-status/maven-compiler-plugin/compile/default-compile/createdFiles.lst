@@ -12,8 +12,8 @@ com/afonsovilalonga/Common/Modulators/ModulatorClientInterface.class
 com/afonsovilalonga/Common/Socks/Exceptions/SocksException.class
 com/afonsovilalonga/Common/Utils/TupleWebServer.class
 com/afonsovilalonga/Common/Initialization/PluggableTransportHanshake/InitializationPT.class
-com/afonsovilalonga/Common/Modulators/Server/StunnelMod.class
 com/afonsovilalonga/Common/Modulators/Server/Streaming.class
+com/afonsovilalonga/Common/Modulators/Server/StunnelMod.class
 com/afonsovilalonga/Common/ObserversCleanup/ObserverServer.class
 com/afonsovilalonga/Common/Modulators/Client/Streaming.class
 com/afonsovilalonga/Common/Socks/SocksReq.class
@@ -25,8 +25,8 @@ com/afonsovilalonga/Common/Modulators/ModulatorTop.class
 com/afonsovilalonga/Common/ObserversCleanup/Observer.class
 com/afonsovilalonga/Common/Modulators/ModulatorServerInterface.class
 com/afonsovilalonga/Solution.class
-com/afonsovilalonga/Solution$1.class
 com/afonsovilalonga/PluggableTransport/Server/Server.class
+com/afonsovilalonga/Solution$1.class
 com/afonsovilalonga/Proxy/Proxy.class
-com/afonsovilalonga/Common/ObserversCleanup/Monitor.class
 com/afonsovilalonga/Common/Initialization/Exceptions/BridgeFailedException.class
+com/afonsovilalonga/Common/ObserversCleanup/Monitor.class

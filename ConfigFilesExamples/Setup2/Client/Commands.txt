@@ -1,0 +1,6 @@
+docker run -it -v "location_of_the_code":\code "image_name"
+
+Once inside, to use the client:
+Interactive client: java -jar client interactive 
+Multiple async clients: java -jar client async "number_of_clients"
+Multiple async clients without time inbetween requests: java -jar client "protocol (use tcp)" "file_name_to_download (large,small, earth.png, book.pdf)" "num_of_clients" "num_of_requests_for_each_client"

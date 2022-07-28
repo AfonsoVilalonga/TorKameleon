@@ -18,7 +18,7 @@ import com.afonsovilalonga.Common.Socks.SocksProtocol;
 public class Utilities {
 
     public static byte[] torRequest(String path, String remoteAddress, int remotePort) throws IOException {
-        String tor_host = "127.0.0.1";
+        String tor_host = Config.getInstance().getTor_ip();
         int tor_port = Config.getInstance().getTor_port();
         int tor_buffer_size = Config.getInstance().getTor_buffer_size();
 

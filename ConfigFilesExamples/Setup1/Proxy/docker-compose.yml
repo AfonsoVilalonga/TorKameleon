@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+  httpserver:
+    build: .
+    ports:
+      - 1239:1239
+      - 2999:2999
+      - 3000:3000
+      - 3001:3001
+      - 8000:8000
+    volumes:
+      - c:\Users\Afonso\Desktop\ThesisCode:/code
+    command: bash -c "stunnel && cd /code/PT/target && java -jar proxy-jar-with-dependencies.jar proxy-pt"

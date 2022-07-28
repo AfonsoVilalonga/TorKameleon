@@ -64,6 +64,8 @@ public class Config {
     private int stunnel_iperf;
     private int stunnel_httping;
 
+    private String tor_ip;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -92,7 +94,9 @@ public class Config {
         return stunnel_httping;
     }
 
-
+    public String getTor_ip(){
+        return tor_ip;
+    }
 
     public int getControl_tor_port(){
         return control_tor_port;
@@ -258,6 +262,8 @@ public class Config {
 
             stunnel_iperf = Integer.parseInt(prop.getProperty("stunnel_httping"));
             stunnel_httping = Integer.parseInt(prop.getProperty("stunnel_iperf"));
+
+            tor_ip = prop.getProperty("tor_ip");
 
         } catch (IOException e) {
             e.printStackTrace();

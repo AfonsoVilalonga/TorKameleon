@@ -152,6 +152,7 @@ public class Server implements ObserverServer {
 
         try {
             Socket conn = new Socket(pt_host, or_port);
+            System.out.println("Ready");
             return conn;
         } catch (IOException e) {
             e.printStackTrace();

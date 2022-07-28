@@ -10,6 +10,7 @@ import java.net.Socket;
 import javax.net.ssl.SSLSocket;
 
 import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedException;
+import com.afonsovilalonga.Common.Utils.Config;
 
 /**
  * Class for initialization and automation purposes
@@ -25,7 +26,7 @@ public class InitializationPT {
     private static final byte MOD_STREAMING = 0x02;
 
     public static boolean tor_init(long sleep) {
-        try (Socket tor = new Socket("127.0.0.1", 9051)) {
+        try (Socket tor = new Socket(Config.getInstance().getTor_ip(), 9051)) {
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor.getOutputStream()));
             DataInputStream in_tor = new DataInputStream(new BufferedInputStream(tor.getInputStream()));
 

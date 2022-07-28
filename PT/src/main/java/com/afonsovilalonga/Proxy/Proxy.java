@@ -342,7 +342,7 @@ public class Proxy {
             String local_host = "localhost";
             int tor_buffer_size = config.getTor_buffer_size();
             String remote_host = config.getRemote_host();
-            String tor_host = "127.0.0.1";
+            String tor_host = config.getTor_ip();
             int tor_port = config.getTor_port();
             int stunnel_httping = config.getStunnel_httping();
             
@@ -428,7 +428,7 @@ public class Proxy {
             int tor_buffer_size = config.getTor_buffer_size();
             String local_host = "localhost";
             String remote_host = config.getRemote_host();
-            String tor_host = "127.0.0.1";
+            String tor_host = config.getTor_ip();
             int tor_port = config.getTor_port();
             int stunnel_iperf = config.getStunnel_iperf();
 

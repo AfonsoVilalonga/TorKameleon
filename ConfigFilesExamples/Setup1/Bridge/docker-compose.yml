@@ -1,19 +1,18 @@
 version: '3.9'
 services:    
-  tor:
-    hostname: torcont
-    build: ./Tor
-    ports:
-      - 65300:65300
-      - 9051:9051
-    command: bash -c "tor"
   bridge:
     build: .
     ports:
       - 8000:8000
-      - 65300:65300
-      - 9999:9999
     volumes:
       - c:\Users\Afonso\Desktop\ThesisCode:/code
-    command: bash -c "stunnel && cd /code/PT/target && java -jar proxy-jar-with-dependencies.jar pt-server"
-  
+    command: bash -c "cd /code/PT/target && mvn clean compile assembly:single && java -jar proxy-jar-with-dependencies.jar pt-server"
+    depends_on: 
+      - stunnel
+    
+  stunnel:
+    hostname: stunnelcont
+    build: ./Stunnel
+    ports:
+      - 9999:9999
+    command: bash -c "stunnel"

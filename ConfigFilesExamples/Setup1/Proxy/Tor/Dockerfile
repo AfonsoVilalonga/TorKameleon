@@ -9,3 +9,4 @@ RUN apt-get update && \
 RUN apt-get install -y torbrowser-launcher
 
 COPY torrc /etc/tor/torrc
+COPY wait-for-it.sh wait-for-it.sh

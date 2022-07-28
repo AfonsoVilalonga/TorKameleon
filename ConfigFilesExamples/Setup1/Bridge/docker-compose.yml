@@ -4,15 +4,10 @@ services:
     build: .
     ports:
       - 8000:8000
+      - 65300:65300
+      - 9999:9999
     volumes:
       - c:\Users\Afonso\Desktop\ThesisCode:/code
-    command: bash -c "cd /code/PT/target && mvn clean compile assembly:single && java -jar proxy-jar-with-dependencies.jar pt-server"
-    depends_on: 
-      - stunnel
+    command: bash -c "stunnel > stunnel.txt & tor > tor.txt & cd /code/PT/target && java -jar proxy-jar-with-dependencies.jar pt-server"
     
-  stunnel:
-    hostname: stunnelcont
-    build: ./Stunnel
-    ports:
-      - 9999:9999
-    command: bash -c "stunnel"
+

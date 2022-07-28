@@ -1,4 +1,0 @@
-UseBridges 1
-Bridge proxycont:9999
-ClientTransportPlugin pt socks5 proxycont:9999
-ControlPort 9051

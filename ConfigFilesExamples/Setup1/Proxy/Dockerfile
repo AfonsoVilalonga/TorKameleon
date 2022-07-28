@@ -17,5 +17,12 @@ RUN apt-get install -y openjdk-11-jdk-headless
 RUN apt-get install -y iperf
 
 RUN apt-get install -y maven
+
+RUN apt-get install -y stunnel4
+
+RUN apt-get install -y torbrowser-launcher
+
+COPY stunnel.conf /etc/stunnel/stunnel.conf
+COPY torrc /etc/tor/torrc
 	
 

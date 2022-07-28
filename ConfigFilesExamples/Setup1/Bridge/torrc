@@ -1,0 +1,4 @@
+BridgeRelay 1
+PublishServerDescriptor 0
+ORPort 65300
+ControlPort 9051

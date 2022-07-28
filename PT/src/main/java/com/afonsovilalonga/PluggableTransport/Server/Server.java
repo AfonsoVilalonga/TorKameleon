@@ -144,11 +144,11 @@ public class Server implements ObserverServer {
     }
 
     private Socket connectToTor(String pt_host, int or_port) {
-        // if (!bootstraped && !InitializationPT.tor_init(1000)) {
-        //     System.err.println("Could not connect to Tor.");
-        //     System.err.println("Exiting...");
-        //     System.exit(-1);
-        // }
+        if (!bootstraped && !InitializationPT.tor_init(1000)) {
+            System.err.println("Could not connect to Tor.");
+            System.err.println("Exiting...");
+            System.exit(-1);
+        }
 
         try {
             Socket conn = new Socket(pt_host, or_port);

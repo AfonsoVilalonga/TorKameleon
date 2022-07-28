@@ -1,5 +1,12 @@
 version: '3.9'
 services:    
+  tor:
+    hostname: torcont
+    build: ./Tor
+    ports:
+      - 65300:65300
+      - 9051:9051
+    command: bash -c "tor"
   bridge:
     build: .
     ports:
@@ -9,3 +16,4 @@ services:
     volumes:
       - c:\Users\Afonso\Desktop\ThesisCode:/code
     command: bash -c "stunnel && cd /code/PT/target && java -jar proxy-jar-with-dependencies.jar pt-server"
+  

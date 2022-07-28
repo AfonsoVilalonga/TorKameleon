@@ -1,6 +1,7 @@
 version: '3.9'
 services:
-  httpserver:
+  proxy:
+    hostname: proxycont
     build: .
     ports:
       - 1239:1239
@@ -8,6 +9,14 @@ services:
       - 3000:3000
       - 3001:3001
       - 8000:8000
+      - 9999:9999
     volumes:
       - c:\Users\Afonso\Desktop\ThesisCode:/code
     command: bash -c "stunnel && cd /code/PT/target && java -jar proxy-jar-with-dependencies.jar proxy-pt"
+  tor:
+    hostname: torcont
+    build: ./Tor
+    ports:
+      - 65300:65300
+      - 9051:9051
+    command: bash -c "tor"

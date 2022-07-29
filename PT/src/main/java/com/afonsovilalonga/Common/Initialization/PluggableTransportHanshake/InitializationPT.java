@@ -16,9 +16,6 @@ import com.afonsovilalonga.Common.Utils.Config;
  * Class for initialization and automation purposes
  */
 public class InitializationPT {
-
-    private static final int RETRIES = 10;
-
     private static final byte ACK_SUCC = 0x00;
     private static final byte ACK_REF = 0x01;
     private static final byte MOD_COPY = 0x00;
@@ -31,10 +28,9 @@ public class InitializationPT {
             DataInputStream in_tor = new DataInputStream(new BufferedInputStream(tor.getInputStream()));
 
             boolean done = false;
-            int i = 0;
             byte[] recv = new byte[2048];
 
-            while (i < RETRIES && !done) {
+            while (!done) {
                 out_tor.write("AUTHENTICATE\r\n".getBytes());
                 out_tor.flush();
 
@@ -52,8 +48,6 @@ public class InitializationPT {
                     done = true;
                 else
                     Thread.sleep(sleep);
-
-                i++;
             }
             return done;
         } catch (IOException e) {

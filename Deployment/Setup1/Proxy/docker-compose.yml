@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  proxy:
+    build: .
+    ports:
+      - 10000:10000
+      - 10001:10001
+      - 10002:10002
+      - 10003:10004
+      - 10004:10005
+    volumes:
+      - c:\Users\Afonso\Desktop\ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup1/Proxy/config.properties /code/PT/Config/config.properties &&
+                      cp /code/Deployment/Setup1/Proxy/WebRTC/configB.js /code/PT/WebRTC/Bridge/public/config/config.js &&
+                      cp /code/Deployment/Setup1/Proxy/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
+                      cp /code/Deployment/Setup1/Bridge/WebRTC/default.json /code/PT/WebRTC/Signalling/config/default.json &&
+                      stunnel > stunnel.txt & 
+                      cd /code/PT/target && 
+                      java -jar proxy-jar-with-dependencies.jar pt-proxy & 
+                      sleep 3 && 
+                      tor"
+
+    

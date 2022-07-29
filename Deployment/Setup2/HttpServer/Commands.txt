@@ -1,0 +1,2 @@
+docker run -it -v "location_of_the_code":\code -p 10002:1238 "image_name"
+

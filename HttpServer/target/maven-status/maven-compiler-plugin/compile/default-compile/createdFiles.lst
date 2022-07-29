@@ -1,3 +1,4 @@
+com\afonsovilalonga\Utils\Config.class
+com\afonsovilalonga\Utils\HttpsClient.class
 com\afonsovilalonga\HttpServer.class
 com\afonsovilalonga\Utils\Http.class
-com\afonsovilalonga\Utils\HttpsClient.class

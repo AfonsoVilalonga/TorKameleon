@@ -7,14 +7,15 @@ import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.afonsovilalonga.Utils.Config;
 import com.afonsovilalonga.Utils.Http;
 import com.afonsovilalonga.Utils.HttpsClient;
 
 public class HttpServer {
-    public static final int PORT = 1238;
+    public static final int PORT = Config.getInstance().getNormal_port();
     static final int MAX_BYTES = 102400000;
-    public static final int TEST_PORT = 2238;
-    public static final int ECHO_PORT = 3238;
+    public static final int TEST_PORT = Config.getInstance().getTest_port();
+    public static final int ECHO_PORT = Config.getInstance().getEcho_port();
 
     public static void main(String[] args) throws IOException {
 

@@ -18,5 +18,5 @@ window.webrtc = {
 };
 
 //window.signalling_server = 'wss://localhost:8000';
-window.signalling_server = 'wss://localhost:8000';
+window.signalling_server = 'wss://localhost:10002';
 window.tor_conn_addr = 'ws://localhost:4444';

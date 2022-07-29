@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  httpserver:
+    build: .
+    ports:
+      - 10000:10000
+      - 10002:10002
+      - 10001:10001
+    volumes:
+      - c:\Users\Afonso\Desktop\ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup1/HttpServer/config.properties code/HttpServer/Config/config.properties &&
+                      cd /code/HttpServer/target && 
+                      java -jar httpserver-jar-with-dependencies.jar"
+                      

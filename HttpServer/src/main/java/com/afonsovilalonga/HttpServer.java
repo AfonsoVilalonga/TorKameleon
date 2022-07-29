@@ -27,8 +27,15 @@ public class HttpServer {
                 while (true) {
                     Socket clientSock = ss.accept();
                     System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
-                    processClientRequest(clientSock);
-                    clientSock.close();
+                    executor.execute(() -> {
+                        processClientRequest(clientSock);
+                        try {
+                            clientSock.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                
                 }
             } catch (IOException ioe) {
                 System.err.println("Cannot open the port on TCP");
@@ -49,8 +56,12 @@ public class HttpServer {
                 while (true) {
                     Socket clientSock = ss.accept();
                     System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
-                    HttpsClient.httpsRequest(clientSock);
-                    clientSock.close();
+                    executor.execute(()-> {
+                        try {
+                            HttpsClient.httpsRequest(clientSock);
+                            clientSock.close();
+                        } catch (IOException e) {}
+                    });
                 }
             } catch (IOException ioe) {
                 System.err.println("Cannot open the port on TCP");
@@ -115,7 +126,7 @@ public class HttpServer {
                 System.out.println(line);
                 line = Http.readLine(in);
             }
-            System.out.println();
+            
             if (request[0].equalsIgnoreCase("GET") || request[0].equalsIgnoreCase("HEAD") && !request[1].equals("")) {
                 sendFile(request[1], out);
             } else {
@@ -162,7 +173,7 @@ public class HttpServer {
     private static void sendFile(String fileName, OutputStream out)
             throws IOException {
         // strips the leading "/"
-        String name = fileName.substring(1);
+        String name = fileName;
         File f = new File(name);
         System.out.println("I will try to send file: \"" + name + "\"");
         if (name.equals("")) sendsSimplePage("The empty name is not a file", out);

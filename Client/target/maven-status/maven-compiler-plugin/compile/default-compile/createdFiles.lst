@@ -1,6 +1,7 @@
 com/afonsovilalonga/Utils/Stats.class
 com/afonsovilalonga/InteractiveClient/InteractiveClient.class
 com/afonsovilalonga/AutomatedClient/AutomatedClient.class
+com/afonsovilalonga/AutomatedClient/Injector.class
 com/afonsovilalonga/AutomatedClient/AutomatedClient$1.class
 com/afonsovilalonga/Client.class
 com/afonsovilalonga/Utils/Config.class

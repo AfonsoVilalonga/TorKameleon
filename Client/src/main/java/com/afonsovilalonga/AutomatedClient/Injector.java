@@ -50,28 +50,33 @@ public class Injector implements Runnable{
 
         switch (protocol.toLowerCase()) {
             case "tcp":
-                Socket tcp_socket = new Socket(remote_host, remote_port_unsecure);
-                for(int i = 0; i < num_reqs; i++)
+                for(int i = 0; i < num_reqs; i++){
+                    Socket tcp_socket = new Socket(remote_host, remote_port_unsecure);
                     do_TCP_TLS(tcp_socket, file);
-                tcp_socket.close();
+                    tcp_socket.close();
+                }
+               
                 break;
             case "tls":
-                Socket tls_socket = getSecureSocket(remote_host, remote_port_secure);
-                for(int i = 0; i < num_reqs; i++)
+                for(int i = 0; i < num_reqs; i++){
+                    Socket tls_socket = getSecureSocket(remote_host, remote_port_secure);
                     do_TCP_TLS(tls_socket, file);
-                tls_socket.close();
+                    tls_socket.close();
+                }
                 break;
             case "udp":
-                DatagramSocket udp_socket = new DatagramSocket();
-                for(int i = 0; i < num_reqs; i++)
+                for(int i = 0; i < num_reqs; i++){
+                    DatagramSocket udp_socket = new DatagramSocket();
                     doUDP(file.getBytes(), udp_socket, remote_host, remote_port_unsecure);
-                udp_socket.close();
+                    udp_socket.close();
+                }
                 break;
             case "dtls":
-                DatagramSocket dtls_socket = new DatagramSocket();
-                for(int i = 0; i < num_reqs; i++)
+                for(int i = 0; i < num_reqs; i++){
+                    DatagramSocket dtls_socket = new DatagramSocket();
                     doDTLS(dtls_socket, file.getBytes(), remote_host, remote_port_secure);
-                dtls_socket.close();
+                    dtls_socket.close();
+                }
                 break;
         }
 
@@ -91,7 +96,7 @@ public class Injector implements Runnable{
         InputStream in = socket.getInputStream();
         Stats stats = new Stats();
 
-        out.write(String.format("GET %s HTTP/1.1", path).getBytes());
+        out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
 
         int n = 0;
         byte[] buffer = new byte[BUF_SIZE];

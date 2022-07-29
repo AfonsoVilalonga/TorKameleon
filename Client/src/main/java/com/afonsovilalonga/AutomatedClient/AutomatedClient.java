@@ -122,7 +122,7 @@ public class AutomatedClient implements Runnable{
         InputStream in = socket.getInputStream();
         Stats stats = new Stats();
 
-        out.write(String.format("GET %s HTTP/1.1", path).getBytes());
+        out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
 
         int n = 0;
         byte[] buffer = new byte[BUF_SIZE];

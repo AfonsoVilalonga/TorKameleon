@@ -77,10 +77,9 @@ public class InteractiveClient {
         InputStream in = socket.getInputStream();
         Stats stats = new Stats();
 
-        byte[] message = String.format("GET %s HTTP/1.1", path).getBytes();
-        out.write(message, 0, message.length);
+        byte[] message = String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes();
+        out.write(message);
         out.flush();
-
         int n;
         byte[] buffer = new byte[BUF_SIZE];
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {

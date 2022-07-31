@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  proxy:
+    build: .
+    volumes:
+      - /home/bcarvalho1/ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup3/LocalNode3/config.properties /code/PT/Config/config.properties &&
+                      cp /code/Deployment/Setup3/LocalNode3/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
+                      cd /code/PT/target && 
+                      java -jar proxy-jar-with-dependencies.jar proxy-client"
+
+    

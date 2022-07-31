@@ -1,0 +1,18 @@
+version: '3.9'
+services:    
+  bridge:
+    build: .
+    ports:
+      - 30000:30000
+      - 30001:30001
+      - 30002:30002
+    volumes:
+      - /home/bcarvalho1/ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup3/Bridge3/config.properties /code/PT/Config/config.properties &&
+                        cp /code/Deployment/Setup3/Bridge3/WebRTC/configB.js /code/PT/WebRTC/Bridge/public/config/config.js &&
+                        cp /code/Deployment/Setup3/Bridge3/WebRTC/default.json /code/PT/WebRTC/Signalling/config/default.json &&
+                        stunnel > stunnel.txt & 
+                        tor > tor.txt & 
+                        cd /code/PT/target && 
+                        java -jar proxy-jar-with-dependencies.jar pt-server"
+    

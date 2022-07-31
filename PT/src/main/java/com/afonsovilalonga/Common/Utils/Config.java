@@ -66,6 +66,8 @@ public class Config {
 
     private String tor_ip;
 
+    private int connect_streaming;
+
     private static Config instance; 
 
     public static Config getInstance(){
@@ -84,6 +86,10 @@ public class Config {
 
     public int getStreaming_port_proxy(){
         return streaming_port_proxy;
+    }
+
+    public int getConnect_streaming(){
+        return connect_streaming;
     }
 
     public int getStunnel_iperf(){
@@ -264,6 +270,8 @@ public class Config {
             stunnel_httping = Integer.parseInt(prop.getProperty("stunnel_iperf"));
 
             tor_ip = prop.getProperty("tor_ip");
+
+            connect_streaming = Integer.parseInt(prop.getProperty("connect_streaming"));
 
         } catch (IOException e) {
             e.printStackTrace();

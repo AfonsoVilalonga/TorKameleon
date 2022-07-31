@@ -8,8 +8,9 @@ RUN apt-get update && \
 
 RUN apt-get install -y iperf
 
-RUN apt-get install openjdk-11-jdk-headless	
+RUN apt-get install -y openjdk-11-jdk-headless	
 
 RUN apt-get install -y torbrowser-launcher
 
 RUN apt-get install -y maven
+

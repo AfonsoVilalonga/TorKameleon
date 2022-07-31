@@ -9,7 +9,7 @@ services:
       - 10003:10004
       - 10004:10005
     volumes:
-      - c:\Users\Afonso\Desktop\ThesisCode:/code
+      - /home/jvilalonga1/ThesisCode:/code
     command: bash -c "cp /code/Deployment/Setup1/Proxy/config.properties /code/PT/Config/config.properties &&
                       cp /code/Deployment/Setup1/Proxy/WebRTC/configB.js /code/PT/WebRTC/Bridge/public/config/config.js &&
                       cp /code/Deployment/Setup1/Proxy/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&

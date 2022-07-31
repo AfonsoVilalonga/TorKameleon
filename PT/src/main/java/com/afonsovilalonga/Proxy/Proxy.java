@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 
 public class Proxy {
 
-    public static final int N_THREADS = 8;
+    public static final int N_THREADS = 17;
     public static final int PERTURBATION_DELAY_PERCENTAGE = 20;
     public static final int MAX_PERTURBATION_DELAY_TIME_MS = 5000;
 
@@ -635,7 +635,7 @@ public class Proxy {
 
     private byte[] bypassConnectionStremaing(byte[] bytes, byte type) throws Exception{
         String[] addr = bypassAddress.split("-");
-        boolean result = Initialization.startHandshake(addr[0], Config.getInstance().getStreaming_port_proxy());
+        boolean result = Initialization.startHandshake(addr[0], Config.getInstance().getConnect_streaming());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         
         if(result){

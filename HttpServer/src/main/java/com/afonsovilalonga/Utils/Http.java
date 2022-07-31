@@ -39,7 +39,7 @@ public class Http {
         if (pos1 == -1) return error;
         result[1] = request.substring(pos0, pos1 + 1).trim();
         result[2] = request.substring(pos1 + 1).trim();
-        if (!result[1].startsWith("/") || !result[1].startsWith(".")) return error;
+        if (!result[1].startsWith("/") && !result[1].startsWith(".")) return error;
         if (!result[2].startsWith("HTTP")) return error;
         return result;
     }

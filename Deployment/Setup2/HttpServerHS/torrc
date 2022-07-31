@@ -1,0 +1,3 @@
+HiddenServiceDir /hiddenserviceDir
+HiddenServicePort 20002 127.0.0.1:20002
+HiddenServicePort 20001 127.0.0.1:20001

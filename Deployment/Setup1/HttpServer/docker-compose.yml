@@ -7,7 +7,7 @@ services:
       - 10002:10002
       - 10001:10001
     volumes:
-      - c:\Users\Afonso\Desktop\ThesisCode:/code
+      - /home/jvilalonga1/ThesisCode:/code
     command: bash -c "cp /code/Deployment/Setup1/HttpServer/config.properties code/HttpServer/Config/config.properties &&
                       cd /code/HttpServer/target && 
                       java -jar httpserver-jar-with-dependencies.jar"

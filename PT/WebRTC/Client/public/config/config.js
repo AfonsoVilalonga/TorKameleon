@@ -1,27 +1,21 @@
 window.webrtc = {
+    iceTransportPolicy: 'relay',
     iceServers: [{
-        urls: [ "stun:eu-turn2.xirsys.com" ]
-     }, {
-        username: "tykNiA_lpo762O254PychQp_Fjntt9xR-C8rjrgRAyt9qZ0bwQDjOhVzeAWz5jUZAAAAAGLWlcp5b25vaDE2NDkz",
-        credential: "2add367a-0756-11ed-b39b-0242ac140004",
+        urls: ["stun:54.38.65.236"]
+    }, {
+        username: "test",
+        credential: "test123",
         urls: [
-            "turn:eu-turn2.xirsys.com:80?transport=udp",
-            "turn:eu-turn2.xirsys.com:3478?transport=udp",
-            "turn:eu-turn2.xirsys.com:80?transport=tcp",
-            "turn:eu-turn2.xirsys.com:3478?transport=tcp",
-            "turns:eu-turn2.xirsys.com:443?transport=tcp",
-            "turns:eu-turn2.xirsys.com:5349?transport=tcp"
+            "turn:54.38.65.236:3478"
         ]
-     }],
-     
-     
-     
+    }],
+
     encodedInsertableStreams: true
 };
 
 window.modulation = 'add';
 
-window.signalling_server = ['wss://5.196.26.66:10000'];
+window.signalling_server = ['wss://localhost:8000', 'wss://37.187.198.176:10002'];
 //window.signalling_server = ['null','wss://localhost:8000'];
 window.tor_conn_addr = 'ws://localhost:4444';
 window.local_node_addr = 'ws://localhost:8002';

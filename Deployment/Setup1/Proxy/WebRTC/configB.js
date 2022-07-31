@@ -1,16 +1,12 @@
 window.webrtc = {
+   iceTransportPolicy: 'relay',
    iceServers: [{
-      urls: [ "stun:fr-turn1.xirsys.com" ]
+      urls: ["stun:54.38.65.236"]
    }, {
-      username: "EgKMuc0h07Gydlgl9NhHfGwaTVGygqmGPXxN0K2elnwF63zMb4TdjXvFdVahm-ejAAAAAGLRaaJsYWRlY282NjY1",
-      credential: "e8620964-0440-11ed-bda4-0242ac120004",
+      username: "test",
+      credential: "test123",
       urls: [
-          "turn:fr-turn1.xirsys.com:80?transport=udp",
-          "turn:fr-turn1.xirsys.com:3478?transport=udp",
-          "turn:fr-turn1.xirsys.com:80?transport=tcp",
-          "turn:fr-turn1.xirsys.com:3478?transport=tcp",
-          "turns:fr-turn1.xirsys.com:443?transport=tcp",
-          "turns:fr-turn1.xirsys.com:5349?transport=tcp"
+         "turn:54.38.65.236:3478"
       ]
    }],
    

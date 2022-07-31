@@ -105,7 +105,7 @@ public class AutomatedClient implements Runnable{
                     e.printStackTrace();
                 }
             }
-        }, 0, command_timer);
+        }, 0, 1000 + (new Random().nextInt(3) * 1000) );
     }
 
     private static Socket getSecureSocket(String host, int port) throws IOException {

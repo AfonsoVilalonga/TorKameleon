@@ -102,7 +102,7 @@ public class Injector implements Runnable{
         byte[] buffer = new byte[BUF_SIZE];
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {
             stats.newRequest(n);
-            System.out.write(buffer, 0, n);
+            //System.out.write(buffer, 0, n);
         }
         stats.printReport();
     }

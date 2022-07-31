@@ -1,0 +1,18 @@
+version: '3.9'
+services:    
+  bridge:
+    build: .
+    ports:
+      - 20000:20000
+      - 20001:20001
+      - 20002:20002
+    volumes:
+      - /home/mhorta1/ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup1/Bridge/config.properties /code/PT/Config/config.properties &&
+                        cp /code/Deployment/Setup1/Bridge/WebRTC/configB.js /code/PT/WebRTC/Bridge/public/config/config.js &&
+                        cp /code/Deployment/Setup1/Bridge/WebRTC/default.json /code/PT/WebRTC/Signalling/config/default.json &&
+                        stunnel > stunnel.txt & 
+                        tor > tor.txt & 
+                        cd /code/PT/target && 
+                        java -jar proxy-jar-with-dependencies.jar pt-server"
+    

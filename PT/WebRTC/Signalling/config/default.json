@@ -2,6 +2,6 @@
     "https":{
         "key": "Https/key.pem",
         "pem": "Https/cert.pem",
-        "port": 10000
+        "port": 8000
     }
 }

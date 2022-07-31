@@ -677,7 +677,7 @@ public class Proxy {
             
             //Send packet with type (iperf, httping or normal); len of packet and the data
             byte[] bytes_len = ByteBuffer.allocate(4).putInt(bytes.length).array();
-            byte[] type_bytes = ByteBuffer.allocate(1).putInt(type).array();
+            byte[] type_bytes = ByteBuffer.allocate(1).put(type).array();
             byte[] bytes_with_len = new byte[bytes.length + 4 + 1];
             
             System.arraycopy(type_bytes, 0, bytes_with_len, 0, 1);
@@ -686,6 +686,8 @@ public class Proxy {
 
             int bytes_to_send = 0;
             
+            System.out.println(bytes.length + " " + bytes_to_send);
+
             //send from bytes_to_send to (bytes_to_send + the minimum between the data to send length and the size of packets sent between proxys) 
             do{    
                 WebSocketWrapperPT.send(Arrays.copyOfRange(bytes_with_len, bytes_to_send, bytes_to_send + Math.min(config.getProxyBufferSize(), bytes_with_len.length)), sock);

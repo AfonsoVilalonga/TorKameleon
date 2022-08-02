@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  httpserver:
+    build: .
+    ports:
+      - 20000:20000
+      - 20002:20002
+      - 20001:20001
+    volumes:
+      - /home/mhorta1/ThesisCode:/code
+    command: bash -c "cp /code/Deployment/SetupMH/HttpServerHS2/config.properties code/HttpServer/Config/config.properties &&
+                      cd /code/HttpServer/target/ &&
+                      java -jar httpserver-jar-with-dependencies.jar &
+                      tor"
+                      

@@ -1,0 +1,8 @@
+UseBridges 1
+Bridge pt 192.99.168.235:10001
+ClientTransportPlugin pt socks5 127.0.0.1:9999
+SocksPort 0.0.0.0:9050
+
+
+
+

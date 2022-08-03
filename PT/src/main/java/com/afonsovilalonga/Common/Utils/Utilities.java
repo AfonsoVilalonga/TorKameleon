@@ -24,7 +24,18 @@ public class Utilities {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        Socket clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, remotePort, tor_host, tor_port);
+        String req = new String(bytes);
+
+        Socket clientSocket;
+
+        if(req.contains("HEAD")){
+            clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, 10001, tor_host, tor_port);
+        }else if(!req.contains("http") || !req.contains("HTTP")){
+            clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, 5001, tor_host, tor_port);
+        }else{
+            clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, remotePort, tor_host, tor_port);
+        }
+                
         clientSocket.setReceiveBufferSize(tor_buffer_size);
         clientSocket.setSendBufferSize(tor_buffer_size);
         OutputStream out = clientSocket.getOutputStream();

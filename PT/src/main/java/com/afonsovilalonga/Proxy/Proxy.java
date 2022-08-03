@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 
 public class Proxy {
 
-    public static final int N_THREADS = 17;
+    public static final int N_THREADS = 8;
     public static final int PERTURBATION_DELAY_PERCENTAGE = 20;
     public static final int MAX_PERTURBATION_DELAY_TIME_MS = 5000;
 
@@ -77,7 +77,6 @@ public class Proxy {
         int local_port_unsecure = config.getLocal_port_unsecure();
         int local_port_secure = config.getLocal_port_secure();
         int test_port_iperf = config.getTest_port_iperf();
-        int test_port_httping = config.getTest_port_httping();
         int port_streaming = config.getStreaming_port_proxy();
 
         bypassTriggeredTimer();
@@ -422,10 +421,6 @@ public class Proxy {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void doIperf() {
-
     }
 
     private void doUDP(DatagramSocket socket) throws Exception {

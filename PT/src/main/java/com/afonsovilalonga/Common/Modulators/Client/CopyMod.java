@@ -55,7 +55,6 @@ public class CopyMod extends ModulatorTop implements ModulatorClientInterface {
         ExecutorService executor = getExecutor();
 
         try {
-
             DataInputStream in_pt = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
             DataOutputStream out_pt = new DataOutputStream(new BufferedOutputStream(bridge_conn.getOutputStream()));
 

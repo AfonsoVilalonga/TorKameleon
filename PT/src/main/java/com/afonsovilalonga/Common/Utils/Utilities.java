@@ -17,7 +17,7 @@ import com.afonsovilalonga.Common.Socks.SocksProtocol;
 
 public class Utilities {
 
-    public static byte[] torRequest(String path, String remoteAddress, int remotePort) throws IOException {
+    public static byte[] torRequest(byte[] bytes, String remoteAddress, int remotePort) throws IOException {
         String tor_host = Config.getInstance().getTor_ip();
         int tor_port = Config.getInstance().getTor_port();
         int tor_buffer_size = Config.getInstance().getTor_buffer_size();
@@ -28,9 +28,7 @@ public class Utilities {
         clientSocket.setReceiveBufferSize(tor_buffer_size);
         clientSocket.setSendBufferSize(tor_buffer_size);
         OutputStream out = clientSocket.getOutputStream();
-        out.flush();
-
-        out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
+        out.write(bytes);
         out.flush();
 
         InputStream in = clientSocket.getInputStream();

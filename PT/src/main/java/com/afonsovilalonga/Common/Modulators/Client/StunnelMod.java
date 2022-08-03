@@ -57,7 +57,6 @@ public class StunnelMod extends ModulatorTop implements ModulatorClientInterface
         ExecutorService executor = getExecutor();
 
 		try {
-
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
             DataOutputStream out_Tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
 			

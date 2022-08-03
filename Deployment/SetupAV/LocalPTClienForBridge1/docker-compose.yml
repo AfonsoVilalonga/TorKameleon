@@ -6,10 +6,13 @@ services:
       - 8002:8002
     build: .
     volumes:
-      - /home/afonso/Desktop/ThesisCode:/code
+      - c:\Users\Afonso\Desktop\ThesisCode:/code
     command: bash -c "cp /code/Deployment/SetupAV/LocalPTClienForBridge1/config.properties /code/PT/Config/config.properties &&
                       cp /code/Deployment/SetupAV/LocalPTClienForBridge1/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
                       cd /code/PT/target && 
                       java -jar proxy-jar-with-dependencies.jar pt-client &
                       sleep 3 &&
                       tor"
+
+
+             

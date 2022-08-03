@@ -80,8 +80,7 @@ public class Server implements ObserverServer {
                 ModulatorServerInterface copyloop = null;
                 
                 Socket tor_sock = connectToTor(pt_host, or_port);
-                Socket conn = conns.accept();
-     
+                Socket conn = conns.accept();     
                 conn.setSoTimeout(10000);
 
                 byte modByte = InitializationPT.bridge_protocol_server_side(conn);

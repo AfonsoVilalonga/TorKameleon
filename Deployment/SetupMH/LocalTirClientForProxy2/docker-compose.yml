@@ -7,5 +7,6 @@ services:
       - c:\Users\Afonso\Desktop\ThesisCode:/code
     command: bash -c "cp /code/Deployment/SetupMH/LocalTirClientForProxy2/config.properties /code/PT/Config/config.properties &&
                       cp /code/Deployment/SetupMH/LocalTirClientForProxy2/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
+                      cp /code/Deployment/SetupMH/LocalTirClientForProxy2/network /code/PT/Config/network &&
                       cd /code/PT/target && 
                       java -jar proxy-jar-with-dependencies.jar proxy-client"

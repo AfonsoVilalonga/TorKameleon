@@ -4,8 +4,10 @@ services:
     network_mode: "host"
     build: .
     volumes:
-      - c:\Users\Afonso\Desktop\ThesisCode:/code
+      - /home/afonso/Desktop/ThesisCode:/code
     command: bash -c "cp /code/Deployment/SetupAV/LocalTirClientForProxy1/config.properties /code/PT/Config/config.properties &&
                       cp /code/Deployment/SetupAV/LocalTirClientForProxy1/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
+                      cp /code/Deployment/SetupAV/LocalTirClientForProxy1/network /code/PT/Config/network &&
                       cd /code/PT/target && 
-                      java -jar proxy-jar-with-dependencies.jar proxy-client"
+                      java -jar proxy-jar-with-dependencies.jar proxy-client &
+                      tor "

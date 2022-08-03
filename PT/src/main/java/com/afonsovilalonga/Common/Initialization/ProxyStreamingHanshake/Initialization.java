@@ -21,7 +21,6 @@ public class Initialization {
     public static boolean startHandshake(String host, int port){
         try {
             SSLSocket socket = Utilities.createSSLSocket(host, port);
-            System.out.println(socket.isConnected());
 
             DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             DataInputStream in_sock = new DataInputStream(new BufferedInputStream(socket.getInputStream()));

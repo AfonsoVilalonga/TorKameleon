@@ -1,7 +1,9 @@
 version: '3.9'
 services:
   proxy:
-    network_mode: "host"
+    ports:
+      - 9050:9050
+      - 8002:8002
     build: .
     volumes:
       - c:\Users\Afonso\Desktop\ThesisCode:/code

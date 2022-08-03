@@ -266,8 +266,8 @@ public class Config {
 
             control_tor_port = Integer.parseInt(prop.getProperty("control_tor_port"));
 
-            stunnel_iperf = Integer.parseInt(prop.getProperty("stunnel_httping"));
-            stunnel_httping = Integer.parseInt(prop.getProperty("stunnel_iperf"));
+            stunnel_iperf = Integer.parseInt(prop.getProperty("stunnel_iperf"));
+            stunnel_httping = Integer.parseInt(prop.getProperty("stunnel_httping"));
 
             tor_ip = prop.getProperty("tor_ip");
 

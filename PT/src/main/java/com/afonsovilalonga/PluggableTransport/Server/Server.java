@@ -68,11 +68,16 @@ public class Server {
                 ModulatorServerInterface copyloop = null;
                 
                 Socket tor_sock = connectToTor(pt_host, or_port);
+
+                System.out.println("Waiting for a user connection.");
+
                 Socket conn = conns.accept();     
                 conn.setSoTimeout(10000);
 
                 byte modByte = InitializationPT.bridge_protocol_server_side(conn);
                 String mod = InitializationPT.mapper(modByte);
+
+                System.out.println("User from " + conn.getRemoteSocketAddress() + " connected. Requested mode " + mod);
 
                 if (mod != null) {
                     if (mod.equals("copy"))
@@ -116,7 +121,6 @@ public class Server {
 
         try {
             Socket conn = new Socket(pt_host, or_port);
-            System.out.println("Ready");
             return conn;
         } catch (IOException e) {
             e.printStackTrace();

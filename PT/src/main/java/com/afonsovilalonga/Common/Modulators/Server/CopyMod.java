@@ -6,30 +6,24 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
 
 import com.afonsovilalonga.Common.Modulators.ModulatorServerInterface;
-import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Utils.Config;
 
 
-public class CopyMod extends ModulatorTop implements ModulatorServerInterface {
+public class CopyMod implements ModulatorServerInterface {
 
+    private Socket tor_socket; 
     private Socket bridge_conn;
-    private String id;
 
-    public CopyMod(Socket tor_socket, Socket socket, String id) {
-        super(tor_socket);
+    public CopyMod(Socket tor_socket, Socket socket) {
+        this.tor_socket = tor_socket;
         this.bridge_conn = socket;
-        this.id = id;
     }
 
     @Override
     public void run() {
         Config config = Config.getInstance();
-
-        Socket tor_socket = gettor_socket();
-        ExecutorService executor = getExecutor();
 
         try {
             DataInputStream in_pt = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
@@ -41,37 +35,40 @@ public class CopyMod extends ModulatorTop implements ModulatorServerInterface {
             byte[] recv = new byte[config.getPTBufferSize()];
             byte[] send = new byte[config.getPTBufferSize()];
 
-            executor.execute(() -> {
-                try {
-                    int i = 0;
-                    while ((i = in_Tor.read(send)) != -1) {
-                        out_pt.write(send, 0, i);
-                        out_pt.flush();
-                    }
-                } catch (Exception e) {}
-                execNotifier(id);
-            });
+            Thread thread_sender = new Thread(){
+                public void run(){
+                    try {
+                        int i = 0;
+                        while ((i = in_Tor.read(send)) != -1) {
+                            out_pt.write(send, 0, i);
+                            out_pt.flush();
+                        }
+                    } catch (Exception e) {}
+                }
+            };
+            thread_sender.start();
 
-            executor.execute(() -> {
-                try {
-                    int i = 0;
-                    while ((i = in_pt.read(recv)) != -1) {
-                        out_Tor.write(recv, 0, i);
-                        out_Tor.flush();
-                    }
-                } catch (Exception e) {}
-                execNotifier(id);
-            });
-        } catch (IOException e) {
-            execNotifier(id);
-        }
+            Thread thread_receiver = new Thread(){
+                public void run(){
+                    try {
+                        int i = 0;
+                        while ((i = in_pt.read(recv)) != -1) {
+                            out_Tor.write(recv, 0, i);
+                            out_Tor.flush();
+                        }
+                    } catch (Exception e) {}
+                }
+            };
+            thread_receiver.start();
+
+        } catch (IOException e) {}
     }
 
     @Override
     public void shutdown() {
         try {
-            serviceShutdow();
             this.bridge_conn.close();
+            this.tor_socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

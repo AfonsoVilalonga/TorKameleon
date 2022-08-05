@@ -10,7 +10,6 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 
 import javax.net.ssl.SSLSocket;
 
@@ -22,16 +21,20 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import com.afonsovilalonga.Common.Initialization.Exceptions.BridgeFailedException;
 import com.afonsovilalonga.Common.Initialization.PluggableTransportHanshake.InitializationPT;
 import com.afonsovilalonga.Common.Modulators.ModulatorClientInterface;
-import com.afonsovilalonga.Common.Modulators.ModulatorTop;
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
+import com.google.common.base.Supplier;
 
 
-public class Streaming extends ModulatorTop implements ModulatorClientInterface{
+public class Streaming implements ModulatorClientInterface{
+    private static final int RETRIES = 35;
+    private static final int SLEEP_TIME = 1000;
+
 
     private SSLSocket bridge_conn;
+    private Socket tor_socket;
 
     private WebSocket bridge_sock;
     private WebSocketWrapperPT web_server;
@@ -41,7 +44,7 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
     private PipedOutputStream pout;
     
     public Streaming(Socket tor_socket, WebSocketWrapperPT web_server) {
-        super(tor_socket);
+        this.tor_socket = tor_socket;
         this.web_server = web_server;
         this.pin = new PipedInputStream();
         this.pout = new PipedOutputStream();
@@ -121,9 +124,6 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
     public void run() {
         Config config = Config.getInstance();
 
-        Socket tor_socket = gettor_socket();
-        ExecutorService executor = getExecutor();
-        
         try {
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
@@ -131,30 +131,32 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
             byte[] send = new byte[config.getPTBufferSize()];
             byte[] recv = new byte[config.getPTBufferSize()];
 
-            executor.execute(() -> {
-                try {
-                    int i = 0;
-                    while ((i = in_Tor.read(send)) != -1) {
-                        System.out.println(i + " oi");
-                        WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
-                    }
-                } catch (Exception e) {}
-               
-                System.exit(-1);
-            });
+            Thread thread_sender = new Thread(){
+                public void run(){
+                    try {
+                        int i = 0;
+                        while ((i = in_Tor.read(send)) != -1) {
+                            WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
+                        }
+                    } catch (Exception e) {}
+                    System.exit(-1);
+                }
+            };
+            thread_sender.start();
 
-            executor.execute(() -> {
-                try {
-                    int i = 0;
-                    while ((i = pin.read(recv)) != -1) {
-                        out_tor.write(recv, 0, i);
-                        out_tor.flush();            
-                    }
-                } catch (Exception e) {}
-                
-                System.exit(-1);
-            });
-
+            Thread thread_receiver = new Thread(){
+                public void run(){
+                    try {
+                        int i = 0;
+                        while ((i = pin.read(recv)) != -1) {
+                            out_tor.write(recv, 0, i);
+                            out_tor.flush();            
+                        }
+                    } catch (Exception e) {}
+                    System.exit(-1);
+                }
+            };
+            thread_receiver.start();
         } catch (IOException e) {
             System.exit(-1);
         }
@@ -163,14 +165,11 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
     @Override
     public void shutdown() {
         try {
-            serviceShutdow();
-            if(this.bridge_conn != null)
-                this.bridge_conn.close();
-
-            if(browser != null)
-                browser.quit();
+            this.bridge_conn.close();
+            browser.quit();
             pin.close();
             pout.close();
+            tor_socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,4 +185,18 @@ public class Streaming extends ModulatorTop implements ModulatorClientInterface{
         }
         return false;
     }    
+
+    private <T> boolean reTry(Supplier<Boolean> func) {
+        for (int i = 0; i < RETRIES; i++) {
+            boolean result = func.get();
+
+            if(result)
+                return result;
+            
+            try {
+                Thread.sleep(SLEEP_TIME);
+            } catch (InterruptedException e1) {}
+        }
+        return false;
+    }
 }

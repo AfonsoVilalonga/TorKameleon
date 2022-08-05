@@ -7,7 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import org.java_websocket.WebSocket;
@@ -21,11 +20,9 @@ import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
 import com.afonsovilalonga.Common.Modulators.Server.CopyMod;
 import com.afonsovilalonga.Common.Modulators.Server.Streaming;
 import com.afonsovilalonga.Common.Modulators.Server.StunnelMod;
-import com.afonsovilalonga.Common.ObserversCleanup.Monitor;
-import com.afonsovilalonga.Common.ObserversCleanup.ObserverServer;
 import com.afonsovilalonga.Common.Utils.Config;
 
-public class Server implements ObserverServer {
+public class Server {
     private Config config;
     private boolean exit;
     private List<ServerReqConnection> running_conns;
@@ -35,7 +32,6 @@ public class Server implements ObserverServer {
     private ServerSocket conns;
 
     private ChromeDriver browser;
-    private String first_window; 
 
     public Server(WebSocketWrapperPT web_socket_server) {
         this.config = Config.getInstance();
@@ -43,8 +39,6 @@ public class Server implements ObserverServer {
         this.web_socket_server = web_socket_server;
         this.bootstraped = false;
         this.exit = false;
-
-        Monitor.registerObserver(this);
 
         ChromeOptions option = new ChromeOptions();
         option.setAcceptInsecureCerts(true);
@@ -54,11 +48,6 @@ public class Server implements ObserverServer {
         option.addArguments("headless");
 
         this.browser = new ChromeDriver(option);
-
-        for (String aux : browser.getWindowHandles()){
-            this.first_window = aux;
-            break;
-        }
     }
 
     public void run() {
@@ -75,7 +64,6 @@ public class Server implements ObserverServer {
         while (!exit) {
             try {
                 String id = Integer.toString(running_conns.size());
-                String id_window = null;
                 
                 ModulatorServerInterface copyloop = null;
                 
@@ -86,24 +74,18 @@ public class Server implements ObserverServer {
                 byte modByte = InitializationPT.bridge_protocol_server_side(conn);
                 String mod = InitializationPT.mapper(modByte);
 
-                conn.setSoTimeout(0);
-
                 if (mod != null) {
                     if (mod.equals("copy"))
-                        copyloop = new CopyMod(tor_sock, conn, id);
+                        copyloop = new CopyMod(tor_sock, conn);
                     else if (mod.equals("stunnel"))
-                        copyloop = new StunnelMod(tor_sock, conn, id);
-
-                    else if (mod.equals("streaming")) {
+                        copyloop = new StunnelMod(tor_sock, conn);
+                    else if (mod.equals("streaming")) 
                         copyloop = this.streamingMode(tor_sock, id);
-                        Set<String> windowHandles = browser.getWindowHandles();
-                        for (String aux : windowHandles)
-                            id_window = aux;
-                    }
+                    
+                    Thread copyloop_thread = new Thread(copyloop);
+                    copyloop_thread.start();
 
-                    copyloop.run();
-
-                    ServerReqConnection req = new ServerReqConnection(id_window, copyloop, mod, id);
+                    ServerReqConnection req = new ServerReqConnection(copyloop);
                     running_conns.add(req);
 
                     InitializationPT.bridge_protocol_server_side_send_ack(conn, modByte);
@@ -119,27 +101,10 @@ public class Server implements ObserverServer {
             i.shutdown();
         try {
             conns.close();
+            browser.quit();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void onStateChange(String id) {
-        ServerReqConnection aux = null;
-        for(ServerReqConnection i: running_conns){
-            if(i.getId().equals(id)){
-                aux = i;
-                if(i.getMod().equals("streaming")){
-                    browser.switchTo().window(aux.getId_Window());
-                    browser.close();
-                    browser.switchTo().window(this.first_window);
-                }
-                aux.shutdown();
-                break;
-            }
-        }
-        running_conns.remove(aux);
     }
 
     private Socket connectToTor(String pt_host, int or_port) {
@@ -186,6 +151,6 @@ public class Server implements ObserverServer {
         WebSocket sock = web_socket_server.getLaSocket();
         web_socket_server.setPipe(pout, sock);
 
-        return new Streaming(tor_sock, sock, id, pin, pout);
+        return new Streaming(tor_sock, sock, pin, pout);
     }
 }

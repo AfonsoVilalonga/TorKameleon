@@ -11,6 +11,7 @@ import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
+import com.afonsovilalonga.Proxy.Utils.Http;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.java_websocket.WebSocket;
@@ -36,7 +37,6 @@ public class Proxy {
     public static final int PING_PORT = 80;
 
     public static final byte NORMAL = 0x00;
-    public static final byte HTTPING = 0x01;
     public static final byte IPERF = 0X02;
 
     private String bypassAddress;
@@ -247,74 +247,32 @@ public class Proxy {
                 }
 
                 // addJitterPerturbation();
-            } catch (IOException e) {
+            } catch (IOException e) {}
+
+            if (type == NORMAL) {
+                byte[] data = bypass(baos.toByteArray());
+
+                byte[] bytes = ByteBuffer.allocate(4).putInt(data.length).array();
+                byte[] result = new byte[data.length + 4];
+                System.arraycopy(bytes, 0, result, 0, 4);
+                System.arraycopy(data, 0, result, 4, data.length);
+
+                for (int i = 0; i < result.length; i += config.getProxyBufferSize()) {
+                    WebSocketWrapperPT.send(
+                            Arrays.copyOfRange(result, i, Math.min(result.length, i +
+                                    config.getProxyBufferSize())),
+                            sock);
+                }
+            } else if (type == IPERF) {
+                try {
+                    Socket socket_iperf = new Socket("localhost",
+                            Config.getInstance().getTest_port_iperf());
+                    socket_iperf.getOutputStream().write(baos.toByteArray());
+                    socket_iperf.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-
-            // if (type == NORMAL) {
-            // arrival_times.add(Instant.now());
-
-            // String filePath = Http.parseHttpReply(new String(baos.toByteArray()))[1];
-            // System.out.println(
-            // "File request path: " + filePath + " from " + socket.getInetAddress() + ":" +
-            // socket.getPort());
-            // byte[] data = bypass(filePath);
-
-            // byte[] bytes = ByteBuffer.allocate(4).putInt(data.length).array();
-            // byte[] result = new byte[data.length + 4];
-            // System.arraycopy(bytes, 0, result, 0, 4);
-            // System.arraycopy(data, 0, result, 4, data.length);
-
-            // for (int i = 0; i < result.length; i += config.getProxyBufferSize()) {
-            // WebSocketWrapperPT.send(
-            // Arrays.copyOfRange(result, i, Math.min(result.length, i +
-            // config.getProxyBufferSize())),
-            // sock);
-            // }
-            // } else if (type == IPERF) {
-            // try {
-            // Socket socket_iperf = new Socket("localhost",
-            // Config.getInstance().getTest_port_iperf());
-            // socket_iperf.getOutputStream().write(baos.toByteArray());
-            // socket_iperf.close();
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-
-            // } else if (type == HTTPING) {
-            // String[] addr_array = bypassAddress.split("-");
-
-            // if (addr_array[1].equals("s")) {
-            // byte[] ret;
-            // try {
-            // ret = bypassConnectionStremaing(baos.toByteArray(), HTTPING);
-            // WebSocketWrapperPT.send(ret, sock);
-            // } catch (Exception e) {
-            // e.printStackTrace();
-            // }
-            // } else {
-            // try {
-            // SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            // SSLSocket socketStunnel = (SSLSocket)
-            // factory.createSocket(bypassAddress.split("-")[0],
-            // Config.getInstance().getStunnel_httping());
-            // socketStunnel.startHandshake();
-            // OutputStream outStunnel = socketStunnel.getOutputStream();
-            // InputStream inStunnel = socketStunnel.getInputStream();
-
-            // byte[] bufferTStunnel = new byte[Config.getInstance().getTor_buffer_size()];
-
-            // outStunnel.write(baos.toByteArray());
-            // inStunnel.read(bufferTStunnel, 0, bufferTStunnel.length);
-
-            // baos.write("\r\n\r\n".getBytes());
-            // WebSocketWrapperPT.send(baos.toByteArray(), sock);
-            // outStunnel.flush();
-            // socketStunnel.close();
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            // }
-            // }
         } else {
             Initialization.sendFalied(socket);
         }

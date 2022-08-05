@@ -1,8 +1,7 @@
 package com.afonsovilalonga.Common.Modulators;
 
-public interface ModulatorServerInterface {
+public interface ModulatorServerInterface extends Runnable{
     
     public void shutdown();
     
-    public void run();
 }

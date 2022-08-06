@@ -1,5 +1,7 @@
 package com.afonsovilalonga.ChaffClient;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,6 +20,7 @@ public class ChaffClient {
     public ChaffClient(){
         try {
             torRequest();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,7 +31,9 @@ public class ChaffClient {
         int tor_port = 9050;
         int tor_buffer_size = 512;
 
-        Socket clientSocket = socksv4SendRequest("192.99.168.235", 10000, tor_host, tor_port);
+        Socket clientSocket = null;
+        while(clientSocket == null)
+            clientSocket = socksv4SendRequest("192.99.168.235", 10000, tor_host, tor_port);
                 
         clientSocket.setReceiveBufferSize(tor_buffer_size);
         clientSocket.setSendBufferSize(tor_buffer_size);
@@ -79,9 +84,43 @@ public class ChaffClient {
             
             return socket;
         } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return null;
     } 
+
+    public static boolean tor_init(long sleep) {
+        try (Socket tor = new Socket("localhost", 9051)) {
+            DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor.getOutputStream()));
+            DataInputStream in_tor = new DataInputStream(new BufferedInputStream(tor.getInputStream()));
+
+            boolean done = false;
+            byte[] recv = new byte[2048];
+
+            while (!done) {
+                out_tor.write("AUTHENTICATE\r\n".getBytes());
+                out_tor.flush();
+
+                in_tor.read(recv);
+
+                out_tor.writeBytes("GETINFO status/bootstrap-phase\r\n");
+                out_tor.flush();
+
+                recv = new byte[2048];
+                in_tor.read(recv);
+
+                String progress = new String(recv);
+
+                if (progress.contains("100"))
+                    done = true;
+                else
+                    Thread.sleep(sleep);
+            }
+            return done;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {}
+        return false;
+    }
+
 }

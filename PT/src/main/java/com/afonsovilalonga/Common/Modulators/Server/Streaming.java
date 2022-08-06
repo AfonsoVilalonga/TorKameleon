@@ -55,7 +55,6 @@ public class Streaming implements ModulatorServerInterface{
                     }
                 } catch (Exception e) {
                 }
-                System.exit(-1);
             });
 
                   
@@ -69,7 +68,6 @@ public class Streaming implements ModulatorServerInterface{
                     }
                 } catch (Exception e) {
                 }
-                System.exit(-1);
             });
         } catch (IOException e) {}
     }

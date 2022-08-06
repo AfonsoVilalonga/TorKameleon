@@ -1,0 +1,9 @@
+UseBridges 1
+Bridge pt 54.36.163.65:10001
+ClientTransportPlugin pt socks5 127.0.0.1:9999
+SocksPort 0.0.0.0:9050
+ControlPort 9051
+
+
+
+

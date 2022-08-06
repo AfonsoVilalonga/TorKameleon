@@ -49,7 +49,6 @@ public class StunnelMod implements ModulatorServerInterface {
                     }
                 } catch (Exception e) {
                 }
-                System.exit(-1);
             });
 
             executor.execute(() -> {
@@ -62,7 +61,6 @@ public class StunnelMod implements ModulatorServerInterface {
                     }
                 } catch (Exception e) {
                 }
-                System.exit(-1);
             });
         } catch (IOException e) {
         }

@@ -3,6 +3,7 @@ services:
   proxy:
     ports:
       - 1234:1234
+      - 10012:10012
     build: .
     volumes:
       - /home/afonso/Desktop/ThesisCode:/code

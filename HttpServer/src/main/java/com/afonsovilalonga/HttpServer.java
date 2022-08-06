@@ -3,7 +3,6 @@ package com.afonsovilalonga;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -93,6 +92,50 @@ public class HttpServer {
                         try {
                             buffer = new byte[clientSock.getReceiveBufferSize()];
                             while ((in.read(buffer, 0, buffer.length)) >= 0) {}
+                            // close IO streams, then socket
+                            in.close();
+                            clientSock.close();
+                        } catch (IOException e) {}
+                    });
+                    
+                }
+            } catch (IOException ioe) {
+                System.err.println("Cannot open the port on TCP");
+                ioe.printStackTrace();
+            } finally {
+                System.out.println("Closing TCP server");
+                if (executor != null) {
+                    executor.shutdown();
+                }
+            }
+        }).start();
+
+        new Thread(() -> {
+            ExecutorService executor = null;
+            try (ServerSocket ss = new ServerSocket(10004)) {
+                executor = Executors.newFixedThreadPool(25);
+                System.out.println("Http server ready at port " + 10004 + " waiting for request ...");
+                while (true) {
+                    Socket clientSock = ss.accept();
+                    InputStream in = clientSock.getInputStream();
+                    OutputStream out = clientSock.getOutputStream();
+
+                    System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
+
+                    executor.execute(()->{
+                        byte[] buffer;
+                        try {
+                            buffer = new byte[1024];
+                            while ((in.read(buffer, 0, buffer.length)) >= 0) {
+                                out.write(buffer);
+                                out.flush();
+                                out.write(buffer);
+                                out.flush();
+                                out.write(buffer);
+                                out.flush();
+                                out.write(buffer);
+                                out.flush();
+                            }
                             // close IO streams, then socket
                             in.close();
                             clientSock.close();

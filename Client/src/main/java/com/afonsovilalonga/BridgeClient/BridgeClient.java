@@ -1,28 +1,27 @@
-package com.afonsovilalonga.ChaffClient;
+package com.afonsovilalonga.BridgeClient;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 
-public class ChaffClient {
+public class BridgeClient {
 
     public static final byte VERSION_4 = 0x04;
     public static final byte VERSION_RESP = 0x00;
     public static final byte RESP_GRANTED = 0x5a;
     public static final byte TCP_STREAM = 0x01;
     
-    public ChaffClient(){
+    public BridgeClient(){
         try {
-            long init = System.currentTimeMillis();
-            while(!tor_init(1000));
-            System.out.println(System.currentTimeMillis() - init);
             torRequest();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,21 +34,27 @@ public class ChaffClient {
 
         Socket clientSocket = null;
         while(clientSocket == null)
-            clientSocket = socksv4SendRequest("192.99.168.235", 10000, tor_host, tor_port);
+            clientSocket = socksv4SendRequest("192.99.168.235", 10004, tor_host, tor_port);
                 
-        clientSocket.setReceiveBufferSize(tor_buffer_size);
-        clientSocket.setSendBufferSize(tor_buffer_size);
         OutputStream out = clientSocket.getOutputStream();
-        
+        InputStream in = clientSocket.getInputStream();
+
         byte[] message = new byte[tor_buffer_size];
+        byte[] rcv = new byte[tor_buffer_size];
+
         while(true){
             out.write(message);
             out.flush();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            int i = in.read(rcv);
+            System.out.print(i);
+            in.read(rcv);
+            System.out.print(" " + i);
+            in.read(rcv);
+            System.out.print(" " + i);
+            in.read(rcv);
+            System.out.print(" " + i);
+            System.out.println();
         }    
     }
 
@@ -120,6 +125,7 @@ public class ChaffClient {
             }
             return done;
         } catch (IOException e) {
+            e.printStackTrace();
         } catch (InterruptedException e) {}
         return false;
     }

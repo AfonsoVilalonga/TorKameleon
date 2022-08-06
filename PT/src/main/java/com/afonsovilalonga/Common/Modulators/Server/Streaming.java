@@ -9,6 +9,8 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.java_websocket.WebSocket;
 
@@ -35,36 +37,40 @@ public class Streaming implements ModulatorServerInterface{
         Config config = Config.getInstance();
         
         try {
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
 
             byte[] send = new byte[config.getPTBufferSize()];
             byte[] recv = new byte[config.getPTBufferSize()];
 
-            Thread thread_sender = new Thread(){
-                public void run(){
-                    try {
-                        int i = 0;
-                        while ((i = in_Tor.read(send)) != -1) {
-                            WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_conn);         
-                        }
-                    } catch (Exception e) {}
+            
+            executor.execute(() -> {
+                try {
+                    int i = 0;
+                    while (true) {
+                        i = in_Tor.read(send);
+                        WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_conn);         
+                    }
+                } catch (Exception e) {
                 }
-            };
-            thread_sender.start();
+                System.exit(-1);
+            });
 
-            Thread thread_receiver = new Thread(){
-                public void run(){
-                    try {
-                        int i = 0;
-                        while ((i = pin.read(recv)) != -1) {
-                            out_tor.write(recv, 0, i);
-                            out_tor.flush();            
-                        }
-                    } catch (Exception e) {}
+                  
+            executor.execute(() -> {
+                try {
+                    int i = 0;
+                    while (true) {
+                        i = pin.read(recv);
+                        out_tor.write(recv, 0, i);
+                        out_tor.flush();            
+                    }
+                } catch (Exception e) {
                 }
-            };
-            thread_receiver.start();
+                System.exit(-1);
+            });
         } catch (IOException e) {}
     }
 

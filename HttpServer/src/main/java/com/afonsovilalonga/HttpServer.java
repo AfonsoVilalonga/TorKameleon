@@ -3,6 +3,7 @@ package com.afonsovilalonga;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +24,7 @@ public class HttpServer {
         new Thread(() -> {
             ExecutorService executor = null;
             try (ServerSocket ss = new ServerSocket(PORT)) {
-                executor = Executors.newFixedThreadPool(50);
+                executor = Executors.newFixedThreadPool(25);
                 System.out.println("Http server ready at port " + PORT + " waiting for request ...");
                 while (true) {
                     Socket clientSock = ss.accept();
@@ -79,27 +80,25 @@ public class HttpServer {
         new Thread(() -> {
             ExecutorService executor = null;
             try (ServerSocket ss = new ServerSocket(ECHO_PORT)) {
-                executor = Executors.newFixedThreadPool(5);
+                executor = Executors.newFixedThreadPool(25);
                 System.out.println("Http server ready at port " + ECHO_PORT + " waiting for request ...");
                 while (true) {
                     Socket clientSock = ss.accept();
-                    System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
-                    // repeatedly wait for connections, and process
-
-                    // open up IO streams
                     InputStream in = clientSock.getInputStream();
-                    OutputStream out = clientSock.getOutputStream();
 
-                    // waits for data and reads it in until connection dies
-                    // readLine() blocks until the server receives a new line from client
-                    int n;
-                    byte[] buffer = new byte[clientSock.getReceiveBufferSize()];
-                    while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                    }
-                    // close IO streams, then socket
-                    System.err.println("Closing connection with client");
-                    in.close();
-                    clientSock.close();
+                    System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
+
+                    executor.execute(()->{
+                        byte[] buffer;
+                        try {
+                            buffer = new byte[clientSock.getReceiveBufferSize()];
+                            while ((in.read(buffer, 0, buffer.length)) >= 0) {}
+                            // close IO streams, then socket
+                            in.close();
+                            clientSock.close();
+                        } catch (IOException e) {}
+                    });
+                    
                 }
             } catch (IOException ioe) {
                 System.err.println("Cannot open the port on TCP");

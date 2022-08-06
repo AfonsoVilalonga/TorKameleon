@@ -10,6 +10,8 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.net.ssl.SSLSocket;
 
@@ -27,11 +29,9 @@ import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.google.common.base.Supplier;
 
-
-public class Streaming implements ModulatorClientInterface{
+public class Streaming implements ModulatorClientInterface {
     private static final int RETRIES = 35;
     private static final int SLEEP_TIME = 1000;
-
 
     private SSLSocket bridge_conn;
     private Socket tor_socket;
@@ -42,17 +42,18 @@ public class Streaming implements ModulatorClientInterface{
 
     private PipedInputStream pin;
     private PipedOutputStream pout;
-    
+
     public Streaming(Socket tor_socket, WebSocketWrapperPT web_server) {
         this.tor_socket = tor_socket;
         this.web_server = web_server;
         this.pin = new PipedInputStream();
         this.pout = new PipedOutputStream();
-        
+
         try {
             pout.connect(pin);
-        } catch (IOException e) {}
-        
+        } catch (IOException e) {
+        }
+
         this.browser = null;
         this.bridge_sock = null;
     }
@@ -62,28 +63,29 @@ public class Streaming implements ModulatorClientInterface{
         boolean can_connect = reTry(() -> connectToBridge(host, port));
         Config config = Config.getInstance();
 
-        if(can_connect){
+        if (can_connect) {
             try {
-                //Wait for bridge to start up streaming protocol
+                // Wait for bridge to start up streaming protocol
                 InitializationPT.bridge_protocol_client_side(bridge_conn, mod);
 
                 CountDownLatch connectionWaiter = new CountDownLatch(1);
                 web_server.setMutexAndWaitConn(connectionWaiter);
 
                 ChromeOptions option = new ChromeOptions();
-                option.setAcceptInsecureCerts(true);            
-                
+                option.setAcceptInsecureCerts(true);
+
                 option.addArguments("--log-level=3");
                 option.addArguments("--silent");
                 option.addArguments("--no-sandbox");
 
-                if(!config.getWatchVideo().equals("pt-client"))
+                if (!config.getWatchVideo().equals("pt-client"))
                     option.addArguments("headless");
 
                 browser = new ChromeDriver(option);
                 browser.get("http://localhost:" + config.getClientPortStreaming() + "/?bridge=0");
 
-                //Wait for connection between local browser running client side webrtc and java websocket server
+                // Wait for connection between local browser running client side webrtc and java
+                // websocket server
                 try {
                     connectionWaiter.await();
                 } catch (InterruptedException e) {
@@ -93,7 +95,7 @@ public class Streaming implements ModulatorClientInterface{
                 bridge_sock = web_server.getLaSocket();
                 web_server.setPipe(pout, bridge_sock);
 
-                //everthing ready to start sending tor traffic
+                // everthing ready to start sending tor traffic
                 s.sendSocksResponseAccepted();
 
                 try {
@@ -112,8 +114,7 @@ public class Streaming implements ModulatorClientInterface{
                 s.sendSocksResponseRejected(SocksProtocol.CONN_NOT_ALLOWED);
                 return false;
             }
-        }
-        else{
+        } else {
             s.sendSocksResponseRejected(SocksProtocol.CONN_NOT_ALLOWED);
             return false;
         }
@@ -125,38 +126,38 @@ public class Streaming implements ModulatorClientInterface{
         Config config = Config.getInstance();
 
         try {
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+
             DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
             DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
-            
+
             byte[] send = new byte[config.getPTBufferSize()];
             byte[] recv = new byte[config.getPTBufferSize()];
 
-            Thread thread_sender = new Thread(){
-                public void run(){
-                    try {
-                        int i = 0;
-                        while ((i = in_Tor.read(send)) != -1) {
-                            WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);            
-                        }
-                    } catch (Exception e) {}
-                    System.exit(-1);
+            executor.execute(() -> {
+                try {
+                    int i = 0;
+                    while (true) {
+                        i = in_Tor.read(send);
+                        WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);
+                    }
+                } catch (Exception e) {
                 }
-            };
-            thread_sender.start();
+                System.exit(-1);
+            });
 
-            Thread thread_receiver = new Thread(){
-                public void run(){
-                    try {
-                        int i = 0;
-                        while ((i = pin.read(recv)) != -1) {
-                            out_tor.write(recv, 0, i);
-                            out_tor.flush();            
-                        }
-                    } catch (Exception e) {}
-                    System.exit(-1);
+            executor.execute(() -> {
+                try {
+                    int i = 0;
+                    while (true) {
+                        i = pin.read(recv);
+                        out_tor.write(recv, 0, i);
+                        out_tor.flush();
+                    }
+                } catch (Exception e) {
                 }
-            };
-            thread_receiver.start();
+                System.exit(-1);
+            });
         } catch (IOException e) {
             System.exit(-1);
         }
@@ -184,18 +185,19 @@ public class Streaming implements ModulatorClientInterface{
             e.printStackTrace();
         }
         return false;
-    }    
+    }
 
     private <T> boolean reTry(Supplier<Boolean> func) {
         for (int i = 0; i < RETRIES; i++) {
             boolean result = func.get();
 
-            if(result)
+            if (result)
                 return result;
-            
+
             try {
                 Thread.sleep(SLEEP_TIME);
-            } catch (InterruptedException e1) {}
+            } catch (InterruptedException e1) {
+            }
         }
         return false;
     }

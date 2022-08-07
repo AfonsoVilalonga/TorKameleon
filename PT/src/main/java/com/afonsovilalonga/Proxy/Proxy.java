@@ -11,7 +11,6 @@ import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
-import com.afonsovilalonga.Proxy.Utils.Http;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.java_websocket.WebSocket;
@@ -288,31 +287,47 @@ public class Proxy {
             int stunnel_iperf = config.getStunnel_iperf();
 
             InputStream in = serverSocket.getInputStream();
+            OutputStream out = serverSocket.getOutputStream();
 
             byte[] buffer = new byte[tor_buffer_size];
             String my_address = local_host;
 
             String[] addr_array = bypassAddress.split("-");
+            ExecutorService executor;
 
             if (addr_array[0].equals(my_address)) {
-                Socket clientSocket = SocksProtocol.sendRequest((byte) 0x04, remote_host, 9999, tor_host, tor_port);
-                clientSocket.setReceiveBufferSize(tor_buffer_size);
-                clientSocket.setSendBufferSize(tor_buffer_size);
-                OutputStream out = clientSocket.getOutputStream();
+                Socket clientSocket = SocksProtocol.sendRequest((byte) 0x04, remote_host, 10005, tor_host, tor_port);
+                OutputStream out_tor = clientSocket.getOutputStream();
                 InputStream in_tor = clientSocket.getInputStream();
-                out.flush();
+                out_tor.flush();
+                
+                executor = Executors.newFixedThreadPool(2);
+                
+                executor.execute(()->{
+                    try {
+                        int n = 0;
+                        while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
+                            out_tor.write(buffer, 0 , n);
+                            out_tor.flush();
+                        }
+                        out_tor.close();
+                        in.close();
+                    } catch (IOException e) {}
+                });
 
-                int n;
-                while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                    out.write(buffer, 0, n);
-                }
+                executor.execute(()->{
+                    try {
+                        int n = 0;
+                        while ((n = in_tor.read(buffer, 0, buffer.length)) >= 0) {
+                            out.write(buffer, 0 , n);
+                            out.flush();
+                        }
+                        in_tor.close();
+                        out.flush();
+                    } catch (IOException e) {}
+          
+                });
 
-                while((n = in_tor.read(buffer, 0, buffer.length)) >= 0){
-                    System.out.println(n);
-                }
-                //out.write("\r\n\r\n".getBytes());
-                out.flush();
-                //clientSocket.close();
             } else {
                 if (addr_array[1].equals("s")) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -330,16 +345,16 @@ public class Proxy {
                     SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
                     SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], stunnel_iperf);
                     socket.startHandshake();
-                    OutputStream out = socket.getOutputStream();
-                    out.flush();
+                    OutputStream out_aux = socket.getOutputStream();
+                    out_aux.flush();
 
                     int n;
                     while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
                         System.err.println("sending iperf to" + bypassAddress + ":" + new String(buffer));
-                        out.write(buffer, 0, n);
+                        out_aux.write(buffer, 0, n);
                         Thread.sleep(5); // Avoid traffic congestion
                     }
-                    out.flush();
+                    out_aux.flush();
                     socket.close();
                 }
             }

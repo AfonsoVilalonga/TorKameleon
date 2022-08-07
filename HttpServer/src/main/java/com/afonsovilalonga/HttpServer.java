@@ -153,6 +153,65 @@ public class HttpServer {
                 }
             }
         }).start();
+
+        new Thread(() -> {
+            ExecutorService executor = null;
+            try (ServerSocket ss = new ServerSocket(10005)) {
+                executor = Executors.newFixedThreadPool(25);
+                while (true) {
+                    Socket clientSock = ss.accept();
+                    InputStream in = clientSock.getInputStream();
+                    OutputStream out = clientSock.getOutputStream();
+                    
+                    Socket iperf = new Socket("localhost", 5201);
+                    OutputStream out_perf = iperf.getOutputStream();
+                    InputStream in_perf = iperf.getInputStream();
+                    
+                    System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
+
+                    executor.execute(()->{
+                        byte[] buffer;
+                        try {
+                            int n = 0;
+                            buffer = new byte[clientSock.getSendBufferSize()];
+                            while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
+                                out_perf.write(buffer, 0 , n);
+                                out_perf.flush();
+                                System.out.println(n);
+                            }
+                            // close IO streams, then socket
+                            out_perf.close();
+                            in.close();
+                        } catch (IOException e) {}
+                    });
+
+                    executor.execute(()->{
+                        byte[] buffer;
+                        try {
+                            int n = 0;
+                            buffer = new byte[clientSock.getSendBufferSize()];
+                            while ((n = in_perf.read(buffer, 0, buffer.length)) >= 0) {
+                                out.write(buffer, 0 , n);
+                                out.flush();
+                                System.out.println(n);
+                            }
+                            // close IO streams, then socket
+                            out.close();
+                            in_perf.close();
+                        } catch (IOException e) {}
+                    });
+                }
+            } catch (IOException ioe) {
+                System.err.println("Cannot open the port on TCP");
+                ioe.printStackTrace();
+            } finally {
+                System.out.println("Closing TCP server");
+                if (executor != null) {
+                    executor.shutdown();
+                }
+            }
+        }).start();
+
     }
 
 

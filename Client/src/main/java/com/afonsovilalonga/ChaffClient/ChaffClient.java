@@ -31,7 +31,7 @@ public class ChaffClient {
     public void torRequest() throws IOException {
         String tor_host = "localhost";
         int tor_port = 9050;
-        int tor_buffer_size = 512;
+        int tor_buffer_size = 514;
 
         Socket clientSocket = null;
         while(clientSocket == null)

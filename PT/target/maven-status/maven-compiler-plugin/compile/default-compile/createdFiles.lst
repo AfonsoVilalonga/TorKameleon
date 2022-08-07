@@ -21,7 +21,6 @@ com/afonsovilalonga/PluggableTransport/Server/ServerReqConnection.class
 com/afonsovilalonga/Proxy/Proxy$1.class
 com/afonsovilalonga/Proxy/Utils/DTLSOverDatagram.class
 com/afonsovilalonga/Common/Utils/Utilities.class
-com/afonsovilalonga/Common/Modulators/ModulatorTop.class
 com/afonsovilalonga/Common/ObserversCleanup/Observer.class
 com/afonsovilalonga/Common/Modulators/ModulatorServerInterface.class
 com/afonsovilalonga/Solution.class

@@ -299,15 +299,20 @@ public class Proxy {
                 clientSocket.setReceiveBufferSize(tor_buffer_size);
                 clientSocket.setSendBufferSize(tor_buffer_size);
                 OutputStream out = clientSocket.getOutputStream();
+                InputStream in_tor = clientSocket.getInputStream();
                 out.flush();
 
                 int n;
                 while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
                     out.write(buffer, 0, n);
                 }
-                out.write("\r\n\r\n".getBytes());
+
+                while((n = in_tor.read(buffer, 0, buffer.length)) >= 0){
+                    System.out.println(n);
+                }
+                //out.write("\r\n\r\n".getBytes());
                 out.flush();
-                clientSocket.close();
+                //clientSocket.close();
             } else {
                 if (addr_array[1].equals("s")) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();

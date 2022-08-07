@@ -5,7 +5,7 @@ window.webrtc = {
       username: "test",
       credential: "test123",
       urls: [
-         "turn:54.38.65.236:3478"
+         "turn:54.38.65.236:3478?transport=tcp"
       ]
    }],
      

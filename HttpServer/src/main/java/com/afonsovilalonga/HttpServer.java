@@ -177,7 +177,6 @@ public class HttpServer {
                             while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
                                 out_perf.write(buffer, 0 , n);
                                 out_perf.flush();
-                                System.out.println(n);
                             }
                             // close IO streams, then socket
                             out_perf.close();
@@ -193,7 +192,6 @@ public class HttpServer {
                             while ((n = in_perf.read(buffer, 0, buffer.length)) >= 0) {
                                 out.write(buffer, 0 , n);
                                 out.flush();
-                                System.out.println(n);
                             }
                             // close IO streams, then socket
                             out.close();

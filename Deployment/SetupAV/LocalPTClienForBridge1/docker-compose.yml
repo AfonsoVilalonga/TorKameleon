@@ -10,9 +10,11 @@ services:
     command: bash -c "cp /code/Deployment/SetupAV/LocalPTClienForBridge1/config.properties /code/PT/Config/config.properties &&
                       cp /code/Deployment/SetupAV/LocalPTClienForBridge1/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
                       cd /code/PT/target && 
-                      java -jar proxy-jar-with-dependencies.jar pt-proxy &
+                      java -jar proxy-jar-with-dependencies.jar pt-client &
                       sleep 3 &&
-                      tor"
+                      tor &
+                      cd /code/Client/target &&
+                      java -jar client-1.0-SNAPSHOT-jar-with-dependencies.jar ping"
 
 
              

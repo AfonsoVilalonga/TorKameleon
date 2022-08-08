@@ -23,7 +23,7 @@ public class HttpServer {
         new Thread(() -> {
             ExecutorService executor = null;
             try (ServerSocket ss = new ServerSocket(PORT)) {
-                executor = Executors.newFixedThreadPool(25);
+                executor = Executors.newFixedThreadPool(15);
                 System.out.println("Http server ready at port " + PORT + " waiting for request ...");
                 while (true) {
                     Socket clientSock = ss.accept();
@@ -52,7 +52,7 @@ public class HttpServer {
         new Thread(() -> {
             ExecutorService executor = null;
             try (ServerSocket ss = new ServerSocket(TEST_PORT)) {
-                executor = Executors.newFixedThreadPool(5);
+                executor = Executors.newFixedThreadPool(1);
                 System.out.println("Http server ready at port " + TEST_PORT + " waiting for request ...");
                 while (true) {
                     Socket clientSock = ss.accept();
@@ -157,7 +157,7 @@ public class HttpServer {
         new Thread(() -> {
             ExecutorService executor = null;
             try (ServerSocket ss = new ServerSocket(10005)) {
-                executor = Executors.newFixedThreadPool(25);
+                executor = Executors.newFixedThreadPool(2);
                 while (true) {
                     Socket clientSock = ss.accept();
                     InputStream in = clientSock.getInputStream();

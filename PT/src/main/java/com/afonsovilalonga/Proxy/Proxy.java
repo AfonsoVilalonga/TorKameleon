@@ -12,8 +12,6 @@ import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
 
-import io.netty.util.internal.SystemPropertyUtil;
-
 import org.openqa.selenium.JavascriptExecutor;
 import org.java_websocket.WebSocket;
 

@@ -3,6 +3,7 @@ package com.afonsovilalonga;
 import com.afonsovilalonga.AutomatedClient.AutomatedClient;
 import com.afonsovilalonga.AutomatedClient.Injector;
 import com.afonsovilalonga.ChaffClient.ChaffClient;
+import com.afonsovilalonga.Httping.Ping;
 import com.afonsovilalonga.InteractiveClient.InteractiveClient;
 import com.afonsovilalonga.Utils.Config;
 
@@ -37,6 +38,8 @@ public class Client {
             }
         } else if(args[0].equals("chaff")){
             new ChaffClient();
+        } else if(args[0].equals("ping")){
+            new Ping();
         }
         else{
             System.out.println("Invalid arguments: interactive or async x (where x is the number of threads to spawn) or async/notimer protocol file x (where x is the number of threads to spawn) y (where y is the number of requests per thread)");

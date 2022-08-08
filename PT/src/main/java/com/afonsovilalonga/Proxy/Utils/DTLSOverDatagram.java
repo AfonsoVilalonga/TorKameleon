@@ -264,7 +264,7 @@ public class DTLSOverDatagram {
             socket.receive(packet);
             ByteBuffer netBuffer = ByteBuffer.wrap(buf, 0, packet.getLength());
             ByteBuffer recBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-            SSLEngineResult rs = engine.unwrap(netBuffer, recBuffer);
+            engine.unwrap(netBuffer, recBuffer);
             recBuffer.flip();
             if (recBuffer.remaining() != 0) {
                 return new String(recBuffer.array(), StandardCharsets.UTF_8);
@@ -379,7 +379,7 @@ public class DTLSOverDatagram {
 
     private void createPacket(SSLEngine engine, SocketAddress socketAddr, List<DatagramPacket> packets, byte[] sendData) throws SSLException {
         ByteBuffer appNet = ByteBuffer.allocateDirect(engine.getSession().getPacketBufferSize());
-        SSLEngineResult r = engine.wrap(ByteBuffer.wrap(sendData), appNet);
+        engine.wrap(ByteBuffer.wrap(sendData), appNet);
         appNet.flip();
 
         byte[] ba = new byte[appNet.remaining()];

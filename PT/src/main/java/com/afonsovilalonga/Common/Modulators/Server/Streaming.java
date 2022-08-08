@@ -1,10 +1,8 @@
 package com.afonsovilalonga.Common.Modulators.Server;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.Socket;
@@ -39,8 +37,8 @@ public class Streaming implements ModulatorServerInterface{
         try {
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
-            DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
-            DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
+            InputStream in_Tor = tor_socket.getInputStream();
+            OutputStream out_tor = tor_socket.getOutputStream();
 
             byte[] send = new byte[config.getPTBufferSize()];
             byte[] recv = new byte[config.getPTBufferSize()];

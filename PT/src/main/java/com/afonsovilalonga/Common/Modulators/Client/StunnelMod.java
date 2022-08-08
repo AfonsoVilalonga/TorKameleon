@@ -1,10 +1,8 @@
 package com.afonsovilalonga.Common.Modulators.Client;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,12 +58,14 @@ public class StunnelMod implements ModulatorClientInterface {
         try {
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
-            DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
-            DataOutputStream out_Tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
+            InputStream in_Tor = tor_socket.getInputStream();
+            OutputStream out_Tor = tor_socket.getOutputStream();
 
-            DataInputStream in_stunnel = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
-            DataOutputStream out_stunnel = new DataOutputStream(
-                    new BufferedOutputStream(bridge_conn.getOutputStream()));
+            InputStream in_stunnel = bridge_conn.getInputStream();
+            OutputStream out_stunnel = bridge_conn.getOutputStream();
+
+            tor_socket.setTcpNoDelay(true);
+            bridge_conn.setTcpNoDelay(true);
 
             byte[] recv = new byte[config.getPTBufferSize()];
             byte[] send = new byte[config.getPTBufferSize()];
@@ -73,8 +73,7 @@ public class StunnelMod implements ModulatorClientInterface {
             executor.execute(() -> {
                 try {
                     int i = 1;
-                    while (true) {
-                        i = in_Tor.read(send);
+                    while ((i = in_Tor.read(send)) >= 0) {
                         out_stunnel.write(send, 0, i);
                         out_stunnel.flush();
                     }
@@ -86,8 +85,7 @@ public class StunnelMod implements ModulatorClientInterface {
             executor.execute(() -> {
                 try {
                     int i = 1;
-                    while (true) {
-                        i = in_stunnel.read(recv);
+                    while ((i = in_stunnel.read(recv)) >= 0) {
                         out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }

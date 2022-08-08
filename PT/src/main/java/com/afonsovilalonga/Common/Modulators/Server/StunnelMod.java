@@ -1,11 +1,10 @@
 package com.afonsovilalonga.Common.Modulators.Server;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,15 +28,16 @@ public class StunnelMod implements ModulatorServerInterface {
         try {
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
-            DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
-            DataOutputStream out_Tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
+            InputStream in_Tor = tor_socket.getInputStream();
+            OutputStream out_Tor = tor_socket.getOutputStream();
 
-            DataInputStream in_stunnel = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
-            DataOutputStream out_stunnel = new DataOutputStream(
-                    new BufferedOutputStream(bridge_conn.getOutputStream()));
+            InputStream in_stunnel = bridge_conn.getInputStream();
+            OutputStream out_stunnel = bridge_conn.getOutputStream();
 
             byte[] recv = new byte[config.getPTBufferSize()];
             byte[] send = new byte[config.getPTBufferSize()];
+
+            CountDownLatch latch = new CountDownLatch(2);
 
             executor.execute(() -> {
                 try {
@@ -47,8 +47,9 @@ public class StunnelMod implements ModulatorServerInterface {
                         out_stunnel.write(send, 0, i);
                         out_stunnel.flush();
                     }
-                } catch (Exception e) {
-                }
+                   
+                } catch (Exception e) {}
+                latch.countDown();
             });
 
             executor.execute(() -> {
@@ -59,11 +60,16 @@ public class StunnelMod implements ModulatorServerInterface {
                         out_Tor.write(recv, 0, i);
                         out_Tor.flush();
                     }
-                } catch (Exception e) {
-                }
+                } catch (Exception e) {}
+                latch.countDown();
             });
-        } catch (IOException e) {
-        }
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {}
     }
 
     @Override

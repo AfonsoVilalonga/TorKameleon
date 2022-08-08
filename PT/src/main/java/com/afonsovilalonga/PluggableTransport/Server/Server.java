@@ -72,7 +72,6 @@ public class Server {
                 System.out.println("Waiting for a user connection.");
 
                 Socket conn = conns.accept();     
-                conn.setSoTimeout(10000);
 
                 byte modByte = InitializationPT.bridge_protocol_server_side(conn);
                 String mod = InitializationPT.mapper(modByte);
@@ -87,13 +86,18 @@ public class Server {
                     else if (mod.equals("streaming")) 
                         copyloop = this.streamingMode(tor_sock, id);
                     
+                    if(!mod.equals("streaming"))
+                        InitializationPT.bridge_protocol_server_side_send_ack(conn, modByte);
+                    
                     Thread copyloop_thread = new Thread(copyloop);
                     copyloop_thread.start();
 
                     ServerReqConnection req = new ServerReqConnection(copyloop);
                     running_conns.add(req);
 
-                    InitializationPT.bridge_protocol_server_side_send_ack(conn, modByte);
+                    if(mod.equals("streaming"))
+                        InitializationPT.bridge_protocol_server_side_send_ack(conn, modByte);
+                   
                 }
 
             } catch (IOException e) {}
@@ -113,10 +117,13 @@ public class Server {
     }
 
     private Socket connectToTor(String pt_host, int or_port) {
-        if (!bootstraped && !InitializationPT.tor_init(1000)) {
-            System.err.println("Could not connect to Tor.");
-            System.err.println("Exiting...");
-            System.exit(-1);
+        if (!bootstraped) {
+            if(!InitializationPT.tor_init(1000)){
+                System.err.println("Could not connect to Tor.");
+                System.err.println("Exiting...");
+                System.exit(-1);
+            }
+            bootstraped = true;
         }
 
         try {
@@ -130,9 +137,6 @@ public class Server {
     }
 
     private ModulatorServerInterface streamingMode(Socket tor_sock, String id){
-        //byte modWebRTCByte = InitializationPT.bridge_protocol_server_side(conn);
-        //String webrtcMode = InitializationPT.mapper(modWebRTCByte);
-        
         PipedInputStream pin = new PipedInputStream();
         PipedOutputStream pout = new PipedOutputStream();
 

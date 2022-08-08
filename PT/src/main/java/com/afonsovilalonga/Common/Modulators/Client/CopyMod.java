@@ -1,10 +1,8 @@
 package com.afonsovilalonga.Common.Modulators.Client;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,11 +55,11 @@ public class CopyMod implements ModulatorClientInterface {
         try {
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
-            DataInputStream in_pt = new DataInputStream(new BufferedInputStream(bridge_conn.getInputStream()));
-            DataOutputStream out_pt = new DataOutputStream(new BufferedOutputStream(bridge_conn.getOutputStream()));
+            InputStream in_pt = bridge_conn.getInputStream();
+            OutputStream out_pt = bridge_conn.getOutputStream();
 
-            DataInputStream in_Tor = new DataInputStream(new BufferedInputStream(tor_socket.getInputStream()));
-            DataOutputStream out_Tor = new DataOutputStream(new BufferedOutputStream(tor_socket.getOutputStream()));
+            InputStream in_Tor = tor_socket.getInputStream();
+            OutputStream out_Tor = tor_socket.getOutputStream();
 
             byte[] recv = new byte[config.getPTBufferSize()];
             byte[] send = new byte[config.getPTBufferSize()];

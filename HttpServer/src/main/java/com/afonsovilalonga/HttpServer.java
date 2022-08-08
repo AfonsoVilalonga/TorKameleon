@@ -173,7 +173,7 @@ public class HttpServer {
                         byte[] buffer;
                         try {
                             int n = 0;
-                            buffer = new byte[clientSock.getSendBufferSize()];
+                            buffer = new byte[514];
                             while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
                                 out_perf.write(buffer, 0 , n);
                                 out_perf.flush();

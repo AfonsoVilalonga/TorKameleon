@@ -12,6 +12,8 @@ import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
 
+import io.netty.util.internal.SystemPropertyUtil;
+
 import org.openqa.selenium.JavascriptExecutor;
 import org.java_websocket.WebSocket;
 
@@ -165,8 +167,10 @@ public class Proxy {
                 System.out.println("Iperf proxy is listening on port " + test_port_iperf);
                 while (true) {
                     Socket socket = serverSocket.accept();
-                    executor.execute(() -> measureTestIperf(socket));
-                    socket.close();
+                    executor.execute(() -> {
+                        measureTestIperf(socket);
+                    });
+             
                 }
             } catch (IOException ex) {
                 System.out.println("Iperf exception: " + ex.getMessage());
@@ -327,7 +331,7 @@ public class Proxy {
                     } catch (IOException e) {}
           
                 });
-
+                
             } else {
                 if (addr_array[1].equals("s")) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();

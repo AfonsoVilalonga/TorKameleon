@@ -68,7 +68,6 @@ public class Ping {
     }
 
     public void iperf(Socket socket, Socket tor_sock, int l) throws IOException {
-        System.out.println(tor_sock);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         
         OutputStream out = socket.getOutputStream();
@@ -77,34 +76,50 @@ public class Ping {
         OutputStream out_tor = tor_sock.getOutputStream();
         InputStream in_tor = tor_sock.getInputStream();
 
+
+
         executorService.execute(() -> {
             int b = 0;
-            byte[] rcv = new byte[514];
+            byte[] rcv = new byte[2048];
             try {
 				while((b = in.read(rcv)) > 0){
 				    out_tor.write(rcv,0,b);
-                    out.flush();
-                    System.out.println(b + " b " + l);
+                    //out.flush();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-                System.out.println(l);
 			}
+
+            try {
+                socket.close();
+                tor_sock.close();    
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         });
 
         executorService.execute(() -> {
             int n = 0;
-            byte[] buffer = new byte[514];
+            byte[] buffer = new byte[2048];
             
             try {
 				while((n = in_tor.read(buffer)) > 0){
 				    out.write(buffer,0,n);
-                    out.flush();
-                    System.out.println(n + " n " + l);
+                    //out.flush();
 				}
 			} catch (IOException e) {
                 e.printStackTrace();
-			}    
+			}
+            try {
+                socket.close();
+                tor_sock.close();   
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+ 
         });
         
     }

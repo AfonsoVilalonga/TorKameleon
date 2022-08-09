@@ -3,7 +3,7 @@ package com.afonsovilalonga;
 import com.afonsovilalonga.AutomatedClient.AutomatedClient;
 import com.afonsovilalonga.AutomatedClient.Injector;
 import com.afonsovilalonga.ChaffClient.ChaffClient;
-import com.afonsovilalonga.Httping.Ping;
+import com.afonsovilalonga.HttpingIperf.Ping;
 import com.afonsovilalonga.InteractiveClient.InteractiveClient;
 import com.afonsovilalonga.Utils.Config;
 

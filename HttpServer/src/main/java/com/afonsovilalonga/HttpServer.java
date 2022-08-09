@@ -121,7 +121,6 @@ public class HttpServer {
                     OutputStream out = clientSock.getOutputStream();
 
                     System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
-
                     executor.execute(()->{
                         byte[] buffer;
                         try {

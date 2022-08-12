@@ -1,5 +1,9 @@
 package com.afonsovilalonga.AutomatedClient;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,6 +24,13 @@ import com.afonsovilalonga.Utils.Stats;
 
 public class Injector implements Runnable{
     
+
+    public static final byte VERSION_4 = 0x04;
+    public static final byte VERSION_RESP = 0x00;
+    public static final byte RESP_GRANTED = 0x5a;
+    public static final byte TCP_STREAM = 0x01;
+    
+
     private String file;
     private String protocol;
     private int num_reqs;
@@ -36,6 +47,8 @@ public class Injector implements Runnable{
     @Override
     public void run() {
         try {
+            System.out.println("oi");
+            while(!tor_init(1000));
             executeCommand();
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,6 +56,8 @@ public class Injector implements Runnable{
     }
 
     private void executeCommand() throws Exception {
+        String tor_host = "localhost";
+        int tor_port = 9050;
         Config config = Config.getInstance();
         String remote_host = config.get_remote_host();
         int remote_port_secure = config.getRemote_port_secure();
@@ -50,13 +65,12 @@ public class Injector implements Runnable{
 
         switch (protocol.toLowerCase()) {
             case "tcp":
-                for(int i = 0; i < num_reqs; i++){
-                    Socket tcp_socket = new Socket(remote_host, remote_port_unsecure);
-                    do_TCP_TLS(tcp_socket, file);
-                    tcp_socket.close();
+                Socket tcp_socket = socksv4SendRequest("192.99.168.235", 10002, tor_host, tor_port);
+                OutputStream out = tcp_socket.getOutputStream();
+                InputStream in = tcp_socket.getInputStream();
+                for(;;){
+                    do_TCP_TLS(out, in, file);
                 }
-               
-                break;
             case "tls":
                 for(int i = 0; i < num_reqs; i++){
                     Socket tls_socket = getSecureSocket(remote_host, remote_port_secure);
@@ -91,15 +105,38 @@ public class Injector implements Runnable{
         return socket;
     }
 
-    private static void do_TCP_TLS(Socket socket, String path) throws IOException {
-        OutputStream out = socket.getOutputStream();
-        InputStream in = socket.getInputStream();
+    private static void do_TCP_TLS(OutputStream out, InputStream in, String path) throws IOException {
         Stats stats = new Stats();
 
+        out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
+        byte[] size_buff = new byte[4]; 
+        in.read(size_buff);
+        ByteBuffer wrapper = ByteBuffer.wrap(size_buff);
+        int size = wrapper.getInt();
+
+        int recv = 0;
+        int n = 0;
+        byte[] buffer = new byte[BUF_SIZE];
+
+        System.out.println(size);
+
+        while ((n = in.read(buffer, 0, buffer.length)) != -1 && recv != size) {
+            recv += n;
+            stats.newRequest(n);
+            //System.out.write(buffer, 0, n);
+        }
+        stats.printReport();
+    }
+
+    private static void do_TCP_TLS(Socket socket, String path) throws IOException {
+        Stats stats = new Stats();
+        OutputStream out = socket.getOutputStream();
+        InputStream in = socket.getInputStream();
         out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
 
         int n = 0;
         byte[] buffer = new byte[BUF_SIZE];
+
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {
             stats.newRequest(n);
             //System.out.write(buffer, 0, n);
@@ -160,6 +197,78 @@ public class Injector implements Runnable{
         dtls.handshake(engine, socket, isa, "Client");
         return engine;
     }
+
+    public static boolean tor_init(long sleep) {
+        try (Socket tor = new Socket("localhost", 9051)) {
+            DataOutputStream out_tor = new DataOutputStream(new BufferedOutputStream(tor.getOutputStream()));
+            DataInputStream in_tor = new DataInputStream(new BufferedInputStream(tor.getInputStream()));
+
+            boolean done = false;
+            byte[] recv = new byte[2048];
+
+            while (!done) {
+                out_tor.write("AUTHENTICATE\r\n".getBytes());
+                out_tor.flush();
+
+                in_tor.read(recv);
+
+                out_tor.writeBytes("GETINFO status/bootstrap-phase\r\n");
+                out_tor.flush();
+
+                recv = new byte[2048];
+                in_tor.read(recv);
+
+                String progress = new String(recv);
+
+                if (progress.contains("100"))
+                    done = true;
+                else
+                    Thread.sleep(sleep);
+            }
+            return done;
+        } catch (IOException e) {
+        } catch (InterruptedException e) {}
+        return false;
+    }
+
+
+    private static Socket socksv4SendRequest(String remote_host, int remote_port,  String tor_host, int tor_port){
+        Socket socket = new Socket();   
+        try { 
+            socket.connect(new InetSocketAddress(tor_host, tor_port));
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            
+            out.writeByte(VERSION_4);
+            out.writeByte(TCP_STREAM);
+            out.writeShort((short) remote_port);
+
+            out.writeInt(0x01);
+            out.writeByte(0x00);
+
+            out.write(remote_host.getBytes());
+            out.writeByte(0x00);
+
+            out.flush();
+
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            
+            byte version = in.readByte();
+            byte resp = in.readByte();
+
+            if(version != VERSION_RESP || resp != RESP_GRANTED){
+                socket.close();
+                return null;
+            }
+
+            in.readShort();
+            in.readInt();
+            
+            return socket;
+        } catch (IOException e) {
+        }
+
+        return null;
+    } 
 
 
 }

@@ -89,12 +89,12 @@ public class AutomatedClient implements Runnable{
     }
 
     private static void nextCommandTriggeredTimer() {
-        Config config = Config.getInstance();
-        int command_max_timer = config.get_command_max_timer();
-        int command_min_timer = config.get_command_min_timer();
+        //Config config = Config.getInstance();
+        //int command_max_timer = config.get_command_max_timer();
+        //int command_min_timer = config.get_command_min_timer();
 
         Timer timer = new Timer();
-        int command_timer = (new Random()).nextInt(command_max_timer - command_min_timer) + command_min_timer;
+        //int command_timer = (new Random()).nextInt(command_max_timer - command_min_timer) + command_min_timer;
         timer.schedule(new TimerTask() {
             @Override
             public void run() {

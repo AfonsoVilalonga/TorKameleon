@@ -12,4 +12,5 @@ services:
                       cp /code/Deployment/SetupAV/LocalTirClientForProxy1/network /code/PT/Config/network &&
                       cd /code/PT/target && 
                       java -jar proxy-jar-with-dependencies.jar proxy-client &
+                      sleep 2 &&
                       tor "

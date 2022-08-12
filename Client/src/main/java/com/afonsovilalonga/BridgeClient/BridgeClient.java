@@ -20,6 +20,7 @@ public class BridgeClient {
     
     public BridgeClient(){
         try {
+            while(!tor_init(1000));
             torRequest();
 
         } catch (IOException e) {
@@ -45,14 +46,11 @@ public class BridgeClient {
         while(true){
             out.write(message);
             out.flush();
-
-            int i = in.read(rcv);
-            System.out.print(i);
-            in.read(rcv);
-            System.out.print(" " + i);
-            in.read(rcv);
-            System.out.print(" " + i);
-            in.read(rcv);
+            int i = 0;
+            while(i < 4*1024){
+                int n = in.read(rcv);
+                i += n;
+            }
             System.out.print(" " + i);
             System.out.println();
         }    
@@ -125,7 +123,6 @@ public class BridgeClient {
             }
             return done;
         } catch (IOException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {}
         return false;
     }

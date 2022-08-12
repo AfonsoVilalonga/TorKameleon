@@ -29,12 +29,16 @@ public class HttpServer {
                     Socket clientSock = ss.accept();
                     System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
                     executor.execute(() -> {
-                        processClientRequest(clientSock);
                         try {
-                            clientSock.close();
+                            InputStream in = clientSock.getInputStream();
+                            OutputStream out = clientSock.getOutputStream();
+
+                            while(!clientSock.isClosed())
+                                processClientRequest(in, out);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
                     });
                 
                 }
@@ -152,70 +156,11 @@ public class HttpServer {
                 }
             }
         }).start();
-
-        new Thread(() -> {
-            ExecutorService executor = null;
-            try (ServerSocket ss = new ServerSocket(10005)) {
-                executor = Executors.newFixedThreadPool(2);
-                while (true) {
-                    Socket clientSock = ss.accept();
-                    InputStream in = clientSock.getInputStream();
-                    OutputStream out = clientSock.getOutputStream();
-                    
-                    Socket iperf = new Socket("localhost", 5201);
-                    OutputStream out_perf = iperf.getOutputStream();
-                    InputStream in_perf = iperf.getInputStream();
-                    
-                    System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
-
-                    executor.execute(()->{
-                        byte[] buffer;
-                        try {
-                            int n = 0;
-                            buffer = new byte[514];
-                            while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                                out_perf.write(buffer, 0 , n);
-                                out_perf.flush();
-                            }
-                            // close IO streams, then socket
-                            out_perf.close();
-                            in.close();
-                        } catch (IOException e) {}
-                    });
-
-                    executor.execute(()->{
-                        byte[] buffer;
-                        try {
-                            int n = 0;
-                            buffer = new byte[clientSock.getSendBufferSize()];
-                            while ((n = in_perf.read(buffer, 0, buffer.length)) >= 0) {
-                                out.write(buffer, 0 , n);
-                                out.flush();
-                            }
-                            // close IO streams, then socket
-                            out.close();
-                            in_perf.close();
-                        } catch (IOException e) {}
-                    });
-                }
-            } catch (IOException ioe) {
-                System.err.println("Cannot open the port on TCP");
-                ioe.printStackTrace();
-            } finally {
-                System.out.println("Closing TCP server");
-                if (executor != null) {
-                    executor.shutdown();
-                }
-            }
-        }).start();
-
     }
 
 
-    private static void processClientRequest(Socket socket) {
+    private static void processClientRequest(InputStream in, OutputStream out) {
         try {
-            InputStream in = socket.getInputStream();
-            OutputStream out = socket.getOutputStream();
             String line = Http.readLine(in);
             System.out.println("\nGot: \n\n" + line);
             String[] request = Http.parseHttpRequest(line);
@@ -290,37 +235,41 @@ public class HttpServer {
             // rest is <= still available && <= MAX_BYTES && <= demanded
             long size = rest <= 0 ? 0 : rest; // number of bytes to send
 
-            RandomAccessFile file = new RandomAccessFile(f, "r");
-            StringBuilder header = new StringBuilder();
+            try (RandomAccessFile file = new RandomAccessFile(f, "r")) {
+                StringBuilder header = new StringBuilder();
 
-            if (size == fileSize) {
-                header.append("HTTP/1.0 200 OK\r\n");
-                header.append("Date: ").append(new Date().toString()).append("\r\n");
-                header.append("Server: " + "X-HttpServer" + "\r\n");
-                header.append("Content-type: ").append(getContentType(fileName)).append("\r\n");
-            } else { // there are ranges and something to send
-                header.append("HTTP/1.0 206 Partial Content\r\n");
-                header.append("Date: ").append(new Date().toString()).append("\r\n");
-                header.append("Server: " + "X-HttpServer" + "\r\n");
-                header.append("Content-type: ").append(getContentType(fileName)).append("\r\n");
-                header.append("XAlmost-Accept-Ranges: bytes\r\n");
-                header.append("Content-Range: bytes ").append(size - 1).append("/*\r\n"); // "/"+fileSize+
+                if (size == fileSize) {
+                    header.append("HTTP/1.0 200 OK\r\n");
+                    header.append("Date: ").append(new Date().toString()).append("\r\n");
+                    header.append("Server: " + "X-HttpServer" + "\r\n");
+                    header.append("Content-type: ").append(getContentType(fileName)).append("\r\n");
+                } else { // there are ranges and something to send
+                    header.append("HTTP/1.0 206 Partial Content\r\n");
+                    header.append("Date: ").append(new Date().toString()).append("\r\n");
+                    header.append("Server: " + "X-HttpServer" + "\r\n");
+                    header.append("Content-type: ").append(getContentType(fileName)).append("\r\n");
+                    header.append("XAlmost-Accept-Ranges: bytes\r\n");
+                    header.append("Content-Range: bytes ").append(size - 1).append("/*\r\n"); // "/"+fileSize+
+                }
+                header.append("Content-Length: ").append(size).append(" \r\n\r\n");
+                out.write(header.toString().getBytes().length + (int)size);
+
+                System.out.println(header.toString().getBytes().length + (int)size);
+
+                out.write(header.toString().getBytes());
+                // size > 0 since there is something to send
+                long bufferSize = (size <= 4096) ? size : 4096;
+                byte[] buffer = new byte[(int) bufferSize];
+                int totalSent = 0;
+                for (; ; ) {
+                    int n = file.read(buffer, 0, (int) bufferSize);
+                    if (n == -1) break;
+                    out.write(buffer, 0, n);
+                    totalSent += n;
+                    if (size - totalSent < bufferSize) bufferSize = size - totalSent;
+                    if (bufferSize == 0) break;
+                }
             }
-            header.append("Content-Length: ").append(size).append(" \r\n\r\n");
-            out.write(header.toString().getBytes());
-            // size > 0 since there is something to send
-            long bufferSize = (size <= 4096) ? size : 4096;
-            byte[] buffer = new byte[(int) bufferSize];
-            int totalSent = 0;
-            for (; ; ) {
-                int n = file.read(buffer, 0, (int) bufferSize);
-                if (n == -1) break;
-                out.write(buffer, 0, n);
-                totalSent += n;
-                if (size - totalSent < bufferSize) bufferSize = size - totalSent;
-                if (bufferSize == 0) break;
-            }
-            file.close();
         }
     }
 

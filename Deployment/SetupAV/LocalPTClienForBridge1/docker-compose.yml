@@ -4,17 +4,16 @@ services:
     ports:
       - 1234:1234
       - 10010:10010
+      - 9050:9050
     build: .
     volumes:
       - /home/afonso/Desktop/ThesisCode:/code
     command: bash -c "cp /code/Deployment/SetupAV/LocalPTClienForBridge1/config.properties /code/PT/Config/config.properties &&
                       cp /code/Deployment/SetupAV/LocalPTClienForBridge1/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
                       cd /code/PT/target && 
-                      java -jar proxy-jar-with-dependencies.jar pt-client &
+                      java -jar proxy-jar-with-dependencies.jar pt-proxy &
                       sleep 3 &&
-                      tor &
-                      cd /code/Client/target &&
-                      java -jar client-1.0-SNAPSHOT-jar-with-dependencies.jar ping"
+                      tor"
 
 
              

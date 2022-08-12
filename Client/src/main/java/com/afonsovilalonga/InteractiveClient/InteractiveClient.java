@@ -60,6 +60,7 @@ public class InteractiveClient {
                     dtls_socket.close();
                     break;
             }
+            inFromUser.close();
         }
     }
 

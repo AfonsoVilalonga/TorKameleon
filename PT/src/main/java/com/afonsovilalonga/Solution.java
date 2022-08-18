@@ -86,6 +86,7 @@ public class Solution {
             case "pt-proxy":
                 pt = new PT(web_socket_server);
                 pt.run();
+                System.out.println("oi");
                 new Proxy(web_socket_server);
                 break;
             case "proxy":

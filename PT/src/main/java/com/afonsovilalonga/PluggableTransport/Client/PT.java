@@ -57,7 +57,6 @@ public class PT{
        
         if (!result)
             System.exit(-1);
-
         copyloop.run();
         modulator = copyloop;
     }

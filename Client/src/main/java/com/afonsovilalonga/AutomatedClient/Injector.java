@@ -48,7 +48,9 @@ public class Injector implements Runnable{
     public void run() {
         try {
             System.out.println("oi");
-            while(!tor_init(1000));
+            long start = System.currentTimeMillis();
+            while(!tor_init(500));
+            System.out.println(System.currentTimeMillis()-start);
             executeCommand();
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,10 +67,10 @@ public class Injector implements Runnable{
 
         switch (protocol.toLowerCase()) {
             case "tcp":
-                Socket tcp_socket = socksv4SendRequest("192.99.168.235", 10002, tor_host, tor_port);
-                OutputStream out = tcp_socket.getOutputStream();
-                InputStream in = tcp_socket.getInputStream();
                 for(;;){
+                    Socket tcp_socket = socksv4SendRequest("37.187.198.176", 10002, tor_host, tor_port);
+                    OutputStream out = tcp_socket.getOutputStream();
+                    InputStream in = tcp_socket.getInputStream();
                     do_TCP_TLS(out, in, file);
                 }
             case "tls":
@@ -110,17 +112,14 @@ public class Injector implements Runnable{
 
         out.write(String.format("GET %s HTTP/1.1\r\n\r\n", path).getBytes());
         byte[] size_buff = new byte[4]; 
-        in.read(size_buff);
-        ByteBuffer wrapper = ByteBuffer.wrap(size_buff);
-        int size = wrapper.getInt();
+       
 
         int recv = 0;
         int n = 0;
         byte[] buffer = new byte[BUF_SIZE];
 
-        System.out.println(size);
 
-        while ((n = in.read(buffer, 0, buffer.length)) != -1 && recv != size) {
+        while (recv != 259296 && (n = in.read(buffer, 0, buffer.length)) != -1 ) {
             recv += n;
             stats.newRequest(n);
             //System.out.write(buffer, 0, n);

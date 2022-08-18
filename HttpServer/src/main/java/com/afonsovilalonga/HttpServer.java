@@ -28,19 +28,20 @@ public class HttpServer {
                 while (true) {
                     Socket clientSock = ss.accept();
                     System.err.println("New client ---->" + clientSock.getRemoteSocketAddress());
-                    executor.execute(() -> {
-                        try {
-                            InputStream in = clientSock.getInputStream();
-                            OutputStream out = clientSock.getOutputStream();
 
-                            while(!clientSock.isClosed())
-                                processClientRequest(in, out);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    new Thread(){
+                        public void run(){
+                            try {
+                                InputStream in = clientSock.getInputStream();
+                                OutputStream out = clientSock.getOutputStream();
+    
+                                while(!clientSock.isClosed())
+                                    processClientRequest(in, out);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-
-                    });
-                
+                    }.start();
                 }
             } catch (IOException ioe) {
                 System.err.println("Cannot open the port on TCP");

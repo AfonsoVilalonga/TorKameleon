@@ -27,7 +27,7 @@ public class AutomatedClient implements Runnable{
     public static final List<String> protocols =
             List.of(Config.getInstance().get_protocols().split(",")); // "tls", "udp", "dtls"
 
-    public static String command = "";
+    public static String command = "../Files/large" + SPACE + "tcp";
 
 
     public AutomatedClient(){
@@ -35,7 +35,15 @@ public class AutomatedClient implements Runnable{
 
     @Override
     public void run() {
-        nextCommandTriggeredTimer();
+        while(true){
+            try {
+                executeCommand();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+       // nextCommandTriggeredTimer();
     }
 
     private static void executeCommand() throws Exception {
@@ -88,25 +96,25 @@ public class AutomatedClient implements Runnable{
         System.out.println("Selected command is: " + command);
     }
 
-    private static void nextCommandTriggeredTimer() {
-        //Config config = Config.getInstance();
-        //int command_max_timer = config.get_command_max_timer();
-        //int command_min_timer = config.get_command_min_timer();
+    // private static void nextCommandTriggeredTimer() {
+    //     //Config config = Config.getInstance();
+    //     //int command_max_timer = config.get_command_max_timer();
+    //     //int command_min_timer = config.get_command_min_timer();
 
-        Timer timer = new Timer();
-        //int command_timer = (new Random()).nextInt(command_max_timer - command_min_timer) + command_min_timer;
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                nextCommand();
-                try {
-                    executeCommand();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 0, 1000 + (new Random().nextInt(3) * 1000) );
-    }
+    //     Timer timer = new Timer();
+    //     //int command_timer = (new Random()).nextInt(command_max_timer - command_min_timer) + command_min_timer;
+    //     timer.schedule(new TimerTask() {
+    //         @Override
+    //         public void run() {
+    //             nextCommand();
+    //             try {
+    //                 executeCommand();
+    //             } catch (Exception e) {
+    //                 e.printStackTrace();
+    //             }
+    //         }
+    //     }, 0, 1000 + (new Random().nextInt(3) * 1000) );
+    // }
 
     private static Socket getSecureSocket(String host, int port) throws IOException {
         SSLSocketFactory factory =
@@ -128,7 +136,7 @@ public class AutomatedClient implements Runnable{
         byte[] buffer = new byte[BUF_SIZE];
         while ((n = in.read(buffer, 0, buffer.length)) != -1) {
             stats.newRequest(n);
-            System.out.write(buffer, 0, n);
+            //System.out.write(buffer, 0, n);
         }
         stats.printReport();
     }

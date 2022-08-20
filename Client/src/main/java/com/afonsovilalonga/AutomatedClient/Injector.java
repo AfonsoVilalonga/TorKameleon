@@ -47,7 +47,6 @@ public class Injector implements Runnable{
     @Override
     public void run() {
         try {
-            System.out.println("oi");
             long start = System.currentTimeMillis();
             while(!tor_init(500));
             System.out.println(System.currentTimeMillis()-start);
@@ -67,10 +66,10 @@ public class Injector implements Runnable{
 
         switch (protocol.toLowerCase()) {
             case "tcp":
+                Socket tcp_socket = socksv4SendRequest("192.99.168.235", 10002, tor_host, tor_port);
+                OutputStream out = tcp_socket.getOutputStream();
+                InputStream in = tcp_socket.getInputStream();
                 for(;;){
-                    Socket tcp_socket = socksv4SendRequest("37.187.198.176", 10002, tor_host, tor_port);
-                    OutputStream out = tcp_socket.getOutputStream();
-                    InputStream in = tcp_socket.getInputStream();
                     do_TCP_TLS(out, in, file);
                 }
             case "tls":
@@ -119,10 +118,9 @@ public class Injector implements Runnable{
         byte[] buffer = new byte[BUF_SIZE];
 
 
-        while (recv != 259296 && (n = in.read(buffer, 0, buffer.length)) != -1 ) {
+        while (recv != 249930 && (n = in.read(buffer, 0, buffer.length)) != -1 ) {
             recv += n;
             stats.newRequest(n);
-            //System.out.write(buffer, 0, n);
         }
         stats.printReport();
     }

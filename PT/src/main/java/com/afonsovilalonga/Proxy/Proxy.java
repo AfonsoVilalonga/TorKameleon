@@ -7,7 +7,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.afonsovilalonga.Common.Initialization.ProxyStreamingHanshake.Initialization;
 import com.afonsovilalonga.Common.Modulators.WebSocketWrapperPT;
-import com.afonsovilalonga.Common.Socks.SocksProtocol;
 import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
@@ -36,7 +35,6 @@ public class Proxy {
     public static final int PING_PORT = 80;
 
     public static final byte NORMAL = 0x00;
-    public static final byte IPERF = 0X02;
 
     private String bypassAddress;
     private ConcurrentLinkedQueue<Instant> arrival_times = new ConcurrentLinkedQueue<>();
@@ -75,7 +73,6 @@ public class Proxy {
 
         int local_port_unsecure = config.getLocal_port_unsecure();
         int local_port_secure = config.getLocal_port_secure();
-        int test_port_iperf = config.getTest_port_iperf();
         int port_streaming = config.getStreaming_port_proxy();
 
         bypassTriggeredTimer();
@@ -157,29 +154,10 @@ public class Proxy {
             }
         }).start();
 
-        // Iperf test
-        new Thread(() -> {
-            ExecutorService executor = null;
-            try (ServerSocket serverSocket = new ServerSocket(test_port_iperf)) {
-                executor = Executors.newFixedThreadPool(N_THREADS);
-                System.out.println("Iperf proxy is listening on port " + test_port_iperf);
-                while (true) {
-                    Socket socket = serverSocket.accept();
-                    executor.execute(() -> {
-                        measureTestIperf(socket);
-                    });
-             
-                }
-            } catch (IOException ex) {
-                System.out.println("Iperf exception: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-        }).start();
-
         // Streaming incoming connection
         new Thread(() -> {
             ExecutorService executor = null;
-            try (ServerSocket ss = Utilities.getSecureSocketTLS(port_streaming)) {
+            try (ServerSocket ss = new ServerSocket(port_streaming)) {
                 executor = Executors.newFixedThreadPool(N_THREADS);
                 System.out.println("Streaming protocol is listening on port " + port_streaming);
                 while (true) {
@@ -248,7 +226,8 @@ public class Proxy {
                 }
 
                 // addJitterPerturbation();
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
 
             if (type == NORMAL) {
                 byte[] data = bypass(baos.toByteArray());
@@ -264,105 +243,9 @@ public class Proxy {
                                     config.getProxyBufferSize())),
                             sock);
                 }
-            } else if (type == IPERF) {
-                try {
-                    Socket socket_iperf = new Socket("localhost",
-                            Config.getInstance().getTest_port_iperf());
-                    socket_iperf.getOutputStream().write(baos.toByteArray());
-                    socket_iperf.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         } else {
             Initialization.sendFalied(socket);
-        }
-    }
-
-    private void measureTestIperf(Socket serverSocket) {
-        try {
-            int tor_buffer_size = config.getTor_buffer_size();
-            String local_host = "localhost";
-            String remote_host = config.getRemote_host();
-            String tor_host = config.getTor_ip();
-            int tor_port = config.getTor_port();
-            int stunnel_iperf = config.getStunnel_iperf();
-
-            InputStream in = serverSocket.getInputStream();
-            OutputStream out = serverSocket.getOutputStream();
-
-            byte[] buffer = new byte[tor_buffer_size];
-            String my_address = local_host;
-
-            String[] addr_array = bypassAddress.split("-");
-            ExecutorService executor;
-
-            if (addr_array[0].equals(my_address)) {
-                Socket clientSocket = SocksProtocol.sendRequest((byte) 0x04, remote_host, 10005, tor_host, tor_port);
-                OutputStream out_tor = clientSocket.getOutputStream();
-                InputStream in_tor = clientSocket.getInputStream();
-                out_tor.flush();
-                
-                executor = Executors.newFixedThreadPool(2);
-                
-                executor.execute(()->{
-                    try {
-                        int n = 0;
-                        while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                            out_tor.write(buffer, 0 , n);
-                            out_tor.flush();
-                        }
-                        out_tor.close();
-                        in.close();
-                    } catch (IOException e) {}
-                });
-
-                executor.execute(()->{
-                    try {
-                        int n = 0;
-                        while ((n = in_tor.read(buffer, 0, buffer.length)) >= 0) {
-                            out.write(buffer, 0 , n);
-                            out.flush();
-                        }
-                        in_tor.close();
-                        out.flush();
-                    } catch (IOException e) {}
-          
-                });
-                
-            } else {
-                if (addr_array[1].equals("s")) {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    int n;
-
-                    while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                        baos.write(buffer, 0, n);
-                        Thread.sleep(5);
-                    }
-
-                    bypassConnectionStremaing(baos.toByteArray(), IPERF);
-                } else {
-                    System.err.println("Test connection :" + my_address + " ---> " + bypassAddress);
-
-                    SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                    SSLSocket socket = (SSLSocket) factory.createSocket(bypassAddress.split("-")[0], stunnel_iperf);
-                    socket.startHandshake();
-                    OutputStream out_aux = socket.getOutputStream();
-                    out_aux.flush();
-
-                    int n;
-                    while ((n = in.read(buffer, 0, buffer.length)) >= 0) {
-                        System.err.println("sending iperf to" + bypassAddress + ":" + new String(buffer));
-                        out_aux.write(buffer, 0, n);
-                        Thread.sleep(5); // Avoid traffic congestion
-                    }
-                    out_aux.flush();
-                    socket.close();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
         }
     }
 
@@ -472,7 +355,6 @@ public class Proxy {
         List<String> network = config.getNodes();
 
         bypassAddress = network.get(new Random().nextInt(network.size()));
-        System.err.println("Selected new bypass address is " + bypassAddress);
     }
 
     private void bypassTriggeredTimer() {
@@ -561,7 +443,7 @@ public class Proxy {
                 web_socket_server.setPipe(pout, sock);
             }
 
-            // Send packet with type (iperf, httping or normal); len of packet and the data
+            // Send packet with type (); len of packet and the data
             byte[] bytes_len = ByteBuffer.allocate(4).putInt(bytes.length).array();
             byte[] type_bytes = ByteBuffer.allocate(1).put(type).array();
             byte[] bytes_with_len = new byte[bytes.length + 4 + 1];
@@ -572,8 +454,6 @@ public class Proxy {
 
             int bytes_to_send = 0;
 
-            System.out.println(bytes.length + " " + bytes_to_send);
-
             // send from bytes_to_send to (bytes_to_send + the minimum between the data to
             // send length and the size of packets sent between proxys)
             do {
@@ -582,22 +462,19 @@ public class Proxy {
                 bytes_to_send = bytes_to_send + Math.min(config.getProxyBufferSize(), bytes_with_len.length);
             } while (bytes_to_send < bytes_with_len.length);
 
-            if (type != IPERF) {
-                // Receive packets from the stream
-                int n;
-                byte[] buffer = new byte[config.getProxyBufferSize()];
+            // Receive packets from the stream
+            int n;
+            byte[] buffer = new byte[config.getProxyBufferSize()];
 
+            n = pin.read(buffer, 0, buffer.length);
+            baos.write(buffer, 4, n - 4);
+
+            int num_of_byte_to_rcv = ByteBuffer.wrap(buffer).getInt();
+            int num_of_bytes_rcv = n - 4;
+            while (num_of_byte_to_rcv != num_of_bytes_rcv) {
                 n = pin.read(buffer, 0, buffer.length);
-                baos.write(buffer, 4, n - 4);
-
-                int num_of_byte_to_rcv = ByteBuffer.wrap(buffer).getInt();
-                int num_of_bytes_rcv = n - 4;
-
-                while (num_of_byte_to_rcv != num_of_bytes_rcv) {
-                    n = pin.read(buffer, 0, buffer.length);
-                    baos.write(buffer, 0, n);
-                    num_of_bytes_rcv += n;
-                }
+                baos.write(buffer, 0, n);
+                num_of_bytes_rcv += n;
             }
 
             synchronized (this) {

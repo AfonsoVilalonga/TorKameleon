@@ -6,14 +6,14 @@ window.webrtc = {
       username: "test",
       credential: "test123",
       urls: [
-         "turn:54.38.65.236:3478?transport=udp"
+         "turn:54.38.65.236:3478?transport=tcp"
       ]
    }],
      
     encodedInsertableStreams: true
 };
 
-window.modulation = 'replace';
+window.modulation = 'add';
 window.signalling_server = ['wss://54.36.163.65:10000'];
 //window.signalling_server = ['null','wss://localhost:8000'];
 window.tor_conn_addr = 'ws://localhost:4444';

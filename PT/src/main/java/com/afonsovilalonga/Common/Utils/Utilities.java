@@ -31,8 +31,6 @@ public class Utilities {
         if(req.contains("HEAD")){
             System.out.println("oi");
             clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, 10001, tor_host, tor_port);
-        }else if(!req.contains("http") || !req.contains("HTTP")){
-            clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, 5001, tor_host, tor_port);
         }else{
             clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, remotePort, tor_host, tor_port);
         }

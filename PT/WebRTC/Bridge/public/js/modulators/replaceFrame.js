@@ -35,13 +35,12 @@ function encondeReplace(encodedFrame, controller) {
             enconding.splice(0, 1);
             is_last_seg = true;
         }
-
         
         newView.setUint32(newData.byteLength - 12, last_sent);
         newView.setUint16(newData.byteLength - 8, seg_number);
 
-        newView.setUint16(newData.byteLength - 5, num_of_bytes_encoded);
-        newView.setUint16(newData.byteLength - 3, 12345);
+        newView.setUint16(newData.byteLength - 4, num_of_bytes_encoded);
+        newView.setUint16(newData.byteLength - 2, 12345);
 
         if(is_last_seg){
             last_sent = last_sent + 1;
@@ -65,8 +64,8 @@ function decodeReplace(encodedFrame, controller) {
         const packet_id = view.getUint32(encodedFrame.data.byteLength-12);
         const seg_number = view.getUint16(encodedFrame.data.byteLength-8);
         const is_last = view.getUint8(encodedFrame.data.byteLength-6);
-        const len = view.getUint16(encodedFrame.data.byteLength-5);
-        const hasencoded = view.getUint16(encodedFrame.data.byteLength-3);
+        const len = view.getUint16(encodedFrame.data.byteLength-4);
+        const hasencoded = view.getUint16(encodedFrame.data.byteLength-2);
 
         if (!(encodedFrame.type === prevFrameType &&
                 encodedFrame.timestamp === prevFrameTimestamp &&
@@ -106,7 +105,7 @@ function decodeReplace(encodedFrame, controller) {
                 }else{
                     for(let i = 1; i < aux.length-1; i++){
                         if(aux[i] != undefined){
-                            send_pck.concat(aux[i])
+                            conc(send_pck, aux[i]);
                         }else{
                             stop = true;
                             break;
@@ -141,4 +140,10 @@ function decode(bytes) {
         return String.fromCharCode(v)
     }).join(''))
     return result;
+}
+
+function conc(bytes, bytes2){
+    for(let i = 0; i < bytes2.length; i++){
+        bytes.push(bytes2[i]);
+    }
 }

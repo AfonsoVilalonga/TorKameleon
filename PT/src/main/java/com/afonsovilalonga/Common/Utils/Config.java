@@ -26,9 +26,6 @@ public class Config {
     private String stunnel_port;
 
     private int tor_buffer_size;
-    private int test_port_iperf;
-
-    private int test_port_httping;
 
     private int number_of_nodes;
 
@@ -61,9 +58,6 @@ public class Config {
 
     private int control_tor_port;
 
-    private int stunnel_iperf;
-    private int stunnel_httping;
-
     private String tor_ip;
 
     private int connect_streaming;
@@ -90,14 +84,6 @@ public class Config {
 
     public int getConnect_streaming(){
         return connect_streaming;
-    }
-
-    public int getStunnel_iperf(){
-        return stunnel_iperf;
-    }
-
-    public int getStunnel_httping(){
-        return stunnel_httping;
     }
 
     public String getTor_ip(){
@@ -196,14 +182,6 @@ public class Config {
         return tor_buffer_size;
     }
 
-    public int getTest_port_iperf() {
-        return test_port_iperf;
-    }
-
-    public int getTest_port_httping() {
-        return test_port_httping;
-    }
-
     public int getNumber_of_nodes() {
         return number_of_nodes;
     }
@@ -232,8 +210,6 @@ public class Config {
             tor_port = Integer.parseInt(prop.getProperty("tor_port"));
             stunnel_port = prop.getProperty("stunnel_port");
             bypass_timer = Integer.parseInt(prop.getProperty("bypass_timer"));
-            test_port_iperf = Integer.parseInt(prop.getProperty("test_port_iperf"));
-            test_port_httping = Integer.parseInt(prop.getProperty("test_port_httping"));
             number_of_nodes = Integer.parseInt(prop.getProperty("number_of_nodes"));
             tor_buffer_size = Integer.parseInt(prop.getProperty("tor_buffer_size"));
 
@@ -265,9 +241,6 @@ public class Config {
             watch_video = prop.getProperty("watch_video");
 
             control_tor_port = Integer.parseInt(prop.getProperty("control_tor_port"));
-
-            stunnel_iperf = Integer.parseInt(prop.getProperty("stunnel_iperf"));
-            stunnel_httping = Integer.parseInt(prop.getProperty("stunnel_httping"));
 
             tor_ip = prop.getProperty("tor_ip");
 

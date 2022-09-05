@@ -14,12 +14,6 @@ RUN apt-get install -y wget && \
 
 RUN apt-get install -y openjdk-11-jdk-headless	
 
-RUN apt-get install -y iperf
-
-RUN apt-get install -y maven
-
 RUN apt-get install -y torbrowser-launcher
-
-COPY torrc /etc/tor/torrc
 	
 

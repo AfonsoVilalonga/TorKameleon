@@ -14,9 +14,6 @@ RUN apt-get install -y wget && \
 
 RUN apt-get install -y openjdk-11-jdk-headless	
 
-RUN apt-get install -y iperf
-
-RUN apt-get install -y maven
 
 	
 

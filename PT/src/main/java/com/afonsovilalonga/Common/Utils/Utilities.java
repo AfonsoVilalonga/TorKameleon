@@ -35,8 +35,8 @@ public class Utilities {
             clientSocket = SocksProtocol.sendRequest((byte)0x04, remoteAddress, remotePort, tor_host, tor_port);
         }
                 
-        clientSocket.setReceiveBufferSize(tor_buffer_size);
-        clientSocket.setSendBufferSize(tor_buffer_size);
+        //clientSocket.setReceiveBufferSize(tor_buffer_size);
+        //clientSocket.setSendBufferSize(tor_buffer_size);
         OutputStream out = clientSocket.getOutputStream();
         out.write(bytes);
         out.flush();

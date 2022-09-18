@@ -1,6 +1,8 @@
 version: '3.9'
 services:
   proxy:
+    ports:
+      - 1234:1234
     build: .
     volumes:
       - /home/afonso/Desktop/ThesisCode:/code
@@ -8,11 +10,9 @@ services:
                       cp /code/Deployment/SetupAV/LocalPTClienForBridge1/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
                       cp /code/Deployment/SetupAV/LocalPTClienForBridge1/torrc /etc/tor/torrc &&
                       cd /code/PT/target &&
-                      java -jar proxy-jar-with-dependencies.jar pt-client &
+                      java -jar proxy-jar-with-dependencies.jar pt-proxy &
                       sleep 3 &&
-                      tor &
-                      cd /code/Client/target &&
-                      java -jar client-1.0-SNAPSHOT-jar-with-dependencies.jar async/notimer tcp ../Files/large 1 1"
+                      tor"
 
 
              

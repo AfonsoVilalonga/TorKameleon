@@ -140,6 +140,7 @@ public class Streaming implements ModulatorClientInterface {
                         WebSocketWrapperPT.send(Arrays.copyOfRange(send, 0, i), bridge_sock);
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 System.exit(-1);
             });
@@ -153,6 +154,7 @@ public class Streaming implements ModulatorClientInterface {
                         out_tor.flush();
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 System.exit(-1);
             });

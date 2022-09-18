@@ -64,6 +64,8 @@ public class Initialization {
             DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             out_sock.writeByte(ACCEPTED_REQ);
             out_sock.flush();
+
+            socket.close();
         } catch(IOException e) {}
     }
 
@@ -72,6 +74,8 @@ public class Initialization {
             DataOutputStream out_sock = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             out_sock.writeByte(ACK_FAILED);
             out_sock.flush();
+
+            socket.close();
         } catch(IOException e) {}
     }
 

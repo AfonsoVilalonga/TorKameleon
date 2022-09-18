@@ -11,7 +11,7 @@ import com.afonsovilalonga.Common.Utils.Config;
 import com.afonsovilalonga.Common.Utils.Utilities;
 import com.afonsovilalonga.Proxy.Utils.DTLSOverDatagram;
 
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WindowType;
 import org.java_websocket.WebSocket;
 
 import java.io.*;
@@ -54,6 +54,7 @@ public class Proxy {
             option.addArguments("--silent");
             option.addArguments("--log-level=3");
             option.addArguments("--no-sandbox");
+            option.addArguments("--disable-dev-shm-usage");
 
             if (!config.getWatchVideo().equals("proxy-client"))
                 option.addArguments("headless");
@@ -190,9 +191,9 @@ public class Proxy {
                 CountDownLatch connectionWaiter = new CountDownLatch(1);
                 web_socket_server.setMutexAndWaitConn(connectionWaiter);
 
-                ((JavascriptExecutor) browser).executeScript(
-                        "window.open('http://localhost:" + config.getBridgePortStreaming() + "');");
-
+                browser.switchTo().newWindow(WindowType.TAB);
+                browser.get("http://localhost:" + config.getBridgePortStreaming());
+                
                 try {
                     connectionWaiter.await();
                 } catch (InterruptedException e) {
@@ -420,10 +421,9 @@ public class Proxy {
                 CountDownLatch connectionWaiter = new CountDownLatch(1);
                 web_socket_server.setMutexAndWaitConn(connectionWaiter);
 
-                ((JavascriptExecutor) browser).executeScript(
-                        "window.open('http://localhost:" + config.getClientPortStreaming() + "/?bridge=" + addr[2]
-                                + "');");
-
+                browser.switchTo().newWindow(WindowType.TAB);
+                browser.get("http://localhost:" + config.getClientPortStreaming() + "/?bridge=" + addr[2]);
+                
                 try {
                     connectionWaiter.await();
                 } catch (InterruptedException e) {

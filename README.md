@@ -5,6 +5,13 @@ TorKameleon is a solution designed to protect Tor users with increased censorshi
 ## Setup
 ![Alt text](https://github.com/AfonsoVi/TorKameleon/blob/master/Setup.png)
 
+In our experiments, we used a setup similar to the one shown in the figure above. There are five main components in this setup: 
+1. The local machine, which is used as the client and runs the TorKameleon Proxy locally;
+2. The TorKameleon Proxy, which receives the encapsulated data from the local machine via a WebRTC-based covert channel or TLS tunnel;
+3. The TorKameleon Tor Bridge, which receives the encapsulated data from the TorKameleon Proxy over a WebRTC-based covert channel or TLS tunnel;
+4. The HTTP server, which is used as the final destination for the client;
+5. The STUN / TURN server used as a STUN and or TURN server for the WebRTC connections.
+
 
 ## Configuration
 

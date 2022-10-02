@@ -14,6 +14,8 @@ In our experiments, we used a setup similar to the one shown in the figure above
 
 The setup can also be used without the Tor network component (TorKameleon Tor Bridge, Tor Middle Relay, and Tor Exit Relay) by forwarding traffic between the local machine and the proxy and from the proxy to the HTTP server, or without the proxy component by having the local machine forward traffic directly to the TorKameleon Tor Bridge.
 
+## Prerequisites
+
 ## Configuration
 
 ### WebRTC Config Files

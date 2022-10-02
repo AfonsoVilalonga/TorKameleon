@@ -12,6 +12,7 @@ In our experiments, we used a setup similar to the one shown in the figure above
 * The HTTP server, which is used as the final destination for the client;
 * The STUN / TURN server used as a STUN and or TURN server for the WebRTC connections.
 
+The setup can also be used without the Tor network component (TorKameleon Tor Bridge, Tor Middle Relay, and Tor Exit Relay) by forwarding traffic between the local machine and the proxy and from the proxy to the HTTP server, or without the proxy component by having the local machine forward traffic directly to the TorKameleon Tor Bridge.
 
 ## Configuration
 

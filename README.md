@@ -9,7 +9,7 @@ In our experiments, we used a setup similar to the one shown in the figure above
 * The local machine, which is used as the client and runs the TorKameleon Proxy locally;
 * The TorKameleon Proxy, which receives the encapsulated data from the local machine via a WebRTC-based covert channel or TLS tunnel;
 * The TorKameleon Tor Bridge, which receives the encapsulated data from the TorKameleon Proxy over a WebRTC-based covert channel or TLS tunnel;
-* The HTTP server, which is used as the final destination for the client;
+* The HTTP server, which is used as the final destination for the client (the HTTP server can also be deployed as a hidden service);
 * The STUN / TURN server used as a STUN and or TURN server for the WebRTC connections.
 
 The setup can also be used without the Tor network component (TorKameleon Tor Bridge, Tor Middle Relay, and Tor Exit Relay) by forwarding traffic between the local machine and the proxy and from the proxy to the HTTP server, or without the proxy component by having the local machine forward traffic directly to the TorKameleon Tor Bridge.
@@ -25,6 +25,11 @@ The setup can also be used without the Tor network component (TorKameleon Tor Br
 
 
 ### Deployment
+The deployment folder contains two folders, teh Coturn and the Setup folder. These folders are:
+
+
+
+each with a Docker Compose deployment for a specific TorKameleon mode
 
 
 ## Usage

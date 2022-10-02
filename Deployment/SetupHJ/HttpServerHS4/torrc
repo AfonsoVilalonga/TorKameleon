@@ -1,3 +1,0 @@
-HiddenServiceDir /hiddenserviceDir
-HiddenServicePort 40002 127.0.0.1:40002
-HiddenServicePort 40001 127.0.0.1:40001

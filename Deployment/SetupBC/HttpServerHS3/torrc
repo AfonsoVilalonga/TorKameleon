@@ -1,3 +1,0 @@
-HiddenServiceDir /hiddenserviceDir
-HiddenServicePort 30002 127.0.0.1:30002
-HiddenServicePort 30001 127.0.0.1:30001

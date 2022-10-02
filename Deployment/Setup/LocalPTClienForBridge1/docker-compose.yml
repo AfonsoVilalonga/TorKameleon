@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  proxy:
+    build: .
+    volumes:
+      - /home/afonso/Desktop/ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup/LocalPTClienForBridge1/config.properties /code/PT/Config/config.properties &&
+                      cp /code/Deployment/Setup/LocalPTClienForBridge1/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
+                      cp /code/Deployment/Setup/LocalPTClienForBridge1/torrc /etc/tor/torrc &&
+                      cd /code/PT/target &&
+                      java -jar proxy-jar-with-dependencies.jar pt-client &
+                      sleep 3 &&
+                      tor &
+                      cd /code/Client/target &&
+                      java -jar client-1.0-SNAPSHOT-jar-with-dependencies.jar async/notimer tcp ../Files/large 1 1"
+
+
+             

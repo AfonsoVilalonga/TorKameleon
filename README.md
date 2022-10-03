@@ -44,6 +44,12 @@ There are two main configurable components in the TorKameleon system: the TorKam
 ### WebRTC Config Files
 The WebRTC-based configuration files can be accessed via the folders ```PT/WebRTC/Bridge/public/config``` or ```PT/WebRTC/Client/public/config```. There is also a Signaling server that can be configured at ```PT/WebRTC/Signalling/config```.
 
+The first configures the WebRTC-based web application in receiver mode (the web application that receives and accepts all incoming WebRTC connections to a TorKameleon Tor Bridge or TorKameleon Proxy). There are three configurable fields in the configuration file:
+
+* ```window.webrtc```: is used to specify the IP and credentials of the TURN and STUN server and whether to use a TURN server (by adding in the second line ```iceTransportPolicy: 'relay',```);
+
+
+
 ### TorKameleon Core Config Files
 
 

@@ -4,10 +4,10 @@ TorKameleon is a solution designed to protect Tor users with increased censorshi
 
 ## Repo Folders
 The repository currently consists of four different folders: 
-*The Client folder, which contains the code and configuration files for the client simulator Java program;
-*The Deployment folder, which contains the Docker and configuration files for deploying TorKameleon in different modes and for deploying all the necessary components to create the setup described below;
-*The HttpServer folder, which contains the code and configuration files for the HTTP Java server;
-*The PT folder, which contains the code and configuration files for the TorKameleon software (including the necessary WebRTC-based application code and configuration files).
+* The Client folder, which contains the code and configuration files for the client simulator Java program;
+* The Deployment folder, which contains the Docker and configuration files for deploying TorKameleon in different modes and for deploying all the necessary components to create the setup described below;
+* The HttpServer folder, which contains the code and configuration files for the HTTP Java server;
+* The PT folder, which contains the code and configuration files for the TorKameleon software (including the necessary WebRTC-based application code and configuration files).
 
 
 ## Prerequisites

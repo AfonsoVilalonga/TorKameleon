@@ -63,7 +63,8 @@ The Signaling server can also be configured, namely:
 
 
 ### TorKameleon Core Config Files
-There are two configurable files for the TorKameleon core: the ```network``` configuration file and the ``config.properties``` configuration file. They are both located in the ```PT/Config/``` folder.
+There are two configurable files for the TorKameleon core: the ```network``` configuration file and the ```config.properties``` configuration file. They are both located in the ```PT/Config/``` folder.
+
 
 ### Deployment
 The deployment folder contains two folders, teh Coturn and the Setup folder. These folders are:

@@ -11,6 +11,19 @@ The repository currently consists of four different folders:
 
 
 ## Prerequisites
+Depending on how the TorKameleon is used, different prerequisites are required.
+If the deployment files are used (strongly recommended): 
+* Docker (any version should do it, but the version used was 20.10.16);
+* Docker compose (any version should do it, but the version used was 2.8.0);
+* Ubuntu (20.04 and above)
+
+When running TorKameleon with the jars (not recommended, the system has been tested with the following software versions):
+* Java 11
+* Maven 3.8.1 
+* NodeJS
+* Stunnel 5.62 (higher versions should work)
+* Tor 0.4.6.7 (higher versions should work)
+* Ubuntu 20.04
 
 ## Setup
 
@@ -42,6 +55,6 @@ each with a Docker Compose deployment for a specific TorKameleon mode
 
 
 ## Usage
-
+The PT, the client, and the HttpServer are Maven projects that can be compiled and run with the Jar, but to use TorKameleon, the deployment files should be used and the various components of TorKameleon should be deployed with the Docker containers.
 
 

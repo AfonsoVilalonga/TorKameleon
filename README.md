@@ -42,7 +42,7 @@ The setup can also be used without the Tor network component (TorKameleon Tor Br
 There are two main configurable components in the TorKameleon system: the TorKameleon core and the WebRTC-based application. It is also possible to configure the deployment files, but these are only configurations of the test deployment, which in turn are configurations of the two aforementioned components.
 
 ### WebRTC Config Files
-The WebRTC-based configuration files can be accessed via the folders ```PT/WebRTC/Bridge/public/config``` or ```PT/WebRTC/Client/public/config```. There is also a Signaling server that can be configured at ```PT/WebRTC/Signalling/config```.
+The WebRTC-based configuration files can be accessed via the folders ```PT/WebRTC/Bridge/public/config/``` or ```PT/WebRTC/Client/public/config/```. There is also a Signaling server that can be configured at ```PT/WebRTC/Signalling/config/```.
 
 The first configures the WebRTC-based web application in receiver mode (the web application that receives and accepts all incoming WebRTC connections to a TorKameleon Tor Bridge or TorKameleon Proxy). There are three configurable fields in the configuration file:
 
@@ -63,7 +63,7 @@ The Signaling server can also be configured, namely:
 
 
 ### TorKameleon Core Config Files
-
+There are two configurable files for the TorKameleon core: the ```network``` configuration file and the ``config.properties``` configuration file. They are both located in the ```PT/Config/``` folder.
 
 ### Deployment
 The deployment folder contains two folders, teh Coturn and the Setup folder. These folders are:

@@ -17,7 +17,7 @@ If the deployment files are used (strongly recommended):
 * Docker compose (any version should do it, but the version used was 2.8.0);
 * Ubuntu (20.04 and above)
 
-When running TorKameleon with the jars (not recommended, the system has been tested with the following software versions):
+When running TorKameleon with the jars (not recommended), the system has been tested with the following software versions:
 * Java 11
 * Maven 3.8.1 
 * NodeJS

@@ -56,6 +56,11 @@ The second configures the WebRTC-based web application in initiator mode (the we
 * ```window.local_node_addr```: is used to make a WebSocket connection to nodeJS's local server to get from it the position in the array of signaling server addresses to which it will try to connect. The address must always be localhost, but the port may change (although it must be the same as configured in the TorKameleon core configuration files);
 * ```window.modulation```: the encapsulation method (```"add"``` or ```"replace"```) to be used in the WebRTC-based covert channel;
 
+The Signaling server can also be configured, namely:
+* ```port```: The port assigned to the signaling server; 
+* ```pem```: Location of the pem file for the secure WebSocket connections to the signaling server;
+* ```key```: Location of the key file for the secure WebSocket connections to the signaling server;
+
 
 ### TorKameleon Core Config Files
 

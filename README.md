@@ -46,8 +46,15 @@ The WebRTC-based configuration files can be accessed via the folders ```PT/WebRT
 
 The first configures the WebRTC-based web application in receiver mode (the web application that receives and accepts all incoming WebRTC connections to a TorKameleon Tor Bridge or TorKameleon Proxy). There are three configurable fields in the configuration file:
 
-* ```window.webrtc```: is used to specify the IP and credentials of the TURN and STUN server and whether to use a TURN server (by adding in the second line ```iceTransportPolicy: 'relay',```);
+* ```window.webrtc```: used to specify the IP and credentials of the TURN and STUN server and whether to use a TURN server (by adding in the second line ```iceTransportPolicy: 'relay',```);
+* ```window.signalling_server```: used to specify the IP and port of the signaling server. It must always be localhost, but the port may change (although it must be the same port configured in the Signaling server configuration file);
+* ```window.tor_conn_addr```: used to specify the IP and port of the WebSocket connection to the TorKameleon core software (it works like an interprocess connection between the TorKameleon Java core and the web application). It must always be localhost, but the port can change (although it must be the same port configured in the TorKameleon core configuration file);
 
+The second configures the WebRTC-based web application in initiator mode (the web application that starts the WebRTC connections received by a TorKameleon Tor bridge or proxy). The configuration file is the same as the first one, with three exceptions:
+
+* ```window.signalling_server```: instead of being just a localhost address, in the web application in initiator mode it is an array of addresses, where the first position is always the address of the TorKameleon Tor bridge (if no TorKameleon Tor bridge is used, the first position of the array must be the string ```"null"```) and after that, the addresses represent the TorKameleon proxies that make up the pre-staged network. The addresses of the proxies must be in the same order as in the TorKameleon core network configuration file;
+* ```window.local_node_addr```: is used to make a WebSocket connection to nodeJS's local server to get from it the position in the array of signaling server addresses to which it will try to connect. The address must always be localhost, but the port may change (although it must be the same as configured in the TorKameleon core configuration files);
+* ```window.modulation```: the encapsulation method (```"add"``` or ```"replace"```) to be used in the WebRTC-based covert channel;
 
 
 ### TorKameleon Core Config Files

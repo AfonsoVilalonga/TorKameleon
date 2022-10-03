@@ -59,4 +59,8 @@ each with a Docker Compose deployment for a specific TorKameleon mode
 ## Usage
 The PT, the client, and the HttpServer are Maven projects that can be compiled and run with the Jar, but to use TorKameleon, the deployment files should be used and the various components of TorKameleon should be deployed with the Docker containers.
 
+### Docker Compose
+
+### Jars
+
 

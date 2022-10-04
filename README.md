@@ -66,6 +66,9 @@ The Signaling server can also be configured, namely:
 There are two configurable files for the TorKameleon core: the ```network``` configuration file and the ```config.properties``` configuration file. They are both located in the ```PT/Config/``` folder.
 
 #### config.properties
+The config.properties is a file used to configure all possible configurations in the TorKameleon core system. It has the following properties:
+* ```tor_buffer_size```: the size of the Tor cells (should be left at the default value, it is the same size used by the Tor network);
+
 
 #### network
 

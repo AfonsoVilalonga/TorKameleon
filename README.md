@@ -79,10 +79,17 @@ The config.properties is a file used to configure all possible configurations in
 * ```pt_client_port```: open port for the SOCKS5 proxy for the TorKameleon pluggable transport (should be left as default);
 * ```pt_server_port```: open port for the reverse proxy for the TorKameleon pluggable transport (should be left as default);
 * ```or_port```: open ORport of the Tor client configured in the torrc file (should be left as default); 
-*
+* ```keystore```, ```password```, and ```key```: location of the keystore, password of the Keystore and location of the key file for the secure communication used for the protocols and SSL tunnels; 
+* ```client_streaming_port```: open port for the local nodeJS server serving the web application in initiator mode (should be left as default); 
+* ```bridge_streaming_port```: open port for the local nodeJS server serving the web application in receiver mode (should be left as default);
+* ```webdriver_location```: the location of the web driver for the Chrome driver used in the Selenium framework;
+* ```proxy_buffer_size```: the size of the encapsulated data between TorKameleon proxies;
+* ```pt_buffer_size```: the size of the encapsulated data between the client-side TorKameleon pluggable transport and the server-side TorKameleon pluggable transport;
+* ```websocket_port```: open port for the WebSocket server used to communicate with the web application (should be left as default);
+* ```webrtc_location```: the location of the WebRTC files;
+* ```watch_video```: used to launch the Chrome browser with or without a graphical user interface;
 
-
-
+For examples of how to configure various components (proxies, bridges, clients, and so on), see the Deployment folder.
 
 #### network
 

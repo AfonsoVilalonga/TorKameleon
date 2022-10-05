@@ -96,10 +96,10 @@ For examples of how to configure various components (proxies, bridges, clients, 
 The addresses of the proxies are configured in the network file. The proxies should be added in the following format: ```IP-Encapsulation_method-Order_number```, where IP is the IP of the proxy, Encapsulation_method is the type of encapsulation to be used with this specific proxy (```s```, i.e. streaming, or ```t```, i.e. TLS), and Order_number is the number of the proxy in the network file (the first is 1, the second is 2, etc.). The window.signalling_server property of the WebRTC web application in initiator mode follows the same order in the array as in the network file. 
 
 
-### Deployment
+## Deployment
 The deployment folder contains two folders, the ```/Deployment/Coturn/``` folder and the ```/Deployment/Setup/``` folder.
 
-#### Coturn Folder
+### Coturn Folder
 
 The Coturn folder contains the configuration file for configuring the Coturn TURN and STUN server. To deploy the Coturn server on a machine, the following command should be used, using the configuration file in the Coturn folder: 
 
@@ -107,7 +107,7 @@ The Coturn folder contains the configuration file for configuring the Coturn TUR
 
 The coturn configuration file should be located in the current directory.
 
-#### Setup Folder
+### Setup Folder
 
 ## Usage
 The PT, the client, and the HttpServer are Maven projects that can be compiled and run with the Jar, but to use TorKameleon, the deployment files should be used and the various components of TorKameleon should be deployed with the Docker containers.

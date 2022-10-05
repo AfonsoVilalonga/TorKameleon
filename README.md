@@ -99,7 +99,11 @@ The addresses of the proxies are configured in the network file. The proxies sho
 ### Deployment
 The deployment folder contains two folders, the ```/Deployment/Coturn/``` folder and the ```/Deployment/Setup/``` folder.
 
-The Coturn folder contains the configuration file for configuring the Coturn TURN and STUN server. To deploy the Coturn server on a machine, the following command should be used, using the configuration file in the Coturn folder: ```docker run -d --network=host -v $(pwd)/my.conf:/etc/coturn/turnserver.conf coturn/coturn```. The coturn configuration file should be located in the current directory.
+The Coturn folder contains the configuration file for configuring the Coturn TURN and STUN server. To deploy the Coturn server on a machine, the following command should be used, using the configuration file in the Coturn folder: 
+
+```docker run -d --network=host -v $(pwd)/my.conf:/etc/coturn/turnserver.conf coturn/coturn```
+
+The coturn configuration file should be located in the current directory.
 
 
 ## Usage

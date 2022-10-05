@@ -93,6 +93,9 @@ For examples of how to configure various components (proxies, bridges, clients, 
 
 #### network
 
+The addresses of the proxies are configured in the network file. The proxies should be added in the following format: ```IP-Encapsulation_method-Order_number```, where IP is the IP of the proxy, Encapsulation_method is the type of encapsulation to be used with this specific proxy (```s```, i.e. streaming, or ```t```, i.e. TLS), and Order_number is the number of the proxy in the network file (the first is 1, the second is 2, etc.). The window.signalling_server property of the WebRTC web application in initiator mode follows the same order in the array as in the network file. 
+
+
 ### Deployment
 The deployment folder contains two folders, teh Coturn and the Setup folder. These folders are:
 *

@@ -112,8 +112,10 @@ The coturn configuration file should be located in the current directory.
 ## Usage
 The PT, the client, and the HttpServer are Maven projects that can be compiled and run with the Jar, but to use TorKameleon, the deployment files should be used and the various components of TorKameleon should be deployed with the Docker containers.
 
-### Docker Compose
+### Client
 
-### Jars
+### HTTP Server 
 
+### TorKameleon Tor Bridge
 
+#### TorKameleon Proxy

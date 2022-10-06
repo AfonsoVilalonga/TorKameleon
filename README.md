@@ -65,7 +65,7 @@ The Signaling server can also be configured, namely:
 ### TorKameleon Core Config Files
 There are two configurable files for the TorKameleon core: the ```network``` configuration file and the ```config.properties``` configuration file. They are both located in the ```PT/Config/``` folder.
 
-#### config.properties
+#### config.properties File
 The config.properties is a file used to configure all possible configurations in the TorKameleon core system. It has the following properties:
 * ```tor_buffer_size```: the size of the Tor cells (should be left at the default value, it is the same size used by the Tor network);
 * ```number_of_nodes```: the number of TorKameleon proxies in the pre-staged network;
@@ -91,7 +91,7 @@ The config.properties is a file used to configure all possible configurations in
 
 For examples of how to configure various components (proxies, bridges, clients, and so on), see the Deployment folder.
 
-#### network
+#### network File
 
 The addresses of the proxies are configured in the network file. The proxies should be added in the following format: ```IP-Encapsulation_method-Order_number```, where IP is the IP of the proxy, Encapsulation_method is the type of encapsulation to be used with this specific proxy (```s```, i.e. streaming, or ```t```, i.e. TLS), and Order_number is the number of the proxy in the network file (the first is 1, the second is 2, etc.). The window.signalling_server property of the WebRTC web application in initiator mode follows the same order in the array as in the network file. 
 

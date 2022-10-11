@@ -75,7 +75,7 @@ The config.properties is a file used to configure all possible configurations in
 * ```tor_port```, ```tor_ip```, and ```control_tor_port```: open port and IP of the Tor client for connections between the Tor client and TorKameleon and the open control port of the Tor client (configured in the torrc file, all these configurations should be left as default);
 * ```stunnel_port```: open port on the receiving TorKameleon Proxy (to where the connections will be made) for the stunnel SSL tunnel (should be left as default);
 * ```connect_streaming```: open port on the receiving TorKameleon Proxy (to where the connections will be made) for incoming connections of the WebRTC protocol handshake (should be left as default);
-* ```modulation```: type of modulation used for the TorKameleon proxy and TorKameleon pluggable transport (```streaming``` or ```stunnel```);
+* ```modulation```: type of modulation used for the TorKameleon Proxy and TorKameleon pluggable transport (```streaming``` or ```stunnel```);
 * ```pt_client_port```: open port for the SOCKS5 proxy for the TorKameleon pluggable transport (should be left as default);
 * ```pt_server_port```: open port for the reverse proxy for the TorKameleon pluggable transport (should be left as default);
 * ```or_port```: open ORport of the Tor client configured in the torrc file (should be left as default); 
@@ -83,7 +83,7 @@ The config.properties is a file used to configure all possible configurations in
 * ```client_streaming_port```: open port for the local nodeJS server serving the web application in initiator mode (should be left as default); 
 * ```bridge_streaming_port```: open port for the local nodeJS server serving the web application in receiver mode (should be left as default);
 * ```webdriver_location```: the location of the web driver for the Chrome driver used in the Selenium framework;
-* ```proxy_buffer_size```: the size of the encapsulated data between TorKameleon proxies;
+* ```proxy_buffer_size```: the size of the encapsulated data between TorKameleon Proxies;
 * ```pt_buffer_size```: the size of the encapsulated data between the client-side TorKameleon pluggable transport and the server-side TorKameleon pluggable transport;
 * ```websocket_port```: open port for the WebSocket server used to communicate with the web application (should be left as default);
 * ```webrtc_location```: the location of the WebRTC files;
@@ -93,7 +93,7 @@ For examples of how to configure various components (proxies, bridges, clients, 
 
 #### network File
 
-The addresses of the proxies are configured in the network file. The proxies should be added in the following format: ```IP-Encapsulation_method-Order_number```, where IP is the IP of the proxy, Encapsulation_method is the type of encapsulation to be used with this specific proxy (```s```, i.e. streaming, or ```t```, i.e. TLS), and Order_number is the number of the proxy in the network file (the first is 1, the second is 2, etc.). The window.signalling_server property of the WebRTC web application in initiator mode follows the same order in the array as in the network file. 
+The addresses of the Proxies are configured in the network file. The Proxies should be added in the following format: ```IP-Encapsulation_method-Order_number```, where IP is the IP of the Proxy, Encapsulation_method is the type of encapsulation to be used with this specific Proxy (```s```, i.e. streaming, or ```t```, i.e. TLS), and Order_number is the number of the Proxy in the network file (the first in the file is 1, the second in the file is 2, etc.). The window.signalling_server property of the WebRTC web application in initiator mode follows the same order in the array as in the network file. 
 
 
 ## Deployment
@@ -105,7 +105,7 @@ The Coturn folder contains the configuration file for configuring the Coturn TUR
 
 ```docker run -d --network=host -v $(pwd)/my.conf:/etc/coturn/turnserver.conf coturn/coturn```
 
-The coturn configuration file should be located in the current directory.
+The coturn configuration file should be moved to the current directory.
 
 ### Setup Folder
 

@@ -46,7 +46,7 @@ The WebRTC-based configuration files can be accessed via the folders ```PT/WebRT
 
 The first configures the WebRTC-based web application in receiver mode (the web application that receives and accepts all incoming WebRTC connections to a TorKameleon Tor Bridge or TorKameleon Proxy). There are three configurable fields in the configuration file:
 
-* ```window.webrtc```: used to specify the IP and credentials of the TURN and STUN server and whether to use a TURN server (by adding in the second line ```iceTransportPolicy: 'relay',```);
+* ```window.webrtc```: used to specify the IP and credentials of the TURN and STUN server and whether to use a TURN server (by adding in ```iceTransportPolicy: 'relay',```);
 * ```window.signalling_server```: used to specify the IP and port of the signaling server. It must always be localhost, but the port may change (although it must be the same port configured in the Signaling server configuration file);
 * ```window.tor_conn_addr```: used to specify the IP and port of the WebSocket connection to the TorKameleon core software (it works like an interprocess connection between the TorKameleon Java core and the web application). It must always be localhost, but the port can change (although it must be the same port configured in the TorKameleon core configuration file);
 

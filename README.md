@@ -89,12 +89,13 @@ The config.properties is a file used to configure all possible configurations in
 * ```webrtc_location```: the location of the WebRTC files;
 * ```watch_video```: used to launch the Chrome browser with or without a graphical user interface;
 
-For examples of how to configure various components (proxies, bridges, clients, and so on), see the Deployment folder.
-
 #### network File
 
 The addresses of the Proxies are configured in the network file. The Proxies should be added in the following format: ```IP-Encapsulation_method-Order_number```, where IP is the IP of the Proxy, Encapsulation_method is the type of encapsulation to be used with this specific Proxy (```s```, i.e. streaming, or ```t```, i.e. TLS), and Order_number is the number of the Proxy in the network file (the first in the file is 1, the second in the file is 2, etc.). The window.signalling_server property of the WebRTC web application in initiator mode follows the same order in the array as in the network file. 
 
+#### Configuration Examples
+Examples of how to configure various components (proxies, bridges, clients, etc.) can be found in the Deployment folder or via the links below.
+Note: ```0000``` in the fields of the ```config.properties``` file means that the field is not used for this configuration.   
 
 ## Deployment
 The deployment folder contains two folders, the ```/Deployment/Coturn/``` folder and the ```/Deployment/Setup/``` folder.

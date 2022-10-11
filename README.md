@@ -73,7 +73,7 @@ The config.properties is a file used to configure all possible configurations in
 * ```remote_host```, ```remote_port```: the IP and port of the target destination (the IP and port of the HTTP server);
 * ```local_port_unsecure```, ```local_port_secure```, and ```streaming_port_proxy```: the open ports for incoming TCP and UDP, TLS and DTLS, and WebRTC protocol handshake connections respectively (should be left as default);
 * ```tor_port```, ```tor_ip```, and ```control_tor_port```: open port and IP of the Tor client for connections between the Tor client and TorKameleon and the open control port of the Tor client (configured in the torrc file, all these configurations should be left as default);
-* ```stunnel_port```: open port on the receiving TorKameleon Proxy for the stunnel SSL tunnel (should be left as default);
+* ```stunnel_port```: open port on the receiving TorKameleon Proxy (to where the connection will be made) for the stunnel SSL tunnel (should be left as default);
 * ```connect_streaming```: open port on the receiving TorKameleon proxy for incoming connections of the WebRTC protocol handshake (should be left as default);
 * ```modulation```: type of modulation used for the TorKameleon proxy and TorKameleon pluggable transport (```streaming``` or ```stunnel```);
 * ```pt_client_port```: open port for the SOCKS5 proxy for the TorKameleon pluggable transport (should be left as default);

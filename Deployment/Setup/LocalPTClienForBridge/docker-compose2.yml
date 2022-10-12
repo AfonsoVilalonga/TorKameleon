@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  proxy:
+    ports:
+      - 1234:1234
+      - 9050:9050
+    build: .
+    volumes:
+      - /home/afonso/Desktop/ThesisCode:/code
+    command: bash -c "cp /code/Deployment/Setup/LocalPTClienForBridge/config.properties /code/PT/Config/config.properties &&
+                      cp /code/Deployment/Setup/LocalPTClienForBridge/WebRTC/configC.js /code/PT/WebRTC/Client/public/config/config.js &&
+                      cp /code/Deployment/Setup/LocalPTClienForBridge/torrc /etc/tor/torrc &&
+                      cd /code/PT/target &&
+                      java -jar proxy-jar-with-dependencies.jar pt-proxy &
+                      sleep 3 &&
+                      tor"
+
+
+             

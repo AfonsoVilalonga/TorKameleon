@@ -10,7 +10,7 @@ services:
       - 10005:10005
     volumes:
       - /home/jvilalonga1/ThesisCode:/code
-    command: bash -c "cp /code/Deployment/Setup/HttpServerHS1/config.properties code/HttpServer/Config/config.properties &&
+    command: bash -c "cp /code/Deployment/Setup/HttpServerHS/config.properties code/HttpServer/Config/config.properties &&
                       cd /code/HttpServer/target/ &&
                       java -jar httpserver-jar-with-dependencies.jar &
                       tor"

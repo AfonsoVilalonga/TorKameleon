@@ -8,9 +8,9 @@ services:
       - 10002:10002
     volumes:
       - /home/jvilalonga1/ThesisCode:/code
-    command: bash -c "cp /code/Deployment/Setup/Bridge1/config.properties /code/PT/Config/config.properties &&
-                        cp /code/Deployment/Setup/Bridge1/WebRTC/configB.js /code/PT/WebRTC/Bridge/public/config/config.js &&
-                        cp /code/Deployment/Setup/Bridge1/WebRTC/default.json /code/PT/WebRTC/Signalling/config/default.json &&
+    command: bash -c "cp /code/Deployment/Setup/Bridge/config.properties /code/PT/Config/config.properties &&
+                        cp /code/Deployment/Setup/Bridge/WebRTC/configB.js /code/PT/WebRTC/Bridge/public/config/config.js &&
+                        cp /code/Deployment/Setup/Bridge/WebRTC/default.json /code/PT/WebRTC/Signalling/config/default.json &&
                         stunnel > stunnel.txt & 
                         tor > tor.txt & 
                         cd /code/PT/target && 

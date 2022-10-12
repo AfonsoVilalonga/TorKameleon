@@ -147,16 +147,16 @@ There are four files available for download: ```../Files/large```, ```../Files/s
 ### HTTP Server 
 It can be deployed as a hidden service or as a normal HTTP server. Both are deployed by running ```docker compose up``` and for the normal HTTP server it is automatically ready to receive requests. For the hidden service, it is ready as soon as the 100% line appears on the console.
 
-The HTTP server has three open ports that can be configured in. These are: 
-* ```echo port```: used to receive packets, but the server does not send anything back; 
+The HTTP server has three open ports that can be configured in ```/Client/Config/config.properties```. These are: 
+* ```echo port```: used to receive packets without sending responses; 
 * ```test port```: used to receive httping requests and send an HTTP header response;
 * ```normal_port```: used for download requests;
 
 ### TorKameleon Tor Bridge
-It is deployed by running the ```docker compose up``` command and is ready to receive connections once the Tor software is ready (once the 100% line appears on the console).
+The TorKameleon Tor Bridge is deployed by running the ```docker compose up``` command and is ready to receive connections once the Tor software is ready (once the 100% line appears on the console).
 
 ### TorKameleon Proxy
-It is deployed by running the ```docker compose up``` command and is ready when the Tor software is ready (as soon as the 100% line appears on the screen).
+The TorKameleon Proxy is deployed by running the ```docker compose up``` command and is ready when the Tor software is ready (as soon as the 100% line appears on the screen).
 
 
 

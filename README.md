@@ -97,6 +97,8 @@ The addresses of the Proxies are configured in the network file. The Proxies sho
 Examples of how to configure various components (proxies, bridges, clients, etc.) can be found in the Deployment folder or via the links below.
 Note: ```0000``` in the fields of the ```config.properties``` file means that the field is not used for this configuration.   
 
+*TorKameleon Tor Bridge configuration files 
+
 ## Deployment
 The deployment folder contains two folders, the ```/Deployment/Coturn/``` folder and the ```/Deployment/Setup/``` folder.
 
@@ -120,3 +122,8 @@ The PT, the client, and the HttpServer are Maven projects that can be compiled a
 ### TorKameleon Tor Bridge
 
 ### TorKameleon Proxy
+
+
+
+
+[TorKameleon Tor Bridge](/Deployment/Setup/Bridge)

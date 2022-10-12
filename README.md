@@ -129,16 +129,34 @@ The setup folder has six different folders that have different operating modes o
 
 
 ## Usage
-The PT, the client, and the HttpServer are Maven projects that can be compiled and run with the Jar, but to use TorKameleon, the deployment files should be used and the various components of TorKameleon should be deployed with the Docker containers.
+TorKameleon is Docker-friendly and should be used in containers configured like those in the deployment folder. However, it can also be run on a machine without Docker by compiling the Maven project and running the jar file. Other deployments can be configured and we recommend users to check the deployment folder and test the different configurations for the system and operating modes.
 
 ### Client
+The client should only be run when the TorKameleon environment is set up. The client software is started by launching the client's maven project jar. The following command should be used:
+
+```java -jar name_of_jar mode arg1 arg2 ...```
+
+There are several modes of operation of the client software, and each mode may have different arguments. The following are the operating modes of the client software:
+
+* ```interactive```: the user must manually enter the input (path and protocol) required for the file download. Example: ```java -jar name_of_jar interactive``` and ```../Files/large tcp```;
+* ```async```: The program automatically sends requests to the HTTP server with a cool-down time of X seconds (configurable) between requests, but the user must pass the number of client threads the program should use. Example: ```java -jar name_of_jar async 2``` (to start two clients in parallel sending download requests to the HTTP server);
+* ```async/notimer```: The program automatically sends X requests to the HTTP server, without a cool-down period between requests. The user must specify the number of client threads, the protocol, the file to download, and the number of requests each thread should make. Example: ```java -jar name_of_jar async/notimer tcp ../Files/large 2 2``` (to run two clients in parallel, send the download requests for file large over the TCP protocol and perform two downloads for each thread);
+
+There are four files available for download: ```../Files/large```, ```../Files/small```, ```../Files/earth.jpg``` and ```../Files/book.pdf```. There are also four protocols available: ```tcp```, ```dtls```, ```udp``` and ```tcp```.  
 
 ### HTTP Server 
+It can be deployed as a hidden service or as a normal HTTP server. Both are deployed by running ```docker compose up``` and for the normal HTTP server it is automatically ready to receive requests. For the hidden service, it is ready as soon as the 100% line appears on the console.
+
+The HTTP server has three open ports that can be configured in. These are: 
+* ```echo port```: used to receive packets, but the server does not send anything back; 
+* ```test port```: used to receive httping requests and send an HTTP header response;
+* ```normal_port```: used for download requests;
 
 ### TorKameleon Tor Bridge
+It is deployed by running the ```docker compose up``` command and is ready to receive connections once the Tor software is ready (once the 100% line appears on the console).
 
 ### TorKameleon Proxy
-
+It is deployed by running the ```docker compose up``` command and is ready when the Tor software is ready (as soon as the 100% line appears on the screen).
 
 
 

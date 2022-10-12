@@ -97,12 +97,12 @@ The addresses of the Proxies are configured in the network file. The Proxies sho
 Examples of how to configure various components (proxies, bridges, clients, etc.) can be found in the Deployment folder or via the links below.
 Note: ```0000``` in the fields of the ```config.properties``` file means that the field is not used for this configuration. The volume field in each Docker compose file should be changed with the specific location of the code on the current machine.
 
-* [TorKameleon Tor Bridge configuration files](/Deployment/Setup/Bridge);
-* [HTTP server (normal) configuration files](/Deployment/Setup/HttpServer);
-* [HTTP server (hidden service) configuration files](/Deployment/Setup/HttpServerHS);
-* [Client-side TorKameleon pluggable transport configuration files](/Deployment/Setup/LocalPTClienForBridge);
-* [Client-side TorKameleon pluggable transport and TorKameleon Proxy configuration files](/Deployment/Setup/Proxy);
-* [Local Proxy (used to connect to other TorKameleon Proxies) configuration files](/Deployment/Setup/LocalTirClientForProxy);
+* [TorKameleon Tor Bridge](/Deployment/Setup/Bridge) configuration files;
+* [HTTP server (normal)](/Deployment/Setup/HttpServer) configuration files;
+* [HTTP server (hidden service)](/Deployment/Setup/HttpServerHS) configuration files;
+* [Client-side TorKameleon pluggable transport](/Deployment/Setup/LocalPTClienForBridge) configuration files;
+* [Client-side TorKameleon pluggable transport and TorKameleon Proxy](/Deployment/Setup/Proxy) configuration files;
+* [Local Proxy (used to connect to other TorKameleon Proxies)](/Deployment/Setup/LocalTirClientForProxy) configuration files;
 
 ## Deployment
 The deployment folder contains two folders, the ```/Deployment/Coturn/``` folder and the ```/Deployment/Setup/``` folder.

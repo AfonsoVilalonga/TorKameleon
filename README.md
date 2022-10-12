@@ -116,6 +116,17 @@ The Coturn folder contains the configuration file for configuring the Coturn TUR
 The coturn configuration file should be moved to the current directory.
 
 ### Setup Folder
+The setup folder has six different folders that have different operating modes of TorKameleon and provide different configurations of the system. To deploy each component, the following command must be run in the particular folder to be deployed:
+
+```docker compose up```
+
+* ```/Deployment/Setup/Bridge/```: Contains the configuration files necessary to deploy TorKameleon as a server-side pluggable transport (TorKameleon Tor Bridge);
+* ```Deployment/Setup/HttpServer/```: Contains the configuration files necessary to deploy the HTTP server as a normal HTTP server for testing purposes;
+* ```/Deployment/Setup/HttpServerHS/```: Contains the configuration files required to deploy the HTTP server as a hidden service HTTP server for testing purposes;
+* ```/Deployment/Setup/LocalPTClienForBridge/```: Contains the configuration files necessary to deploy TorKameleon as a client-side pluggable transport. Has two Docker Compose files. One is used to set up the client-side pluggable transport and automatically launch a client that downloads files from an HTTP server. The other only launches the client-side pluggable transport and exposes port 1234 so that the client application can connect and send download requests, and port 9050 so that applications can connect to the Tor client SOCKS and use it as a proxy that routes traffic through the TorKameleon pluggable transport;
+* ```Deployment/Setup/LocalTirClientForProxy/```: Contains the configuration files necessary to deploy TorKameleon as a network proxy and as a client-side pluggable transport. It is used to receive traffic from other proxies and route it to the Tor network;
+* ```/Deployment/Setup/Proxy/```: Contains the configuration files necessary to set up TorKameleon as a network proxy that forwards traffic to other proxies on the network;
+
 
 ## Usage
 The PT, the client, and the HttpServer are Maven projects that can be compiled and run with the Jar, but to use TorKameleon, the deployment files should be used and the various components of TorKameleon should be deployed with the Docker containers.

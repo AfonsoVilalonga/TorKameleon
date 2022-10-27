@@ -1,12 +1,12 @@
 window.webrtc = {
-   iceTransportPolicy: 'relay',
+   //iceTransportPolicy: 'relay',
    iceServers: [{
       urls: ["stun:54.38.65.236"]
    }, {
       username: "test",
       credential: "test123",
       urls: [
-         "turn:54.38.65.236:3478?transport=tcp"
+         "turn:54.38.65.236:3478?transport=udp"
       ]
    }],
 

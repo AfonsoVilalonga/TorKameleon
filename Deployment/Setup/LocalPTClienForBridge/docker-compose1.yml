@@ -1,8 +1,6 @@
 version: '3.9'
 services:
   proxy:
-    ports:
-      - 9050:9050
     build: .
     volumes:
       - /home/afonso/Desktop/ThesisCode:/code
@@ -12,7 +10,9 @@ services:
                       cd /code/PT/target &&
                       java -jar proxy-jar-with-dependencies.jar pt-client &
                       sleep 3 &&
-                      tor"
+                      tor &
+                      cd /code/Client/target &&
+                      java -jar client-1.0-SNAPSHOT-jar-with-dependencies.jar async/notimer tcp ../Files/large 1 1"
 
 
              

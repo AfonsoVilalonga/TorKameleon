@@ -4,12 +4,12 @@ TorKameleon is a solution designed to protect Tor users with increased censorshi
 
 This code was implemented in the context of the dissertation:
 ```
-</br>@mastersthesis{TorKameleon,</br> 
- author       = {João Afonso Vilalonga},</br>
- title        = {TorKameleon-Improving Tor's censorship resistance with K-anonymization media morphing covert input channels}, </br>
- school       = {NOVA School of Science and Technology}, </br>
- year         = 2022, </br>
- month        = 10, </br>
+@mastersthesis{TorKameleon, 
+ author       = {João Afonso Vilalonga},
+ title        = {TorKameleon-Improving Tor's censorship resistance with K-anonymization media morphing covert input channels},
+ school       = {NOVA School of Science and Technology}, 
+ year         = 2022, 
+ month        = 10,
 }
 ```
 

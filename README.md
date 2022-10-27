@@ -9,7 +9,7 @@ title        = {TorKameleon-Improving Tor's censorship resistance with K-anonymi
 school       = {NOVA School of Science and Technology},
 year         = 2022,
 month        = 10, 
-} ```
+}```
 
 ## Repo Folders
 The repository currently consists of four different folders: 

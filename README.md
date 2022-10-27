@@ -38,7 +38,7 @@ When running TorKameleon with the jars (not recommended), the system has been te
 
 ## Setup
 	
-![alt text](https://github.com/AfonsoVi/TorKameleon/blob/master/Test%20bench%20diagram.pdf)
+![](https://github.com/AfonsoVi/TorKameleon/blob/master/Setup.png)
 
 In our experiments, we used a setup similar to the one shown in the figure above. There are five main components in this setup: 
 * The local machine, which is used as the client and runs the TorKameleon Proxy locally;

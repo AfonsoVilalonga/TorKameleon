@@ -150,7 +150,7 @@ The client should only be run when the TorKameleon environment is set up. The cl
 
 There are several modes of operation of the client software, and each mode may have different arguments. The following are the operating modes of the client software:
 
-* ```interactive```: the user must manually enter the input (path and protocol) required for the file download. Example: ```java -jar name_of_jar interactive ../Files/large tcp```;
+* ```interactive```: the user must manually enter the input (path and protocol) required for the file download. Example: ```java -jar name_of_jar interactive``` and ```../Files/large tcp```;
 * ```async```: The program automatically sends requests to the HTTP server with a cool-down time of X seconds (configurable) between requests, but the user must pass the number of client threads the program should use. Example: ```java -jar name_of_jar async 2``` (to start two clients in parallel sending download requests to the HTTP server);
 * ```async/notimer```: The program automatically sends X requests to the HTTP server, without a cool-down period between requests. The user must specify the number of client threads, the protocol, the file to download, and the number of requests each thread should make. Example: ```java -jar name_of_jar async/notimer tcp ../Files/large 2 2``` (to run two clients in parallel, send the download requests for file large over the TCP protocol and perform two downloads for each thread);
 

@@ -9,7 +9,7 @@ This code was implemented in the context of the dissertation:
  title        = {TorKameleon-Improving Tor's censorship resistance with K-anonymization media morphing covert input channels},
  school       = {NOVA School of Science and Technology}, 
  year         = 2022, 
- month        = 10,
+ month        = 9,
 }
 ```
 

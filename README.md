@@ -13,6 +13,16 @@ This code was implemented in the context of the dissertation:
 }
 ```
 
+The design, implementation and evaluation of the system is also described in our Arxiv 2023 [paper](https://jresende.github.io/paper/TorKam.pdf).
+```
+@article{vilalonga2023torkameleon,
+  title={TorKameleon: Improving Tor's Censorship Resistance With K-anonimization and Media-based Covert Channels},
+  author={Vilalonga, Jo{\~a}o Afonso and Resende, Jo{\~a}o S and Domingos, Henrique},
+  journal={arXiv preprint arXiv:2303.17544},
+  year={2023}
+}
+```
+
 ## Repo Folders
 The repository currently consists of four different folders: 
 * The Client folder, which contains the code and configuration files for the client simulator Java program;

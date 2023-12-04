@@ -2,6 +2,16 @@
 
 TorKameleon is a solution designed to protect Tor users with increased censorship resistance against powerful traffic correlation attacks carried out by global adversaries. The system is based on flexible K-anonymization input circuits that can support TLS tunneling and WebRTC-based covert channels before forwarding users' original input traffic to the Tor network. Our goal is to protect users from correlation attacks through machine learning between incoming user traffic and the observed traffic at different Tor network intermediate relays or outgoing traffic to destinations. TorKameleon is the first system to implement a Tor pluggable transport based on both parameterizable TLS tunneling or WebRTC-based covert channels. We have implemented the TorKameleon prototype and performed extensive validations to observe the correctness and experimental performance of the proposed solution in the Tor environment.
 
+The design, implementation and evaluation of the system is also described in our Arxiv 2023 [paper](https://jresende.github.io/paper/TorKam.pdf). (To be published in TrustCom 2023)
+```
+@article{vilalonga2023torkameleon,
+  title={TorKameleon: Improving Tor's Censorship Resistance With K-anonimization and Media-based Covert Channels},
+  author={Vilalonga, Afonso and Resende, Jo{\~a}o S and Domingos, Henrique},
+  journal={arXiv preprint arXiv:2303.17544},
+  year={2023}
+}
+```
+
 This code was implemented in the context of the dissertation:
 ```
 @mastersthesis{TorKameleon, 
@@ -10,16 +20,6 @@ This code was implemented in the context of the dissertation:
  school       = {NOVA School of Science and Technology}, 
  year         = 2022, 
  month        = 9,
-}
-```
-
-The design, implementation and evaluation of the system is also described in our Arxiv 2023 [paper](https://jresende.github.io/paper/TorKam.pdf). (To be published in TrustCom 2023)
-```
-@article{vilalonga2023torkameleon,
-  title={TorKameleon: Improving Tor's Censorship Resistance With K-anonimization and Media-based Covert Channels},
-  author={Vilalonga, Afonso and Resende, Jo{\~a}o S and Domingos, Henrique},
-  journal={arXiv preprint arXiv:2303.17544},
-  year={2023}
 }
 ```
 

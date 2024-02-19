@@ -4,11 +4,13 @@ TorKameleon is a solution designed to protect Tor users with increased censorshi
 
 The design, implementation and evaluation of the system is also described in our Arxiv 2023 [paper](https://jresende.github.io/paper/TorKam.pdf). (To be published in TrustCom 2023)
 ```
-@article{vilalonga2023torkameleon,
-  title={TorKameleon: Improving Tor's Censorship Resistance With K-anonimization and Media-based Covert Channels},
-  author={Vilalonga, Afonso and Resende, Jo{\~a}o S and Domingos, Henrique},
-  journal={arXiv preprint arXiv:2303.17544},
-  year={2023}
+@misc{vilalonga2023torkameleon,
+      title={TorKameleon: Improving Tor's Censorship Resistance with K-anonymization and Media-based Covert Channels}, 
+      author={Afonso Vilalonga and João S. Resende and Henrique Domingos},
+      year={2023},
+      eprint={2303.17544},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR}
 }
 ```
 

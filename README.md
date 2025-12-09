@@ -3,6 +3,9 @@
 TorKameleon is a solution designed to protect Tor users with increased censorship resistance against powerful traffic correlation attacks carried out by global adversaries. The system is based on flexible K-anonymization input circuits that can support TLS tunneling and WebRTC-based covert channels before forwarding users' original input traffic to the Tor network. Our goal is to protect users from correlation attacks through machine learning between incoming user traffic and the observed traffic at different Tor network intermediate relays or outgoing traffic to destinations. TorKameleon is the first system to implement a Tor pluggable transport based on both parameterizable TLS tunneling or WebRTC-based covert channels. We have implemented the TorKameleon prototype and performed extensive validations to observe the correctness and experimental performance of the proposed solution in the Tor environment.
 
 The design, implementation and evaluation of the system is also described in our Arxiv 2023 [paper](https://jresende.github.io/paper/TorKam.pdf). (To be published in TrustCom 2023)
+
+Disclaimer: This is a proof of concept for a design and should not be used in real-world settings. It is not production-ready and has not been tested for such use.
+
 ```
 @inproceedings{vilalonga2023torkameleon,
   title={TorKameleon: Improving Tor’s censorship resistance with K-anonymization and media-based covert channels},
